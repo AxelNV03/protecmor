@@ -23,6 +23,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        // Lógica de redirección por roles
+        if (auth()->user()->hasRole('admin|super admin')) {
+            return view('admin.dashboard');
+        } elseif (auth()->user()->hasRole('profesor')) {
+            return view('profesor.dashboard');
+        } elseif (auth()->user()->hasRole('alumno')) {
+            return view('alumno.dashboard');
+        }
+        
+        // Redirigir a inicio si no tiene rol asignado
+        return redirect('/');
     }
 }
