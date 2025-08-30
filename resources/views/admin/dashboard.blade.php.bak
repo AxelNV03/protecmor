@@ -1,0 +1,32 @@
+Aqui no tengo registros
+
+            <tbody>
+                @foreach($usuarios as $usuario)
+                <tr>
+                    <td>{{ $usuario->name }}</td>
+                    <td>{{ $usuario->email }}</td>
+                    <td>
+                        <!-- Toggle switch estilo iOS -->
+                        <button class="btn-toggle {{ $usuario->activo ? 'active' : '' }}" 
+                                onclick="toggleUser({{ $usuario->id }}, this)">
+                            <span class="toggle-handle"></span>
+                        </button>
+                        <span class="status-badge {{ $usuario->activo ? 'status-active' : 'status-inactive' }}">
+                            {{ $usuario->activo ? 'Activo' : 'Inactivo' }}
+                        </span>
+                    </td>
+                    <td>
+                        <!-- Botones de acción -->
+                        <button class="btn btn-edit" onclick="editUser({{ $usuario->id }})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-delete" onclick="deleteUser({{ $usuario->id }})">
+                            🗑️ Borrar
+                        </button>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+
+
+puedes cambiar el body para ver como quedaria la tabla nadamas, estatica
