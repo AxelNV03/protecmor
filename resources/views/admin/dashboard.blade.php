@@ -30,7 +30,9 @@
         <!-- Contenido dinámico -->
         <br><hr class="my-5">
         <div class="content">
-            @role('super admin')@include('admin.parts.admins')@endrole
+            @role('super admin')
+                @include('admin.parts.admins')
+            @endrole
 
             @php
                 $sections = [
@@ -41,6 +43,7 @@
             @foreach($sections as $section)
                 @include("admin.parts.{$section}")
             @endforeach
+        
         </div>
     </div>
 
