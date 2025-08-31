@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory; // ✅ Agregar esto
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -32,7 +33,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable
 {
-	use Notifiable, HasRoles; // ← Agregar HasRoles aquí
+	use Notifiable, HasRoles, HasFactory; // ← Agregar HasRoles aquí
 
 	protected $table = 'users';
 

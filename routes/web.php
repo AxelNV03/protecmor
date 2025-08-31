@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminController; // ✅ Import correcto
+
 
 Route::get('/', function () {
     return view('main');
@@ -12,4 +14,3 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 // Rutas de administración
 require base_path('routes/admin.php');
-

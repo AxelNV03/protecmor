@@ -2,17 +2,29 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Iluminate\Http\Request;
+
 
 class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public function index()
+    {
+        $admins = User::role('admin')->get();
+        return view('admin.admins.index', compact('admins'));
+    }
+
+    /**
+     * Display a dashboard.
+     */
     public function dashboard()
     {
-        return "Panel de admin";
-        // return view('admin.dashboard');
+        return view('admin.dashboard');
     }
 
     /**
