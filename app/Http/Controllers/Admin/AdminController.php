@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Iluminate\Http\Request;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 
 class AdminController extends Controller
@@ -22,14 +23,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Display a dashboard.
-     */
-    public function dashboard()
-    {
-        return view('admin.dashboard');
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -40,9 +33,13 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        // dd($request->all()); // Muestra todos los datos y detiene la ejecución
+        
+        $admin=User::create($request->all());
+        $admin->assignRole('admin');
+        return redirect()->route('admin.index');   
     }
 
     /**
@@ -56,9 +53,9 @@ class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id): View
     {
-        //
+        
     }
 
     /**
@@ -66,7 +63,39 @@ class AdminController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Encontrar el administrador o fallar
+        $admin = Admin::findOrFail($id);
+
+        // Validar los datos del request
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('admins')->ignore($admin->id),
+            ],
+            'password' => 'nullable|string|min:8|confirmed',
+            'telefono' => 'nullable|string|max:20',
+            'estatus' => 'required|in:activo,inactivo',
+        ]);
+
+        // Actualizar los campos
+        $admin->name = $validated['name'];
+        $admin->email = $validated['email'];
+        $admin->telefono = $validated['telefono'] ?? null;
+        $admin->estatus = $validated['estatus'];
+
+        // Actualizar la contraseña si se proporciona
+        if (!empty($validated['password'])) {
+            $admin->password = Hash::make($validated['password']);
+        }
+
+        // Guardar los cambios
+        $admin->save();
+
+        // Redirigir con mensaje de éxito
+        return redirect()->route('admin.index')
+            ->with('success', 'Administrador actualizado correctamente');
     }
 
     /**

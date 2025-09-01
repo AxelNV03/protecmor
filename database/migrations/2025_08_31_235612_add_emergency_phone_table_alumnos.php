@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('alumnos', function (Blueprint $table) {
+            $table->string('telefono_emergencia', 20)->nullable();
+        });
     }
 
     /**
@@ -19,6 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        
     }
 };

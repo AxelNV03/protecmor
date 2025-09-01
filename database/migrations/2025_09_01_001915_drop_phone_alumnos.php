@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('estatus', ['activo', 'inactivo'])->default('activo');
-            $table->string('telefono', 20)->nullable();
+        Schema::table('alumnos', function (Blueprint $table) {
+            $table->dropColumn('telefono');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        Schema::table('alumnos', function (Blueprint $table) {
+            $table->string('telefono', 20)->nullable();
+        });
     }
 };

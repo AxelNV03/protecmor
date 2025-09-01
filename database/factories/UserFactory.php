@@ -11,13 +11,15 @@ class UserFactory extends Factory
 {
     protected $model = User::class;
 
-    public function definition()
+    public function definition() // ✅ ¡FALTA ESTA LÍNEA!
     {
         return [
             'name' => 'Admin ' . $this->faker->firstName(),
             'email' => 'admin.' . $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make('password'), // contraseña: "password"
+            'password' => Hash::make('password'),
+            'telefono' => $this->faker->phoneNumber(),
+            'estatus' => 'activo',
             'remember_token' => Str::random(10),
         ];
     }

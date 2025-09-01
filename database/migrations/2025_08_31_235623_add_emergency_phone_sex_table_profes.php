@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('profesores', function (Blueprint $table) {
+            $table->enum('sexo', ['Masculino', 'Femenino', 'Otro'])->nullable();
+            $table->string('telefono_emergencia', 20)->nullable()->after('especialidad');
+        });
     }
 
     /**

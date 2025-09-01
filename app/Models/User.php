@@ -36,7 +36,7 @@ class User extends Authenticatable
 	use Notifiable, HasRoles, HasFactory; // ← Agregar HasRoles aquí
 
 	protected $table = 'users';
-
+	
 	protected $casts = [
 		'email_verified_at' => 'datetime'
 	];
@@ -51,7 +51,8 @@ class User extends Authenticatable
 		'email',
 		'email_verified_at',
 		'password',
-		'remember_token'
+		'remember_token',
+		'telefono'
 	];
 
 	public function alumnos()

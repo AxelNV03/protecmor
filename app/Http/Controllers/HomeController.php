@@ -25,7 +25,7 @@ class HomeController extends Controller
     {
         // Lógica de redirección por roles
         if (auth()->user()->hasRole('admin|super admin')) {
-            return redirect()->route('admin.dashboard'); 
+            return redirect()->route('admin.index'); 
         } elseif (auth()->user()->hasRole('profesor')) {
             return view('profesor.dashboard');
         } elseif (auth()->user()->hasRole('alumno')) {

@@ -13,14 +13,18 @@ class AdminsTestSeeder extends Seeder
         // Crear rol admin si no existe
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
 
-        // 👑 Crear 6 administradores
-        User::factory()->count(6)->create()->each(function ($user) use ($adminRole) {
+        // 👑 Crear 6 administradores con estatus 'activo'
+        User::factory()->count(6)->create([
+            'estatus' => 'activo' // ✅ Asegurar que estén activos
+        ])->each(function ($user) use ($adminRole) {
             $user->assignRole($adminRole);
-            $this->command->info("✅ Admin creado: {$user->name} - {$user->email}");
+            $this->command->info("✅ Admin creado: {$user->name} - {$user->email} - {$user->telefono}");
         });
 
         $this->command->info('🎉 ¡6 usuarios administradores creados exitosamente!');
         $this->command->info('📧 Emails: admin.*@example.com');
         $this->command->info('🔑 Password: password');
+        $this->command->info('📞 Teléfono: generado automáticamente');
+        $this->command->info('🟢 Estatus: activo');
     }
 }

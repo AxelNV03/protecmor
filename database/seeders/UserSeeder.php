@@ -19,6 +19,8 @@ class UserSeeder extends Seeder
                 'name' => 'Super Administrador',
                 'password' => Hash::make('admin123'),
                 'email_verified_at' => now(),
+                'telefono' => '1234567890',
+                'estatus' => 'activo'
             ]
         );
         $superAdmin->assignRole('super admin');
@@ -30,6 +32,8 @@ class UserSeeder extends Seeder
                 'name' => 'Administrador',
                 'password' => Hash::make('admin123'),
                 'email_verified_at' => now(),
+                'telefono' => '0987654321',
+                'estatus' => 'activo'
             ]
         );
         $admin->assignRole('admin');
@@ -41,6 +45,8 @@ class UserSeeder extends Seeder
                 'name' => 'Juan Profesor',
                 'password' => Hash::make('profe123'),
                 'email_verified_at' => now(),
+                'telefono' => '1231231234',
+                'estatus' => 'activo'
             ]
         );
         $profesor->assignRole('profesor');
@@ -52,6 +58,8 @@ class UserSeeder extends Seeder
                 'name' => 'Carlos Alumno',
                 'password' => Hash::make('alumno123'),
                 'email_verified_at' => now(),
+                'telefono' => '3213214321',
+                'estatus' => 'activo'
             ]
         );
         $alumno->assignRole('alumno');
@@ -62,10 +70,10 @@ class UserSeeder extends Seeder
         $profesor->update(['password' => Hash::make('profe123')]);
         $alumno->update(['password' => Hash::make('alumno123')]);
 
-        $this->command->info('Usuarios de prueba verificados/creados exitosamente!');
-        $this->command->info('Super Admin: sadmin@protecmor.com / admin123');
-        $this->command->info('Admin: admin1@protecmor.com / admin123');
-        $this->command->info('Profesor: profe1@protecmor.com / profe123');
-        $this->command->info('Alumno: alumno1@protecmor.com / alumno123');
+        $this->command->info('✅ Usuarios de prueba creados exitosamente!');
+        $this->command->info('👑 Super Admin: sadmin@protecmor.com / admin123');
+        $this->command->info('👤 Admin: admin1@protecmor.com / admin123');
+        $this->command->info('🎓 Profesor: profe1@protecmor.com / profe123');
+        $this->command->info('📚 Alumno: alumno1@protecmor.com / alumno123');
     }
 }
