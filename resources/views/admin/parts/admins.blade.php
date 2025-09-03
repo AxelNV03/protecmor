@@ -2,6 +2,17 @@
 <!-- <div x-data="{ showModal: false }" x-show="activeTab === 'admins'"> -->
 <div x-data="{ showModal: false, showEdit: false, editAdmin: {} }" x-show="activeTab === 'admins'">
 
+    @if($errors->any())
+    <div class="alert alert-danger">
+        <h6>Por favor corrige los siguientes errores:</h6>
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <h2>Administración de administradores</h2>
 
     <table>
@@ -33,6 +44,8 @@
 
 
                     <button>Eliminar</button>
+
+
                 </td>
             </tr>
             @endforeach
@@ -71,12 +84,10 @@
                     <label class="block text-sm">contraseña</label>
                     <input type="password" name="password" class="w-full border rounded p-2">
                 </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Estado</label>
-                    <select name="estatus" class="w-full border rounded p-2">
-                        <option value="activo">Activo</option>
-                        <option value="inactivo">Inactivo</option>
-                    </select>
+                </div>
+                    <div class="mb-3">
+                    <label class="block text-sm">Confirmar Contraseña</label>
+                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">
                 </div>
 
                 <div class="flex justify-end space-x-2">
@@ -103,10 +114,7 @@
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Editar Administrador</h3>
 
-
-            <!-- <form :action="`/admin/update/${editAdmin.id}`" method="POST"> -->
-            <form :action="`{{ url('/update') }}/${editAdmin.id}`" method="POST">
-
+            <form :action="`{{ route('admin.update', '') }}/${editAdmin.id}`" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="mb-3">
@@ -122,11 +130,12 @@
                     <input type="text" name="telefono" x-model="editAdmin.telefono" class="w-full border rounded p-2">
                 </div>
                 <div class="mb-3">
-                    <label class="block text-sm">Estado</label>
-                    <select name="estatus" x-model="editAdmin.estatus" class="w-full border rounded p-2">
-                        <option value="activo">Activo</option>
-                        <option value="inactivo">Inactivo</option>
-                    </select>
+                    <label class="block text-sm">Contraseña</label>
+                    <input type="password" name="password" x-model="editAdmin.password" class="w-full border rounded p-2">
+                </div>
+                    <div class="mb-3">
+                    <label class="block text-sm">Confirmar Contraseña</label>
+                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">
                 </div>
 
                 <div class="flex justify-end space-x-2">

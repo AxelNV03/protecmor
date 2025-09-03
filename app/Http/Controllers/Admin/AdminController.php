@@ -7,6 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Hash;  // ← Para Hash::make()
+use Illuminate\Validation\Rule;       // ← Para Rule::unique()
+use App\Http\Requests\UpdateAdminRequest; // ← Importar tu FormRequest
+use App\Http\Requests\CreateAdminRequest;
 
 
 class AdminController extends Controller
@@ -33,13 +37,24 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(CreateAdminRequest $request): RedirectResponse // ← Usar FormRequest
     {
-        // dd($request->all()); // Muestra todos los datos y detiene la ejecución
-        
-        $admin=User::create($request->all());
+        // ✅ Los datos YA están validados automáticamente
+        $validated = $request->validated();
+
+        // Crear el usuario con los datos validados
+        $admin = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']), // ← Hashear la contraseña
+            'telefono' => $validated['telefono'] ?? null,
+        ]);
+
+        // Asignar rol de admin
         $admin->assignRole('admin');
-        return redirect()->route('admin.index');   
+
+        return redirect()->route('admin.index')
+            ->with('success', 'Administrador creado correctamente');
     }
 
     /**
@@ -61,31 +76,20 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        // Encontrar el administrador o fallar
-        $admin = Admin::findOrFail($id);
+    public function update(UpdateAdminRequest $request, string $id) // ← Cambiar Request por UpdateAdminRequest
+    {        
+        // Encontrar el administrador
+        $admin = User::findOrFail($id);
 
-        // Validar los datos del request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('admins')->ignore($admin->id),
-            ],
-            'password' => 'nullable|string|min:8|confirmed',
-            'telefono' => 'nullable|string|max:20',
-            'estatus' => 'required|in:activo,inactivo',
-        ]);
+        // ✅ Los datos YA están validados - usamos validated() en lugar de all()
+        $validated = $request->validated();
 
-        // Actualizar los campos
+        // Actualizar campos (ahora más explícito y seguro)
         $admin->name = $validated['name'];
         $admin->email = $validated['email'];
-        $admin->telefono = $validated['telefono'] ?? null;
-        $admin->estatus = $validated['estatus'];
+        $admin->telefono = $validated['telefono'] ?? null; // ← Mejor que fill()
 
-        // Actualizar la contraseña si se proporciona
+        // Actualizar password solo si se proporcionó
         if (!empty($validated['password'])) {
             $admin->password = Hash::make($validated['password']);
         }
@@ -104,5 +108,23 @@ class AdminController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+        // Activar un administrador
+    public function activate(Admin $admin)
+    {
+        $admin->estatus = 'activo';
+        $admin->save();
+        
+        return redirect()->back()->with('success', 'Administrador activado');
+    }
+
+    // Desactivar un administrador  
+    public function deactivate(Admin $admin)
+    {
+        $admin->estatus = 'inactivo';
+        $admin->save();
+        
+        return redirect()->back()->with('success', 'Administrador desactivado');
     }
 }
