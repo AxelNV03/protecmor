@@ -41,8 +41,7 @@
                     >
                         Editar
                     </button>
-
-
+                    
                     <button>Eliminar</button>
 
 
@@ -100,12 +99,8 @@
                 </div>
             </form>
         </div>
-    </div>
 
-
-
-
-    <!-- Modal EDITAR -->
+    <!-- Modal de edición -->
     <div 
         x-show="showEdit" 
         x-transition 
@@ -114,28 +109,34 @@
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Editar Administrador</h3>
 
+            <!-- ✅ CORRECTO: action dinámico con Alpine -->
             <form :action="`{{ route('admin.update', '') }}/${editAdmin.id}`" method="POST">
                 @csrf
                 @method('PUT')
+                
                 <div class="mb-3">
                     <label class="block text-sm">Nombre</label>
                     <input type="text" name="name" x-model="editAdmin.name" class="w-full border rounded p-2">
                 </div>
+                
                 <div class="mb-3">
                     <label class="block text-sm">Email</label>
                     <input type="email" name="email" x-model="editAdmin.email" class="w-full border rounded p-2">
                 </div>
+                
                 <div class="mb-3">
                     <label class="block text-sm">Teléfono</label>
                     <input type="text" name="telefono" x-model="editAdmin.telefono" class="w-full border rounded p-2">
                 </div>
+                
                 <div class="mb-3">
-                    <label class="block text-sm">Contraseña</label>
-                    <input type="password" name="password" x-model="editAdmin.password" class="w-full border rounded p-2">
+                    <label class="block text-sm">Contraseña (dejar vacío para no cambiar)</label>
+                    <input type="password" name="password" class="w-full border rounded p-2" placeholder="Nueva contraseña">
                 </div>
-                    <div class="mb-3">
+                
+                <div class="mb-3">
                     <label class="block text-sm">Confirmar Contraseña</label>
-                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">
+                    <input type="password" name="password_confirmation" class="w-full border rounded p-2" placeholder="Confirmar nueva contraseña">
                 </div>
 
                 <div class="flex justify-end space-x-2">
@@ -152,5 +153,5 @@
 
 
 
-
+    
 </div>

@@ -31,8 +31,8 @@ class PasswordSegura implements ValidationRule
             return;
         }
 
-        if (!preg_match('/[@$!%*?&_\-]/', $value)) {
-            $fail('La contraseña debe contener al menos un carácter especial (@$!%*?&_-).');
+        if (!preg_match('/[#@$!%*?&_\-]/', $value)) {
+            $fail('La contraseña debe contener al menos un carácter especial (#@$!%*?&_-).');
         }
     }
 }
