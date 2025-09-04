@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;  // ← Para Hash::make()
 use Illuminate\Validation\Rule;       // ← Para Rule::unique()
-use App\Http\Requests\UpdateAdminRequest; // ← Importar tu FormRequest
-use App\Http\Requests\CreateAdminRequest;
+use App\Http\Requests\SaveAdminRequest; // ← Importar tu FormRequest
 
 
 class AdminController extends Controller
@@ -37,7 +36,7 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateAdminRequest $request): RedirectResponse // ← Usar FormRequest
+    public function store(SaveAdminRequest $request): RedirectResponse // ← Usar FormRequest
     {
         // ✅ Los datos YA están validados automáticamente
         $validated = $request->validated();
@@ -76,7 +75,7 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAdminRequest $request, string $id) // ← Cambiar Request por UpdateAdminRequest
+    public function update(SaveAdminRequest $request, string $id) // ← Cambiar Request por UpdateAdminRequest
     {        
         // Encontrar el administrador
         $admin = User::findOrFail($id);
@@ -107,7 +106,23 @@ class AdminController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+       // Verificar que el usuario autenticado es super-admin 
+        if (auth()->user()->role !== 'super-admin') {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        // Prevenir que un super-admin se elimine a sí mismo
+        $admin = User::findOrFail($id);
+        if ($admin->id === auth()->id()) {
+            return redirect()->route('admins.index')
+                ->with('error', 'No puedes eliminar tu propia cuenta de super-admin.');
+        }
+
+        // Encontrar y eliminar el administrador
+        $admin->delete();
+
+        return redirect()->route('admin.index')
+            ->with('success', 'Administrador eliminado correctamente');
     }
 
         // Activar un administrador

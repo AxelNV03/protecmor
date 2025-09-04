@@ -17,16 +17,6 @@ class EmailUnico implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (empty($value)) {
-            $fail('El email es obligatorio.');
-            return;
-        }
-
-        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $fail('El formato del email no es válido.');
-            return;
-        }
-
         // Consulta directa más simple
         $query = \App\Models\User::where('email', $value);
         
