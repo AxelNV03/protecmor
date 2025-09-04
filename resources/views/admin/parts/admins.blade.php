@@ -1,6 +1,6 @@
 <!-- admin/parts/admins.blade.php -->
 <!-- <div x-data="{ showModal: false }" x-show="activeTab === 'admins'"> -->
-<div x-data="{ showModal: false, showEdit: false, editAdmin: {} }" x-show="activeTab === 'admins'">
+<div x-data="{ showModal: false, showEdit: false, showConfirmation: false,editAdmin: {} }" x-show="activeTab === 'admins'">
 
     @if($errors->any())
     <div class="alert alert-danger">
@@ -42,7 +42,12 @@
                         Editar
                     </button>
                     
-                    <button>Eliminar</button>
+                    <button
+                        @click="showConfirmation = true; editAdmin = {{ json_encode($admin) }}" 
+                        class="px-2 py-1 bg-red-500 text-white rounded"
+                    >
+                        Eliminar
+                    </button>
 
 
                 </td>
@@ -151,7 +156,27 @@
         </div>
     </div>
 
-
+    
+    <div x-show="showConfirmation">
+        <h3 class="text-lg font-bold mb-4">Eliminar Administrador</h3>
+        <p>¿Estás seguro de que deseas eliminar a <span x-text="editAdmin.name"></span>?</p>
+        <div class="flex justify-end space-x-2 mt-4">
+    
+            <button type="button" @click="showConfirmation = false" class="px-4 py-2 bg-gray-300 rounded">
+                Cancelar
+            </button>
+    
+            <form :action="`{{ route('admin.destroy', '') }}/${editAdmin.id}`" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">
+                    Sí, eliminar
+                </button>
+            </form>
+    
+        </div>
+    </div>
+    
 
     
 </div>

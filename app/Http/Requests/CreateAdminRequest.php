@@ -12,7 +12,7 @@ class CreateAdminRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return auth()->check() && auth()->user()->hasRole('super-admin');
     }
 
     public function rules(): array
