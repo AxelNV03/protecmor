@@ -32,7 +32,7 @@ class SaveAdminRequest extends FormRequest
         ];
 
         // Si es update, usamos el ID del admin en la ruta. En create, será null.
-        $adminId = $this->route('id');
+        $adminId = $this->route('admin')?->id;
         
         //    - Si $adminId es null (creando), busca el email en toda la tabla.
         //    - Si $adminId tiene un valor (actualizando), ignora ese ID en la búsqueda.

@@ -115,7 +115,7 @@
             <h3 class="text-lg font-bold mb-4">Editar Administrador</h3>
 
             <!-- ✅ CORRECTO: action dinámico con Alpine -->
-            <form :action="`{{ route('admin.update', '') }}/${editAdmin.id}`" method="POST">
+            <form :action="'{{ route('admin.update', '') }}/' + editAdmin.id" method="POST">
                 @csrf
                 @method('PUT')
                 
@@ -166,7 +166,7 @@
                 Cancelar
             </button>
     
-            <form :action="`{{ route('admin.destroy', '') }}/${editAdmin.id}`" method="POST">
+            <form :action="'{{ route('admin.destroy', '') }}/' + editAdmin.id" method="POST">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">

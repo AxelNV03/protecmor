@@ -2,144 +2,94 @@
 
 namespace App\Http\Controllers\Admin;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\SaveAdminRequest;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Hash;  // ← Para Hash::make()
-use Illuminate\Validation\Rule;       // ← Para Rule::unique()
-use App\Http\Requests\SaveAdminRequest; // ← Importar tu FormRequest
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View; // <-- Importar View
 
 class AdminController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): View
     {
-        $admins = User::role('admin')->with('roles')->get();
-        return view('admin.dashboard',[
-            'admins' => $admins
-        ]);
+        $admins = User::role('admin')->get();
+        return view('admin.dashboard', compact('admins'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(SaveAdminRequest $request): RedirectResponse // ← Usar FormRequest
+    public function store(SaveAdminRequest $request): RedirectResponse
     {
-        // ✅ Los datos YA están validados automáticamente
         $validated = $request->validated();
-
-        // Crear el usuario con los datos validados
         $admin = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']), // ← Hashear la contraseña
+            'password' => Hash::make($validated['password']),
             'telefono' => $validated['telefono'] ?? null,
         ]);
-
-        // Asignar rol de admin
         $admin->assignRole('admin');
 
-        return redirect()->route('admin.index')
-            ->with('success', 'Administrador creado correctamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(User $admin): View // <-- Usando Route Model Binding
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id): View
+    public function update(SaveAdminRequest $request, User $admin): RedirectResponse // <-- Usando Route Model Binding
     {
-        
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(SaveAdminRequest $request, string $id) // ← Cambiar Request por UpdateAdminRequest
-    {        
-        // Encontrar el administrador
-        $admin = User::findOrFail($id);
-
-        // ✅ Los datos YA están validados - usamos validated() en lugar de all()
+        // ✅ No necesitas buscar al usuario, Laravel ya lo hizo por ti.
         $validated = $request->validated();
 
-        // Actualizar campos (ahora más explícito y seguro)
-        $admin->name = $validated['name'];
-        $admin->email = $validated['email'];
-        $admin->telefono = $validated['telefono'] ?? null; // ← Mejor que fill()
+        $admin->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'telefono' => $validated['telefono'] ?? null,
+        ]);
 
-        // Actualizar password solo si se proporcionó
         if (!empty($validated['password'])) {
             $admin->password = Hash::make($validated['password']);
+            $admin->save();
         }
 
-        // Guardar los cambios
-        $admin->save();
-
-        // Redirigir con mensaje de éxito
-        return redirect()->route('admin.index')
-            ->with('success', 'Administrador actualizado correctamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(User $admin): RedirectResponse // <-- Usando Route Model Binding
     {
-       // Verificar que el usuario autenticado es super-admin 
-        if (auth()->user()->role !== 'super-admin') {
-            abort(403, 'Acción no autorizada.');
+            // ✅ La autorización ahora está en la Policy, más limpio.
+        if (!auth()->user()->hasRole('super admin')) {
+            // Si no lo tiene, detenemos todo y mostramos un error 403.
+            abort(403, 'This action is unauthorized.');
         }
 
-        // Prevenir que un super-admin se elimine a sí mismo
-        $admin = User::findOrFail($id);
-        if ($admin->id === auth()->id()) {
-            return redirect()->route('admins.index')
+        // 2. Verificamos que no se esté intentando eliminar a sí mismo.
+        if (auth()->id() === $admin->id) {
+            return redirect()->route('admin.index')
                 ->with('error', 'No puedes eliminar tu propia cuenta de super-admin.');
         }
 
-        // Encontrar y eliminar el administrador
         $admin->delete();
 
-        return redirect()->route('admin.index')
-            ->with('success', 'Administrador eliminado correctamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador eliminado correctamente');
     }
 
-        // Activar un administrador
-    public function activate(Admin $admin)
+    public function activate(User $admin): RedirectResponse // <-- Corregido el Type Hint
     {
         $admin->estatus = 'activo';
         $admin->save();
-        
         return redirect()->back()->with('success', 'Administrador activado');
     }
 
-    // Desactivar un administrador  
-    public function deactivate(Admin $admin)
+    public function deactivate(User $admin): RedirectResponse // <-- Corregido el Type Hint
     {
         $admin->estatus = 'inactivo';
         $admin->save();
-        
         return redirect()->back()->with('success', 'Administrador desactivado');
     }
 }
