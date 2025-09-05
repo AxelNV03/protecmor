@@ -14,4 +14,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // Rutas de administración
 require base_path('routes/admin.php');
 
-//
+// Rutas de alumno
+require base_path('routes/alumno.php');

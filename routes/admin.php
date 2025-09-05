@@ -1,10 +1,19 @@
 <?php
 
-Route::prefix('admin')->group(function () {
-    Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'index'])->name('admin.index');
-    route::post('/store', [App\Http\Controllers\Admin\AdminController::class, 'store'])->name('admin.store');
-    Route::put('/update/{admin}', [App\Http\Controllers\Admin\AdminController::class, 'update'])->name('admin.update');
-    Route::delete('/destroy/{admin}', [App\Http\Controllers\Admin\AdminController::class, 'destroy'])->name('admin.destroy');
-    // Route::resource('admins', App\Http\Controllers\Admin\AdminController::class);
-    // Route::get('/admins/data', [AdminController::class, 'index'])->name('admins.data'); // ← Nueva ruta
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminController;
+
+Route::prefix('admins')->name('admin.')->group(function () {
+    
+    // GET /admins (Shows the list of admins)
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+
+    // POST /admins (Saves a new admin)
+    Route::post('/', [AdminController::class, 'store'])->name('store');
+    
+    // PUT /admins/{admin} (Updates an existing admin)
+    Route::put('/{admin}', [AdminController::class, 'update'])->name('update');
+    
+    // DELETE /admins/{admin} (Deletes an admin)
+    Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
 });
