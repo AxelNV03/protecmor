@@ -9,6 +9,9 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- Añadido para usar factories
+
 
 /**
  * Class Alumno
@@ -31,6 +34,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Alumno extends Model
 {
+	use HasFactory; // <-- AÑADE ESTA LÍNE
+
 	protected $table = 'alumnos';
 	public $timestamps = false;
 
@@ -45,11 +50,11 @@ class Alumno extends Model
 		'matricula',
 		'grupo_id',
 		'fecha_nacimiento',
-		'telefono',
-		'sexo'
+		'sexo',
+		'telefono_emergencia',
 	];
 
-	public function user()
+	public function user(): BelongsTo
 	{
 		return $this->belongsTo(User::class);
 	}

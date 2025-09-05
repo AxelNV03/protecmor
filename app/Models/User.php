@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory; // ✅ Agregar esto
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\HasOne; // <-- Importar HasOne\
+
 
 /**
  * Class User
@@ -53,9 +55,9 @@ class User extends Authenticatable
 		'telefono'
 	];
 
-	public function alumnos()
+	public function alumno(): HasOne
 	{
-		return $this->hasMany(Alumno::class);
+		return $this->hasOne(Alumno::class);
 	}
 
 	public function mensajes()

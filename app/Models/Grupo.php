@@ -8,6 +8,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- 1. Importar
+
 
 /**
  * Class Grupo
@@ -25,6 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Grupo extends Model
 {
+	use HasFactory; // <-- 2. Añadir esta línea
+
+
 	protected $table = 'grupos';
 	public $timestamps = false;
 
