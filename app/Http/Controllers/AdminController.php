@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Profesore; // <- Asegúrate de importar el modelo
 use App\Http\Requests\SaveAdminRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +15,9 @@ class AdminController extends Controller
     public function index(): View
     {
         $admins = User::role('admin')->get();
-        return view('admin.dashboard', compact('admins'));
+        $profes = Profesore::with('user')->get(); // <- Traemos los profesores con su usuario
+
+        return view('admin.dashboard', compact('admins', 'profes'));
     }
 
     public function create(): View

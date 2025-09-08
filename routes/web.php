@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\AdminController; // ✅ Import correcto
+use App\Http\Controllers\AdminController; // ✅ Import correcto
+use App\Http\Controllers\ProfeController; // ✅ Import correcto
 
 
 Route::get('/', function () {
@@ -16,3 +17,6 @@ require base_path('routes/admin.php');
 
 // Rutas de alumno
 require base_path('routes/alumno.php');
+
+// Rutas de profesores
+require base_path('routes/profesor.php');
