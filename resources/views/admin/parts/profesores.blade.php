@@ -40,6 +40,16 @@
     <div x-show="showModal" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Nuevo Profesor</h3>
+            {{-- Errores de validación para "profesores" --}}
+            @if ($errors->profesores->any())
+                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
+                    <ul>
+                        @foreach ($errors->profesores->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form method="POST" action="{{ route('profesores.store') }}">
                 @csrf
                 <div class="mb-3">
@@ -78,6 +88,16 @@
     <div x-show="showEdit" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Editar Profesor</h3>
+             {{-- Errores de validación para "profesores" --}}
+            @if ($errors->profesores->any())
+                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
+                    <ul>
+                        @foreach ($errors->profesores->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form :action="'{{ route('profesores.update', '') }}/' + editProfe.id" method="POST">
                 @csrf
                 @method('PUT')
