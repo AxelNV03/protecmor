@@ -26,10 +26,17 @@
     
     <div
         x-data="{ 
-        activeTab: new URLSearchParams(window.location.search).get('tab') || 'admins' 
-    }"
+            activeTab: new URLSearchParams(window.location.search).get('tab') || 'admins',
 
-    > 
+            changeTab(tab) {
+                this.activeTab = tab;
+                
+                const url = new URL(window.location);
+                url.searchParams.set('tab', tab);
+                history.pushState({}, '', url);
+            }
+        }"
+    >
         <!-- Menú lateral -->
         @include('admin.parts.sidebar')
         
