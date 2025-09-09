@@ -1,46 +1,92 @@
-<div x-data="{ showModal: false, showEdit: false, showConfirmation: false, editProfe: {} }" x-show="activeTab === 'profesores'">
+<div 
+    x-data="{ 
+        profes: [], 
+        isLoading: true,
+        showModal: false, 
+        showEdit: false, 
+        showConfirmation: false, 
+        editProfe: {} 
+    }" 
+    x-show="activeTab === 'profesores'"
+    x-init="
+        fetch('{{ route('profesores.data') }}')
+            .then(response => response.json())
+            .then(data => {
+                            console.log('Datos de profesores recibidos:', data); 
+
+                profes = data;
+                isLoading = false;
+            })
+            .catch(error => {
+                console.error('Error al cargar los profesores:', error);
+                isLoading = false;
+            })
+    "
+>
+
+    @if($errors->any())
+    <div class="alert alert-danger">
+        <h6>Por favor corrige los siguientes errores:</h6>
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <h2>Administración de Profesores</h2>
 
-    <!-- Botón para agregar profesor -->
     <button @click="showModal = true" class="px-2 py-1 bg-blue-500 text-white rounded mb-4">
         Agregar Profesor
     </button>
 
-    <table>
+    <div x-show="isLoading" class="text-center p-4">
+        Cargando datos de profesores...
+    </div>
+
+    <table x-show="!isLoading">
         <thead>
             <tr>
                 <th>Nombre</th>
                 <th>Email</th>
+                <th>Teléfono</th>
+                <th>Teléfono de Emergencia</th>
                 <th>Especialidad</th>
                 <th>Fecha ingreso</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($profes as $profe)
-            <tr>
-                <td>{{ $profe->user->name }}</td>
-                <td>{{ $profe->user->email }}</td>
-                <td>{{ $profe->especialidad }}</td>
-                <td>{{ $profe->fecha_ingreso }}</td>
-                <td>
-                    <button @click="showEdit = true; editProfe = {{ json_encode($profe) }}" class="px-2 py-1 bg-yellow-500 text-white rounded">
-                        Editar
-                    </button>
-                    <button @click="showConfirmation = true; editProfe = {{ json_encode($profe) }}" class="px-2 py-1 bg-red-500 text-white rounded">
-                        Eliminar
-                    </button>
-                </td>
-            </tr>
-            @endforeach
+            <template x-for="profe in profes" :key="profe.id">
+                <tr>
+                    <td x-text="profe.user.name"></td>
+                    <td x-text="profe.user.email"></td>
+                    
+                    <td x-text="profe.user.telefono"></td>
+                    <td x-text="profe.telefono_emergencia"></td>
+                    <td x-text="profe.especialidad"></td>
+                    <td x-text="profe.fecha_ingreso"></td>
+                    <td x-text="profe.user.estatus"></td>
+                    
+                    <td>
+                        <button @click="showEdit = true; editProfe = { ...profe }" class="px-2 py-1 bg-yellow-500 text-white rounded">
+                            Editar
+                        </button>
+                        <button @click="showConfirmation = true; editProfe = profe" class="px-2 py-1 bg-red-500 text-white rounded">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            </template>
         </tbody>
     </table>
 
-    <!-- Modal Crear Profesor -->
-    <div x-show="showModal" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div x-show="showModal" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Nuevo Profesor</h3>
-            {{-- Errores de validación para "profesores" --}}
+            {{-- This part for errors is excellent! It uses a "Named Error Bag" --}}
             @if ($errors->profesores->any())
                 <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
                     <ul>
@@ -51,14 +97,15 @@
                 </div>
             @endif
             <form method="POST" action="{{ route('profesores.store') }}">
+                {{-- Form fields for creating a new professor --}}
                 @csrf
                 <div class="mb-3">
                     <label class="block text-sm">Nombre</label>
-                    <input type="text" name="name" class="w-full border rounded p-2">
+                    <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name') }}">
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Email</label>
-                    <input type="email" name="email" class="w-full border rounded p-2">
+                    <input type="email" name="email" class="w-full border rounded p-2" value="{{ old('email') }}">
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Contraseña</label>
@@ -70,11 +117,11 @@
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Especialidad</label>
-                    <input type="text" name="especialidad" class="w-full border rounded p-2">
+                    <input type="text" name="especialidad" class="w-full border rounded p-2" value="{{ old('especialidad') }}">
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Fecha ingreso</label>
-                    <input type="date" name="fecha_ingreso" class="w-full border rounded p-2">
+                    <input type="date" name="fecha_ingreso" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
@@ -84,11 +131,11 @@
         </div>
     </div>
 
-    <!-- Modal Editar Profesor -->
-    <div x-show="showEdit" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div x-show="showEdit" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
+            {{-- The rest of your edit and delete modals are already well-structured for Alpine.js --}}
+            {{-- and don't need significant changes. --}}
             <h3 class="text-lg font-bold mb-4">Editar Profesor</h3>
-             {{-- Errores de validación para "profesores" --}}
             @if ($errors->profesores->any())
                 <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
                     <ul>
@@ -132,9 +179,8 @@
             </form>
         </div>
     </div>
-
-    <!-- Modal Eliminar Profesor -->
-    <div x-show="showConfirmation" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    
+    <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Eliminar Profesor</h3>
             <p>¿Estás seguro de que deseas eliminar a <span x-text="editProfe.user.name"></span>?</p>

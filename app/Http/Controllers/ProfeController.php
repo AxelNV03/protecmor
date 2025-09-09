@@ -5,20 +5,24 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;        // <--- Agregar esto
-use App\Models\Profesore;   // <--- Si no lo agregaste todavía
+use App\Models\Profesor;   // <--- Si no lo agregaste todavía
+
 use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View; // <-- Importar View
 
 class ProfeController extends Controller
 {
     public function index()
     {
-         // Profesores
-        $profes = Profesore::with('user')->get();
+        return view('profesores.dashboard');
+    }
 
-        // Administradores (para la sección de admins)
-        $admins = User::role('admin')->get();
-
-        return view('admin.dashboard', compact('profes', 'admins'));
+    public function data(): \Illuminate\Http\JsonResponse
+    {
+        // Eager load the 'user' relationship to have access to name and email
+        $profesores = Profesor::with('user')->get(); 
+        return response()->json($profesores);
     }
 
     public function store(Request $request)
@@ -40,16 +44,16 @@ class ProfeController extends Controller
         $user->assignRole('profesor');
 
         // 2. Crear profesor vinculado al usuario
-        Profesore::create([
+        Profesor::create([
             'user_id'       => $user->id,
             'especialidad'  => $request->especialidad,
             'fecha_ingreso' => $request->fecha_ingreso,
         ]);
 
-        return redirect()->route('profesores.index')->with('success', 'Profesor creado correctamente');
+        return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor creado correctamente');
     }
 
-    public function update(Request $request, Profesore $profesor)
+    public function update(Request $request, Profesor $profesor)
     {
         $request->validate([
             'name'        => 'required|string|max:255',
@@ -76,10 +80,11 @@ class ProfeController extends Controller
             'fecha_ingreso' => $request->fecha_ingreso,
         ]);
 
-        return redirect()->route('profesores.index')->with('success', 'Profesor actualizado correctamente');
+        return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor actualizado correctamente');
+
     }
 
-    public function destroy(Profesore $profesor)
+    public function destroy(Profesor $profesor)
     {
         $profesor->user->delete(); // Borra también al usuario
         $profesor->delete();

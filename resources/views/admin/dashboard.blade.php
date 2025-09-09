@@ -23,7 +23,13 @@
     <!-- Lista lateral -->
     <hr class="my-5">
     <h1>Lista lateral</h1>
-    <div x-data="{ activeTab: 'admins' }"> 
+    
+    <div
+        x-data="{ 
+        activeTab: new URLSearchParams(window.location.search).get('tab') || 'admins' 
+    }"
+
+    > 
         <!-- Menú lateral -->
         @include('admin.parts.sidebar')
         

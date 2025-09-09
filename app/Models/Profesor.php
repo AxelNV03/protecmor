@@ -9,9 +9,10 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- 1. IMPORTA EL TRAIT
 
 /**
- * Class Profesore
+ * Class Profesor
  * 
  * @property int $id
  * @property int $user_id
@@ -23,8 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
-class Profesore extends Model
+class Profesor extends Model
 {
+	use HasFactory; // <-- 2. USA EL TRAIT AQUÍ
+
 	protected $table = 'profesores';
 	public $timestamps = false;
 
@@ -36,7 +39,9 @@ class Profesore extends Model
 	protected $fillable = [
 		'user_id',
 		'especialidad',
-		'fecha_ingreso'
+		'fecha_ingreso',
+		'telefono_emergencia', // <-- AÑADIR ESTE
+        'sexo', 
 	];
 
 	public function user()

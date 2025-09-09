@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Profesore; // <- Asegúrate de importar el modelo
 use App\Http\Requests\SaveAdminRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -14,10 +13,13 @@ class AdminController extends Controller
 {
     public function index(): View
     {
-        $admins = User::role('admin')->get();
-        $profes = Profesore::with('user')->get(); // <- Traemos los profesores con su usuario
+        return view('admin.dashboard');
+    }
 
-        return view('admin.dashboard', compact('admins', 'profes'));
+    public function data(): \Illuminate\Http\JsonResponse
+    {
+        $admins = User::role(['admin', 'super admin'])->get();
+        return response()->json($admins);
     }
 
     public function create(): View
