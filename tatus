@@ -1,0 +1,478 @@
+[1mdiff --git a/app/Http/Controllers/AdminController.php b/app/Http/Controllers/Admin/AdminController.php[m
+[1msimilarity index 92%[m
+[1mrename from app/Http/Controllers/AdminController.php[m
+[1mrename to app/Http/Controllers/Admin/AdminController.php[m
+[1mindex f7eaece..b34a9f4 100644[m
+[1m--- a/app/Http/Controllers/AdminController.php[m
+[1m+++ b/app/Http/Controllers/Admin/AdminController.php[m
+[36m@@ -1,10 +1,9 @@[m
+ <?php[m
+ [m
+[31m-namespace App\Http\Controllers;[m
+[32m+[m[32mnamespace App\Http\Controllers\Admin;[m
+ [m
+ use App\Http\Controllers\Controller;[m
+ use App\Models\User;[m
+[31m-use App\Models\Profesore; // <- Asegúrate de importar el modelo[m
+ use App\Http\Requests\SaveAdminRequest;[m
+ use Illuminate\Http\RedirectResponse;[m
+ use Illuminate\Support\Facades\Hash;[m
+[36m@@ -15,9 +14,7 @@[m [mclass AdminController extends Controller[m
+     public function index(): View[m
+     {[m
+         $admins = User::role('admin')->get();[m
+[31m-        $profes = Profesore::with('user')->get(); // <- Traemos los profesores con su usuario[m
+[31m-[m
+[31m-        return view('admin.dashboard', compact('admins', 'profes'));[m
+[32m+[m[32m        return view('admin.dashboard', compact('admins'));[m
+     }[m
+ [m
+     public function create(): View[m
+[1mdiff --git a/app/Http/Controllers/AlumnoController.php b/app/Http/Controllers/Alumno/AlumnoController.php[m
+[1msimilarity index 96%[m
+[1mrename from app/Http/Controllers/AlumnoController.php[m
+[1mrename to app/Http/Controllers/Alumno/AlumnoController.php[m
+[1mindex a17e357..c17e0a9 100644[m
+[1m--- a/app/Http/Controllers/AlumnoController.php[m
+[1m+++ b/app/Http/Controllers/Alumno/AlumnoController.php[m
+[36m@@ -1,6 +1,6 @@[m
+ <?php[m
+ [m
+[31m-namespace App\Http\Controllers;[m
+[32m+[m[32mnamespace App\Http\Controllers\Alumno;[m
+ [m
+ use App\Http\Controllers\Controller;[m
+ use Illuminate\Http\Request;[m
+[1mdiff --git a/app/Http/Controllers/ProfeController.php b/app/Http/Controllers/ProfeController.php[m
+[1mdeleted file mode 100644[m
+[1mindex 345c87d..0000000[m
+[1m--- a/app/Http/Controllers/ProfeController.php[m
+[1m+++ /dev/null[m
+[36m@@ -1,89 +0,0 @@[m
+[31m-<?php[m
+[31m-[m
+[31m-namespace App\Http\Controllers;[m
+[31m-[m
+[31m-use App\Http\Controllers\Controller;[m
+[31m-use Illuminate\Http\Request;[m
+[31m-use App\Models\User;        // <--- Agregar esto[m
+[31m-use App\Models\Profesore;   // <--- Si no lo agregaste todavía[m
+[31m-use Illuminate\Support\Facades\Hash; // <--- Para Hash::make[m
+[31m-[m
+[31m-class ProfeController extends Controller[m
+[31m-{[m
+[31m-    public function index()[m
+[31m-    {[m
+[31m-         // Profesores[m
+[31m-        $profes = Profesore::with('user')->get();[m
+[31m-[m
+[31m-        // Administradores (para la sección de admins)[m
+[31m-        $admins = User::role('admin')->get();[m
+[31m-[m
+[31m-        return view('admin.dashboard', compact('profes', 'admins'));[m
+[31m-    }[m
+[31m-[m
+[31m-    public function store(Request $request)[m
+[31m-    {[m
+[31m-        $request->validate([[m
+[31m-            'name'        => 'required|string|max:255',[m
+[31m-            'email'       => 'required|email|unique:users',[m
+[31m-            'password'    => 'required|string|min:6|confirmed',[m
+[31m-            'especialidad'=> 'required|string|max:255',[m
+[31m-            'fecha_ingreso' => 'nullable|date',[m
+[31m-        ]);[m
+[31m-[m
+[31m-        // 1. Crear usuario[m
+[31m-        $user = User::create([[m
+[31m-            'name'     => $request->name,[m
+[31m-            'email'    => $request->email,[m
+[31m-            'password' => Hash::make($request->password),[m
+[31m-        ]);[m
+[31m-        $user->assignRole('profesor');[m
+[31m-[m
+[31m-        // 2. Crear profesor vinculado al usuario[m
+[31m-        Profesore::create([[m
+[31m-            'user_id'       => $user->id,[m
+[31m-            'especialidad'  => $request->especialidad,[m
+[31m-            'fecha_ingreso' => $request->fecha_ingreso,[m
+[31m-        ]);[m
+[31m-[m
+[31m-        return redirect()->route('profesores.index')->with('success', 'Profesor creado correctamente');[m
+[31m-    }[m
+[31m-[m
+[31m-    public function update(Request $request, Profesore $profesor)[m
+[31m-    {[m
+[31m-        $request->validate([[m
+[31m-            'name'        => 'required|string|max:255',[m
+[31m-            'email'       => 'required|email|unique:users,email,'.$profesor->user_id,[m
+[31m-            'password'    => 'nullable|string|min:6|confirmed',[m
+[31m-            'especialidad'=> 'required|string|max:255',[m
+[31m-            'fecha_ingreso' => 'nullable|date',[m
+[31m-        ]);[m
+[31m-[m
+[31m-        // Actualizar usuario[m
+[31m-        $profesor->user->update([[m
+[31m-            'name'  => $request->name,[m
+[31m-            'email' => $request->email,[m
+[31m-        ]);[m
+[31m-[m
+[31m-        if ($request->filled('password')) {[m
+[31m-            $profesor->user->password = Hash::make($request->password);[m
+[31m-            $profesor->user->save();[m
+[31m-        }[m
+[31m-[m
+[31m-        // Actualizar profesor[m
+[31m-        $profesor->update([[m
+[31m-            'especialidad'  => $request->especialidad,[m
+[31m-            'fecha_ingreso' => $request->fecha_ingreso,[m
+[31m-        ]);[m
+[31m-[m
+[31m-        return redirect()->route('profesores.index')->with('success', 'Profesor actualizado correctamente');[m
+[31m-    }[m
+[31m-[m
+[31m-    public function destroy(Profesore $profesor)[m
+[31m-    {[m
+[31m-        $profesor->user->delete(); // Borra también al usuario[m
+[31m-        $profesor->delete();[m
+[31m-[m
+[31m-        return redirect()->route('profesores.index')->with('success', 'Profesor eliminado correctamente');[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/app/Http/Requests/SaveProfeRequest.php b/app/Http/Requests/SaveProfeRequest.php[m
+[1mdeleted file mode 100644[m
+[1mindex d57d6dd..0000000[m
+[1m--- a/app/Http/Requests/SaveProfeRequest.php[m
+[1m+++ /dev/null[m
+[36m@@ -1,28 +0,0 @@[m
+[31m-<?php[m
+[31m-[m
+[31m-namespace App\Http\Requests;[m
+[31m-[m
+[31m-use Illuminate\Foundation\Http\FormRequest;[m
+[31m-[m
+[31m-class SaveProfeRequest extends FormRequest[m
+[31m-{[m
+[31m-    /**[m
+[31m-     * Determine if the user is authorized to make this request.[m
+[31m-     */[m
+[31m-    public function authorize(): bool[m
+[31m-    {[m
+[31m-        return false;[m
+[31m-    }[m
+[31m-[m
+[31m-    /**[m
+[31m-     * Get the validation rules that apply to the request.[m
+[31m-     *[m
+[31m-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>[m
+[31m-     */[m
+[31m-    public function rules(): array[m
+[31m-    {[m
+[31m-        return [[m
+[31m-            //[m
+[31m-        ];[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/resources/views/admin/parts/profesores.blade.php b/resources/views/admin/parts/profesores.blade.php[m
+[1mindex 9222103..e69de29 100644[m
+[1m--- a/resources/views/admin/parts/profesores.blade.php[m
+[1m+++ b/resources/views/admin/parts/profesores.blade.php[m
+[36m@@ -1,151 +0,0 @@[m
+[31m-<div x-data="{ showModal: false, showEdit: false, showConfirmation: false, editProfe: {} }" x-show="activeTab === 'profesores'">[m
+[31m-    <h2>Administración de Profesores</h2>[m
+[31m-[m
+[31m-    <!-- Botón para agregar profesor -->[m
+[31m-    <button @click="showModal = true" class="px-2 py-1 bg-blue-500 text-white rounded mb-4">[m
+[31m-        Agregar Profesor[m
+[31m-    </button>[m
+[31m-[m
+[31m-    <table>[m
+[31m-        <thead>[m
+[31m-            <tr>[m
+[31m-                <th>Nombre</th>[m
+[31m-                <th>Email</th>[m
+[31m-                <th>Especialidad</th>[m
+[31m-                <th>Fecha ingreso</th>[m
+[31m-                <th>Acciones</th>[m
+[31m-            </tr>[m
+[31m-        </thead>[m
+[31m-        <tbody>[m
+[31m-            @foreach($profes as $profe)[m
+[31m-            <tr>[m
+[31m-                <td>{{ $profe->user->name }}</td>[m
+[31m-                <td>{{ $profe->user->email }}</td>[m
+[31m-                <td>{{ $profe->especialidad }}</td>[m
+[31m-                <td>{{ $profe->fecha_ingreso }}</td>[m
+[31m-                <td>[m
+[31m-                    <button @click="showEdit = true; editProfe = {{ json_encode($profe) }}" class="px-2 py-1 bg-yellow-500 text-white rounded">[m
+[31m-                        Editar[m
+[31m-                    </button>[m
+[31m-                    <button @click="showConfirmation = true; editProfe = {{ json_encode($profe) }}" class="px-2 py-1 bg-red-500 text-white rounded">[m
+[31m-                        Eliminar[m
+[31m-                    </button>[m
+[31m-                </td>[m
+[31m-            </tr>[m
+[31m-            @endforeach[m
+[31m-        </tbody>[m
+[31m-    </table>[m
+[31m-[m
+[31m-    <!-- Modal Crear Profesor -->[m
+[31m-    <div x-show="showModal" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">[m
+[31m-        <div class="bg-white p-6 rounded shadow-md w-96">[m
+[31m-            <h3 class="text-lg font-bold mb-4">Nuevo Profesor</h3>[m
+[31m-            {{-- Errores de validación para "profesores" --}}[m
+[31m-            @if ($errors->profesores->any())[m
+[31m-                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">[m
+[31m-                    <ul>[m
+[31m-                        @foreach ($errors->profesores->all() as $error)[m
+[31m-                            <li>{{ $error }}</li>[m
+[31m-                        @endforeach[m
+[31m-                    </ul>[m
+[31m-                </div>[m
+[31m-            @endif[m
+[31m-            <form method="POST" action="{{ route('profesores.store') }}">[m
+[31m-                @csrf[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Nombre</label>[m
+[31m-                    <input type="text" name="name" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Email</label>[m
+[31m-                    <input type="email" name="email" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Contraseña</label>[m
+[31m-                    <input type="password" name="password" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Confirmar Contraseña</label>[m
+[31m-                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Especialidad</label>[m
+[31m-                    <input type="text" name="especialidad" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Fecha ingreso</label>[m
+[31m-                    <input type="date" name="fecha_ingreso" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="flex justify-end space-x-2">[m
+[31m-                    <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>[m
+[31m-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Guardar</button>[m
+[31m-                </div>[m
+[31m-            </form>[m
+[31m-        </div>[m
+[31m-    </div>[m
+[31m-[m
+[31m-    <!-- Modal Editar Profesor -->[m
+[31m-    <div x-show="showEdit" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">[m
+[31m-        <div class="bg-white p-6 rounded shadow-md w-96">[m
+[31m-            <h3 class="text-lg font-bold mb-4">Editar Profesor</h3>[m
+[31m-             {{-- Errores de validación para "profesores" --}}[m
+[31m-            @if ($errors->profesores->any())[m
+[31m-                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">[m
+[31m-                    <ul>[m
+[31m-                        @foreach ($errors->profesores->all() as $error)[m
+[31m-                            <li>{{ $error }}</li>[m
+[31m-                        @endforeach[m
+[31m-                    </ul>[m
+[31m-                </div>[m
+[31m-            @endif[m
+[31m-            <form :action="'{{ route('profesores.update', '') }}/' + editProfe.id" method="POST">[m
+[31m-                @csrf[m
+[31m-                @method('PUT')[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Nombre</label>[m
+[31m-                    <input type="text" name="name" x-model="editProfe.user.name" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Email</label>[m
+[31m-                    <input type="email" name="email" x-model="editProfe.user.email" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Contraseña (dejar vacío para no cambiar)</label>[m
+[31m-                    <input type="password" name="password" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Confirmar Contraseña</label>[m
+[31m-                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Especialidad</label>[m
+[31m-                    <input type="text" name="especialidad" x-model="editProfe.especialidad" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="mb-3">[m
+[31m-                    <label class="block text-sm">Fecha ingreso</label>[m
+[31m-                    <input type="date" name="fecha_ingreso" x-model="editProfe.fecha_ingreso" class="w-full border rounded p-2">[m
+[31m-                </div>[m
+[31m-                <div class="flex justify-end space-x-2">[m
+[31m-                    <button type="button" @click="showEdit = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>[m
+[31m-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Actualizar</button>[m
+[31m-                </div>[m
+[31m-            </form>[m
+[31m-        </div>[m
+[31m-    </div>[m
+[31m-[m
+[31m-    <!-- Modal Eliminar Profesor -->[m
+[31m-    <div x-show="showConfirmation" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">[m
+[31m-        <div class="bg-white p-6 rounded shadow-md w-96">[m
+[31m-            <h3 class="text-lg font-bold mb-4">Eliminar Profesor</h3>[m
+[31m-            <p>¿Estás seguro de que deseas eliminar a <span x-text="editProfe.user.name"></span>?</p>[m
+[31m-            <div class="flex justify-end space-x-2 mt-4">[m
+[31m-                <button type="button" @click="showConfirmation = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>[m
+[31m-                <form :action="'{{ route('profesores.destroy', '') }}/' + editProfe.id" method="POST">[m
+[31m-                    @csrf[m
+[31m-                    @method('DELETE')[m
+[31m-                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">Sí, eliminar</button>[m
+[31m-                </form>[m
+[31m-            </div>[m
+[31m-        </div>[m
+[31m-    </div>[m
+[31m-</div>[m
+\ No newline at end of file[m
+[1mdiff --git a/resources/views/profesor/dashboard.blade.php b/resources/views/profesor/dashboard.blade.php[m
+[1mindex ebf6a6e..e69de29 100644[m
+[1m--- a/resources/views/profesor/dashboard.blade.php[m
+[1m+++ b/resources/views/profesor/dashboard.blade.php[m
+[36m@@ -1,48 +0,0 @@[m
+[31m-<!DOCTYPE html>[m
+[31m-<html>[m
+[31m-<head>[m
+[31m-    <title>PROTECMOR - Profesor Dashboard</title>[m
+[31m-</head>[m
+[31m-[m
+[31m-<body>[m
+[31m-    <!-- Encabezado -->[m
+[31m-    <h1>Bienvenido Profesor, {{ auth()->user()->name }}!</h1>[m
+[31m-    <p>Rol: {{ auth()->user()->getRoleNames()->first() }}</p>[m
+[31m-[m
+[31m-    <form method="POST" action="{{ route('logout') }}">[m
+[31m-        @csrf[m
+[31m-        <button type="submit">Cerrar Sesión</button>[m
+[31m-    </form> <br>[m
+[31m-    <a href="{{ url('/') }}">Ir al Inicio</a>[m
+[31m-[m
+[31m-    <hr class="my-5">[m
+[31m-[m
+[31m-    <!-- Lista lateral -->[m
+[31m-    <h1>Lista lateral</h1>[m
+[31m-    <div x-data="{ activeTab: 'mis_clases' }">[m
+[31m-        <!-- Menú lateral -->[m
+[31m-        @include('profesor.parts.sidebar')[m
+[31m-[m
+[31m-        <!-- Contenido dinámico -->[m
+[31m-        <br><hr class="my-5">[m
+[31m-        <div class="content">[m
+[31m-            @php[m
+[31m-                // Secciones que un profesor puede ver[m
+[31m-                $sections = [[m
+[31m-                    'mis_clases', [m
+[31m-                    'mis_alumnos', [m
+[31m-                    'materiales', [m
+[31m-                    'tareas', [m
+[31m-                    'calificaciones',[m
+[31m-                ];[m
+[31m-            @endphp[m
+[31m-[m
+[31m-            @foreach($sections as $section)[m
+[31m-                @include("profesor.parts.{$section}")[m
+[31m-            @endforeach[m
+[31m-        </div>[m
+[31m-    </div>[m
+[31m-[m
+[31m-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>[m
+[31m-</body>[m
+[31m-</html>[m
+[1mdiff --git a/resources/views/profesor/parts/calificaciones.php b/resources/views/profesor/parts/calificaciones.php[m
+[1mdeleted file mode 100644[m
+[1mindex e69de29..0000000[m
+[1mdiff --git a/resources/views/profesor/parts/materiales.php b/resources/views/profesor/parts/materiales.php[m
+[1mdeleted file mode 100644[m
+[1mindex e69de29..0000000[m
+[1mdiff --git a/resources/views/profesor/parts/mis_alumnos.php b/resources/views/profesor/parts/mis_alumnos.php[m
+[1mdeleted file mode 100644[m
+[1mindex e69de29..0000000[m
+[1mdiff --git a/resources/views/profesor/parts/mis_clases.php b/resources/views/profesor/parts/mis_clases.php[m
+[1mdeleted file mode 100644[m
+[1mindex e69de29..0000000[m
+[1mdiff --git a/resources/views/profesor/parts/sidebar.blade.php b/resources/views/profesor/parts/sidebar.blade.php[m
+[1mdeleted file mode 100644[m
+[1mindex f4ff572..0000000[m
+[1m--- a/resources/views/profesor/parts/sidebar.blade.php[m
+[1m+++ /dev/null[m
+[36m@@ -1,17 +0,0 @@[m
+[31m-<div class="sidebar">[m
+[31m-    <button @click="activeTab = 'mis_clases'" :class="{ 'active': activeTab === 'mis_clases' }">[m
+[31m-        Mis Clases[m
+[31m-    </button>[m
+[31m-    <button @click="activeTab = 'mis_alumnos'" :class="{ 'active': activeTab === 'mis_alumnos' }">[m
+[31m-        Mis Alumnos[m
+[31m-    </button>[m
+[31m-    <button @click="activeTab = 'materiales'" :class="{ 'active': activeTab === 'materiales' }">[m
+[31m-        Materiales[m
+[31m-    </button>[m
+[31m-    <button @click="activeTab = 'tareas'" :class="{ 'active': activeTab === 'tareas' }">[m
+[31m-        Tareas / Talleres[m
+[31m-    </button>[m
+[31m-    <button @click="activeTab = 'calificaciones'" :class="{ 'active': activeTab === 'calificaciones' }">[m
+[31m-        Calificaciones[m
+[31m-    </button>[m
+[31m-</div>[m
+\ No newline at end of file[m
+[1mdiff --git a/resources/views/profesor/parts/tareas.php b/resources/views/profesor/parts/tareas.php[m
+[1mdeleted file mode 100644[m
+[1mindex e69de29..0000000[m
+[1mdiff --git a/routes/admin.php b/routes/admin.php[m
+[1mindex e87b0ac..75d5c30 100644[m
+[1m--- a/routes/admin.php[m
+[1m+++ b/routes/admin.php[m
+[36m@@ -1,7 +1,7 @@[m
+ <?php[m
+ [m
+ use Illuminate\Support\Facades\Route;[m
+[31m-use App\Http\Controllers\AdminController;[m
+[32m+[m[32muse App\Http\Controllers\Admin\AdminController;[m
+ [m
+ Route::prefix('admins')->name('admin.')->group(function () {[m
+     [m
+[1mdiff --git a/routes/profesor.php b/routes/profesor.php[m
+[1mindex 9dd6b60..e69de29 100644[m
+[1m--- a/routes/profesor.php[m
+[1m+++ b/routes/profesor.php[m
+[36m@@ -1,11 +0,0 @@[m
+[31m-<?php[m
+[31m-[m
+[31m-use Illuminate\Support\Facades\Route;[m
+[31m-use App\Http\Controllers\ProfeController;[m
+[31m-[m
+[31m-Route::prefix('profesores')->name('profesores.')->group(function () {[m
+[31m-    Route::get('/', [ProfeController::class, 'index'])->name('index');[m
+[31m-    Route::post('/', [ProfeController::class, 'store'])->name('store');[m
+[31m-    Route::put('/{profesor}', [ProfeController::class, 'update'])->name('update');[m
+[31m-    Route::delete('/{profesor}', [ProfeController::class, 'destroy'])->name('destroy');[m
+[31m-});[m
+\ No newline at end of file[m
+[1mdiff --git a/routes/web.php b/routes/web.php[m
+[1mindex 4e0cdd2..f084a38 100644[m
+[1m--- a/routes/web.php[m
+[1m+++ b/routes/web.php[m
+[36m@@ -1,8 +1,7 @@[m
+ <?php[m
+ [m
+ use Illuminate\Support\Facades\Route;[m
+[31m-use App\Http\Controllers\AdminController; // ✅ Import correcto[m
+[31m-use App\Http\Controllers\ProfeController; // ✅ Import correcto[m
+[32m+[m[32muse App\Http\Controllers\Admin\AdminController; // ✅ Import correcto[m
+ [m
+ [m
+ Route::get('/', function () {[m
+[36m@@ -16,7 +15,4 @@[m
+ require base_path('routes/admin.php');[m
+ [m
+ // Rutas de alumno[m
+[31m-require base_path('routes/alumno.php');[m
+[31m-[m
+[31m-// Rutas de profesores[m
+[31m-require base_path('routes/profesor.php');[m
+\ No newline at end of file[m
+[32m+[m[32mrequire base_path('routes/alumno.php');[m
+\ No newline at end of file[m
