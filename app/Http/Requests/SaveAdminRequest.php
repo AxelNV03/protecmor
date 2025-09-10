@@ -7,6 +7,7 @@ use App\Rules\NombreValido;
 use App\Rules\EmailUnico;
 use App\Rules\PasswordSegura;
 use App\Rules\TelefonoValido;
+use Illuminate\Validation\Rule; // <-- Importante para validaciones avanzadas
 
 class SaveAdminRequest extends FormRequest
 {
@@ -24,24 +25,25 @@ class SaveAdminRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Obtenemos el ID del admin que se está actualizando. Será null al crear.
+        $adminId = $this->route('admin')?->id;
+        
         // Usamos las reglas de "creación" como base.
         $rules = [
             'name'     => ['required', new NombreValido],
+            'email'    => ['required', 'email', new EmailUnico($adminId)],
             'password' => ['required', 'confirmed', new PasswordSegura],
-            'telefono' => ['nullable', new TelefonoValido],
+            
+            // 👇 REGLA ACTUALIZADA PARA TELÉFONO
+            'telefono' => [
+                'nullable', 
+                new TelefonoValido, 
+                Rule::unique('users', 'telefono')->ignore($adminId)
+            ],
         ];
 
-        // Si es update, usamos el ID del admin en la ruta. En create, será null.
-        $adminId = $this->route('admin')?->id;
-        
-        //    - Si $adminId es null (creando), busca el email en toda la tabla.
-        //    - Si $adminId tiene un valor (actualizando), ignora ese ID en la búsqueda.
-        $rules['email'] = ['required', 'email', new EmailUnico($adminId)];
-
-        // 4. Si el método es PUT o PATCH (estamos actualizando),
-        //    hacemos las reglas de contraseña y teléfono menos estrictas.
+       // Si estamos actualizando, la contraseña se vuelve opcional.
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            // La contraseña es opcional al actualizar.
             $rules['password'][0] = 'nullable';
         }
 

@@ -83,19 +83,17 @@
         </tbody>
     </table>
 
+
+
+
+
+
+
+
+
     <div x-show="showModal" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Nuevo Profesor</h3>
-            {{-- This part for errors is excellent! It uses a "Named Error Bag" --}}
-            @if ($errors->profesores->any())
-                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
-                    <ul>
-                        @foreach ($errors->profesores->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
             <form method="POST" action="{{ route('profesores.store') }}">
                 {{-- Form fields for creating a new professor --}}
                 @csrf
@@ -103,9 +101,33 @@
                     <label class="block text-sm">Nombre</label>
                     <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name') }}">
                 </div>
+                <div>
+                    <label class="block text-sm">Sexo</label>
+                    <select name="sexo" class="w-full border rounded p-2">
+                        <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
+                        <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
+                        <option value="Otro" {{ old('sexo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label class="block text-sm">Email</label>
                     <input type="email" name="email" class="w-full border rounded p-2" value="{{ old('email') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Especialidad</label>
+                    <input type="text" name="especialidad" class="w-full border rounded p-2" value="{{ old('especialidad') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Teléfono</label>
+                    <input type="text" name="telefono" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Teléfono de Emergencia</label>
+                    <input type="text" name="telefono_emergencia" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Fecha ingreso</label>
+                    <input type="date" name="fecha_ingreso" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Contraseña</label>
@@ -115,14 +137,7 @@
                     <label class="block text-sm">Confirmar Contraseña</label>
                     <input type="password" name="password_confirmation" class="w-full border rounded p-2">
                 </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Especialidad</label>
-                    <input type="text" name="especialidad" class="w-full border rounded p-2" value="{{ old('especialidad') }}">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Fecha ingreso</label>
-                    <input type="date" name="fecha_ingreso" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
-                </div>
+
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Guardar</button>
@@ -130,6 +145,19 @@
             </form>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <div x-show="showEdit" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
@@ -152,9 +180,33 @@
                     <label class="block text-sm">Nombre</label>
                     <input type="text" name="name" x-model="editProfe.user.name" class="w-full border rounded p-2">
                 </div>
+                <div>
+                    <label class="block text-sm">Sexo</label>
+                    <select name="sexo" class="w-full border rounded p-2" x-model="editProfe.user.sexo">
+                        <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
+                        <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
+                        <option value="Otro" {{ old('sexo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label class="block text-sm">Email</label>
                     <input type="email" name="email" x-model="editProfe.user.email" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Especialidad</label>
+                    <input type="text" name="especialidad" x-model="editProfe.especialidad" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Teléfono</label>
+                    <input type="text" name="telefono" class="w-full border rounded p-2" x-model="editProfe.user.telefono">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Teléfono de Emergencia</label>
+                    <input type="text" name="telefono_emergencia" class="w-full border rounded p-2" x-model="editProfe.telefono_emergencia">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Fecha ingreso</label>
+                    <input type="date" name="fecha_ingreso" x-model="editProfe.fecha_ingreso" class="w-full border rounded p-2">
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Contraseña (dejar vacío para no cambiar)</label>
@@ -164,14 +216,6 @@
                     <label class="block text-sm">Confirmar Contraseña</label>
                     <input type="password" name="password_confirmation" class="w-full border rounded p-2">
                 </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Especialidad</label>
-                    <input type="text" name="especialidad" x-model="editProfe.especialidad" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Fecha ingreso</label>
-                    <input type="date" name="fecha_ingreso" x-model="editProfe.fecha_ingreso" class="w-full border rounded p-2">
-                </div>
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="showEdit = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Actualizar</button>
@@ -180,6 +224,17 @@
         </div>
     </div>
     
+
+
+
+
+
+
+
+
+
+
+
     <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Eliminar Profesor</h3>

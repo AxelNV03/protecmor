@@ -48,7 +48,6 @@ class AdminController extends Controller
 
     public function update(SaveAdminRequest $request, User $admin): RedirectResponse // <-- Usando Route Model Binding
     {
-        // ✅ No necesitas buscar al usuario, Laravel ya lo hizo por ti.
         $validated = $request->validated();
 
         $admin->update([

@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\User;        // <--- Agregar esto
 use App\Models\Profesor;   // <--- Si no lo agregaste todavía
 
+use App\Http\Requests\SaveProfeRequest; // <-- CAMBIO CLAVE: Usar el request correcto
 use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View; // <-- Importar View
+
 
 class ProfeController extends Controller
 {
@@ -18,77 +20,95 @@ class ProfeController extends Controller
         return view('profesores.dashboard');
     }
 
+
+
     public function data(): \Illuminate\Http\JsonResponse
     {
-        // Eager load the 'user' relationship to have access to name and email
         $profesores = Profesor::with('user')->get(); 
         return response()->json($profesores);
     }
 
-    public function store(Request $request)
+
+
+    public function store(SaveProfeRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'       => 'required|email|unique:users',
-            'password'    => 'required|string|min:6|confirmed',
-            'especialidad'=> 'required|string|max:255',
-            'fecha_ingreso' => 'nullable|date',
+        // Validar datos y crear usuario y profesor
+        $validated = $request->validated();
+        $profe = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'telefono' => $validated['telefono'] ?? null,
+            'estatus' => 'activo',
         ]);
-
-        // 1. Crear usuario
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        $user->assignRole('profesor');
-
-        // 2. Crear profesor vinculado al usuario
+        $profe->assignRole('profesor');
+        
+        // Crear el registro en la tabla profesores
         Profesor::create([
-            'user_id'       => $user->id,
-            'especialidad'  => $request->especialidad,
-            'fecha_ingreso' => $request->fecha_ingreso,
+            'user_id' => $profe->id,
+            'especialidad' => $validated['especialidad'],
+            'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
+            'fecha_ingreso' => $validated['fecha_ingreso'],
+            'sexo' => $validated['sexo'],
         ]);
-
         return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor creado correctamente');
     }
 
-    public function update(Request $request, Profesor $profesor)
+
+
+
+    public function update(SaveProfeRequest $request, Profesor $profesor): RedirectResponse
     {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'       => 'required|email|unique:users,email,'.$profesor->user_id,
-            'password'    => 'nullable|string|min:6|confirmed',
-            'especialidad'=> 'required|string|max:255',
-            'fecha_ingreso' => 'nullable|date',
-        ]);
+       // 1. La validación ya ocurrió. Obtenemos solo los datos seguros.
+       $validated = $request->validated();
 
-        // Actualizar usuario
-        $profesor->user->update([
-            'name'  => $request->name,
-            'email' => $request->email,
-        ]);
+       // 2. Actualizamos los datos del modelo User.
+       $profesor->user->update([
+           'name'  => $validated['name'],
+           'email' => $validated['email'],
+           'telefono' => $validated['telefono'] ?? null,
+       ]);
 
-        if ($request->filled('password')) {
-            $profesor->user->password = Hash::make($request->password);
-            $profesor->user->save();
+       // 3. Si se proporcionó una nueva contraseña, la actualizamos.
+       if (!empty($validated['password'])) {
+           $profesor->user->password = Hash::make($validated['password']);
+           $profesor->user->save();
+       }
+
+        // 4. Preparamos el array de datos solo para el Profesor
+        $profesorData = [
+            'especialidad'        => $validated['especialidad'],
+            'sexo'                => $validated['sexo'],
+            'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
+        ];
+
+        // 5. Condicionalmente, añadimos la fecha de ingreso al array
+        if (!empty($validated['fecha_ingreso'])) {
+            $profesorData['fecha_ingreso'] = $validated['fecha_ingreso'];
         }
+        
+        // 6. Hacemos UNA SOLA llamada a update() con el array que construimos
+        $profesor->update($profesorData);
 
-        // Actualizar profesor
-        $profesor->update([
-            'especialidad'  => $request->especialidad,
-            'fecha_ingreso' => $request->fecha_ingreso,
-        ]);
-
-        return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor actualizado correctamente');
-
+       return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor actualizado correctamente');
     }
 
-    public function destroy(Profesor $profesor)
+
+
+
+    public function destroy(Profesor $profesor): RedirectResponse
     {
-        $profesor->user->delete(); // Borra también al usuario
+        // Opcional pero recomendado: guardar el usuario antes de borrar el profesor
+        $user = $profesor->user;
+
+        // Paso 1: Eliminar el registro 'hijo' (de la tabla 'profesores')
         $profesor->delete();
 
-        return redirect()->route('profesores.index')->with('success', 'Profesor eliminado correctamente');
+        // Paso 2: Eliminar el registro 'padre' (de la tabla 'users')
+        if ($user) {
+            $user->delete();
+        }
+
+        return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor eliminado correctamente');
     }
 }
