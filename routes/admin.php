@@ -3,7 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
     
     // GET /admins (Shows the list of admins)
     Route::get('/', [AdminController::class, 'index'])->name('index');
