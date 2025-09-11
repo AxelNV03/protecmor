@@ -22,8 +22,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $lugar
  * @property string|null $descripcion
  * @property string $publico
- * @property bool $requiere_inscripcion
- * @property bool $visible
  * @property bool $incluido_mensualidad
  *
  * @package App\Models
@@ -37,8 +35,6 @@ class Evento extends Model
 		'fecha' => 'datetime',
 		'hora' => 'datetime',
 		'costo' => 'float',
-		'requiere_inscripcion' => 'bool',
-		'visible' => 'bool',
 		'incluido_mensualidad' => 'bool'
 	];
 
@@ -52,8 +48,6 @@ class Evento extends Model
 		'lugar',
 		'descripcion',
 		'publico',
-		'requiere_inscripcion',
-		'visible',
 		'incluido_mensualidad'
 	];
 }

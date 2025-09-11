@@ -119,7 +119,7 @@ class AdminController extends Controller
 
         // 2. Verificación de auto-eliminación (se mantiene igual)
         if (auth()->id() === $admin->id) {
-            return redirect()->route('admins.index', ['tab' => 'admins'])
+            return redirect()->route('admin.index', ['tab' => 'admins'])
                 ->with('error', 'No puedes eliminar tu propia cuenta de super-admin.');
         }
 
@@ -129,7 +129,7 @@ class AdminController extends Controller
         // Opcional: Cambiar el estatus
         // $admin->update(['estatus' => 'inactivo']);
 
-        return redirect()->route('admins.index', ['tab' => 'admins'])
+        return redirect()->route('admin.index', ['tab' => 'admins'])
             ->with('success', 'Administrador archivado correctamente.');
     }
 }

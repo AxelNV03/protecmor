@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\EventoController; 
 
 Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
     ->prefix('admin')
@@ -23,9 +24,8 @@ Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
     // DELETE /admins/{admin} (Deletes an admin)
     Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
 
-    // Ruta para desactivar admin
-    Route::post('/admin/{admin}/deactivate', [AdminController::class, 'deactivate'])->name('admin.deactivate');
+    // Rutas para la Gestión de Eventos
+    Route::get('eventos/data', [EventoController::class, 'data'])->name('eventos.data');
+    Route::resource('eventos', EventoController::class);
 
-    // Ruta para grupos
-    // Route::get('/grupos', function () 
 });
