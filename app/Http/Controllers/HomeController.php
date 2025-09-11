@@ -1,48 +1,41 @@
 <?php
 
-namespace App\Http-Controllers;
-
-use Illuminate-Http-Request;
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    * Create a new controller instance.
+    *
+    * @return void
+    */
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
+
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable|\Illuminate\Http\RedirectResponse
-     */
+    * Show the application dashboard.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
     public function index()
     {
-        $user = auth()->user();
-
-        // ✅ CORREGIDO: Usamos hasAnyRole con un array
-        if ($user->hasAnyRole(['super admin', 'admin'])) {
-            return redirect()->route('admins.index'); // <-- Asegúrate que sea 'admins.index'
-        }
-        
-        if ($user->hasRole('profesor')) {
+        // Lógica de redirección por roles
+        if (auth()->user()->hasRole('admin|super admin')) {
+            return redirect()->route('admin.index');
+        } elseif (auth()->user()->hasRole('profesor')) {
             return view('profesor.dashboard');
-        }
-        
-        if ($user->hasRole('alumno')) {
+        } elseif (auth()->user()->hasRole('alumno')) {
             return view('alumno.dashboard');
         }
-        
-        // ✅ MEJORADO: Si un usuario autenticado no tiene rol,
-        // lo mejor es cerrar su sesión y redirigirlo al login
-        // para evitar bucles o accesos no deseados.
-        auth()->logout();
-        
-        return redirect('/login')->with('error', 'No tienes un rol asignado. Contacta al administrador.');
+
+        // Redirigir a inicio si no tiene rol asignado
+        return redirect('/');
     }
+
 }
