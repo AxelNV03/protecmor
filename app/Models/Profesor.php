@@ -53,4 +53,9 @@ class Profesor extends Model
 	{
 		return $this->hasMany(Clase::class, 'profesor_id');
 	}
+
+	// Un profesor puede enseñar en muchos grupos A TRAVÉS de las clases
+	public function grupos() {
+	    return $this->belongsToMany(Grupo::class, 'clases');
+	}
 }

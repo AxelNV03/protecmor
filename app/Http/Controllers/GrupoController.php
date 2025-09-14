@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\Grupo;
 use Illuminate\Http\Request;
 
-class AlumnoController extends Controller
+class GrupoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,11 +15,10 @@ class AlumnoController extends Controller
         //
     }
 
-
     public function data(): \Illuminate\Http\JsonResponse
     {
-        $alumnos = Alumno::with('user')->get(); 
-        return response()->json($alumnos);
+        $grupos = Alumno::with('user')->get(); 
+        return response()->json($grupos);
     }
 
     /**
@@ -41,7 +40,7 @@ class AlumnoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Grupo $grupo)
     {
         //
     }
@@ -49,7 +48,7 @@ class AlumnoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Grupo $grupo)
     {
         //
     }
@@ -57,7 +56,7 @@ class AlumnoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Grupo $grupo)
     {
         //
     }
@@ -65,7 +64,7 @@ class AlumnoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Grupo $grupo)
     {
         //
     }

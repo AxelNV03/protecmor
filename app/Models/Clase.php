@@ -55,9 +55,9 @@ class Clase extends Model
 		return $this->belongsTo(Grupo::class);
 	}
 
-	public function profesore()
+	public function profesor()
 	{
-		return $this->belongsTo(Profesore::class, 'profesor_id');
+		return $this->belongsTo(Profesor::class, 'profesor_id');
 	}
 
 	public function campos_formativo()

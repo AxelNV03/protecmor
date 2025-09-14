@@ -49,4 +49,10 @@ class Grupo extends Model
 	{
 		return $this->hasMany(Clase::class);
 	}
+
+	// Un grupo tiene muchos profesores A TRAVÉS de las clases
+	public function profesores() {
+		return $this->belongsToMany(Profesor::class, 'clases');
+	}
+
 }
