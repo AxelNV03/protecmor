@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;        // <--- Agregar esto
+use App\Models\Alumno;   // <--- Si no lo agregaste todavía
+
+use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View; // <-- Importar View
 
 class AlumnoController extends Controller
 {

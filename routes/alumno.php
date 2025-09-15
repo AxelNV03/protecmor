@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Alumno\AlumnoController;
+use App\Http\Controllers\AlumnoController;
 
 Route::prefix('alumnos')->name('alumnos.')->group(function () {
     
