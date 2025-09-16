@@ -35,6 +35,7 @@ class AdminController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'telefono' => $validated['telefono'] ?? null,
+            'estatus' => 'activo',
         ]);
         $admin->assignRole('admin');
 

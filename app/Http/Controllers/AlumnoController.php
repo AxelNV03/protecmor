@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;        // <--- Agregar esto
 use App\Models\Alumno;   // <--- Si no lo agregaste todavía
 
+use App\Http\Requests\SaveAlumnoRequest; // <-- CAMBIO CLAVE: Usar el request correcto
 use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View; // <-- Importar View
@@ -18,7 +19,8 @@ class AlumnoController extends Controller
      */
     public function index()
     {
-        //
+        // Retornar la vista principal de alumnos
+        return view('alumnos.dashboard');
     }
 
 
@@ -39,9 +41,14 @@ class AlumnoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SaveAlumnoRequest $request): RedirectResponse
     {
-        //
+        // Validar datos y crear usuario y alumno
+        $validated =  $request->validated();
+        $alumno = User::create([
+            
+        
+        ]);
     }
 
     /**
