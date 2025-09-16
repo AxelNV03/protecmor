@@ -35,21 +35,20 @@ class ProfeController extends Controller
         // Validar datos y crear usuario y profesor
         $validated = $request->validated();
         $profe = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'telefono' => $validated['telefono'] ?? null,
-            'estatus' => 'activo',
+            'name'      => $validated['name'],
+            'email'     => $validated['email'],
+            'password'  => Hash::make($validated['password']),
+            'telefono'  => $validated['telefono'] ?? null,
+            'estatus'   => 'activo',
         ]);
         $profe->assignRole('profesor');
         
         // Crear el registro en la tabla profesores
-        Profesor::create([
-            'user_id' => $profe->id,
-            'especialidad' => $validated['especialidad'],
-            'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
-            'fecha_ingreso' => $validated['fecha_ingreso'],
-            'sexo' => $validated['sexo'],
+        $profe->profesor()->create([
+            'especialidad'          => $validated['especialidad'],
+            'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
+            'fecha_ingreso'         => $validated['fecha_ingreso'],
+            'sexo'                  => $validated['sexo'],
         ]);
         return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor creado correctamente');
     }
@@ -64,9 +63,9 @@ class ProfeController extends Controller
 
        // 2. Actualizamos los datos del modelo User.
        $profesor->user->update([
-           'name'  => $validated['name'],
-           'email' => $validated['email'],
-           'telefono' => $validated['telefono'] ?? null,
+           'name'       => $validated['name'],
+           'email'      => $validated['email'],
+           'telefono'   => $validated['telefono'] ?? null,
        ]);
 
        // 3. Si se proporcionó una nueva contraseña, la actualizamos.

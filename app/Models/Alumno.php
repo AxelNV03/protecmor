@@ -78,4 +78,22 @@ class Alumno extends Model
 	{
 		return $this->hasMany(Pago::class);
 	}
+
+	// Generar una matrícula única para el alumno
+	public static function generarMatricula(): string
+    {
+        // $letras = chr(rand(65, 90)) . chr(rand(65, 90)); // Genera 2 letras mayúsculas
+        // $anio = date('Y');
+        // $numeros = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT); // 4 números con ceros a la izquierda
+
+        // $matricula = $letras . $anio . $numeros;
+
+        // // Opcional: Verifica si la matrícula ya existe y genera una nueva si es necesario
+        // while (self::where('matricula', $matricula)->exists()) {
+        //     $numeros = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        //     $matricula = $letras . $anio . $numeros;
+        // }
+
+        // return $matricula;
+    }
 }
