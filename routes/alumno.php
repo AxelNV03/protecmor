@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AlumnoController;
 
-Route::prefix('alumnos')->name('alumnos.')->group(function () {
-    
+Route::middleware('auth')
+    ->prefix('alumnos')
+    ->name('alumnos.')
+    ->group(function () {
     // GET /alumnos  (Manda al dashboard de alumnos)
     Route::get('/', [AlumnoController::class, 'index'])->name('index');
 

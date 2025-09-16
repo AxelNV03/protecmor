@@ -50,8 +50,8 @@ class Alumno extends Model
 		'matricula',
 		'grupo_id',
 		'fecha_nacimiento',
-		'sexo',
 		'telefono_emergencia',
+		'sexo',
 	];
 
 	public function user(): BelongsTo
