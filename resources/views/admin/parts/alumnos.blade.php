@@ -5,7 +5,7 @@
         showModal: false, 
         showEdit: false, 
         showConfirmation: false, 
-        editProfe: {} 
+        editAlumno: {} 
     }" 
     x-show="activeTab === 'alumnos'"
     x-init="
@@ -65,10 +65,10 @@
                     <td x-text="alumno.user.estatus"></td>
                     
                     <td>
-                        <button @click="showEdit = true; editProfe = { ...profe }" class="px-2 py-1 bg-yellow-500 text-white rounded">
+                        <button @click="showEdit = true; editAlumno = { ...alumno }" class="px-2 py-1 bg-yellow-500 text-white rounded">
                             Editar
                         </button>
-                        <button @click="showConfirmation = true; editProfe = profe" class="px-2 py-1 bg-red-500 text-white rounded">
+                        <button @click="showConfirmation = true; editAlumno = alumno" class="px-2 py-1 bg-red-500 text-white rounded">
                             Eliminar
                         </button>
                     </td>
@@ -109,10 +109,6 @@
                     <input type="email" name="email" class="w-full border rounded p-2" value="{{ old('email') }}">
                 </div>
                 <div class="mb-3">
-                    <label class="block text-sm">Especialidad</label>
-                    <input type="text" name="especialidad" class="w-full border rounded p-2" value="{{ old('especialidad') }}">
-                </div>
-                <div class="mb-3">
                     <label class="block text-sm">Teléfono</label>
                     <input type="text" name="telefono" class="w-full border rounded p-2">
                 </div>
@@ -121,8 +117,8 @@
                     <input type="text" name="telefono_emergencia" class="w-full border rounded p-2">
                 </div>
                 <div class="mb-3">
-                    <label class="block text-sm">Fecha ingreso</label>
-                    <input type="date" name="fecha_ingreso" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
+                    <label class="block text-sm">Fecha Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Contraseña</label>

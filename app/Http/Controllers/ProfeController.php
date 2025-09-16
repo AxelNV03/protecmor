@@ -32,24 +32,26 @@ class ProfeController extends Controller
 
     public function store(SaveProfeRequest $request): RedirectResponse
     {
-        // Validar datos y crear usuario y profesor
-        $validated = $request->validated();
-        $profe = User::create([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'password'  => Hash::make($validated['password']),
-            'telefono'  => $validated['telefono'] ?? null,
-            'estatus'   => 'activo',
-        ]);
-        $profe->assignRole('profesor');
-        
-        // Crear el registro en la tabla profesores
-        $profe->profesor()->create([
-            'especialidad'          => $validated['especialidad'],
-            'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
-            'fecha_ingreso'         => $validated['fecha_ingreso'],
-            'sexo'                  => $validated['sexo'],
-        ]);
+        DB::transaction(function () use ($request) {
+            // Validar datos y crear usuario y profesor
+            $validated = $request->validated();
+            $profe = User::create([
+                'name'      => $validated['name'],
+                'email'     => $validated['email'],
+                'password'  => Hash::make($validated['password']),
+                'telefono'  => $validated['telefono'] ?? null,
+                'estatus'   => 'activo',
+            ]);
+            $profe->assignRole('profesor');
+
+            // Crear el registro en la tabla profesores
+            $profe->profesor()->create([
+                'especialidad'          => $validated['especialidad'],
+                'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
+                'fecha_ingreso'         => $validated['fecha_ingreso'],
+                'sexo'                  => $validated['sexo'],
+            ]);
+        });
         return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor creado correctamente');
     }
 

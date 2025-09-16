@@ -44,25 +44,29 @@ class AlumnoController extends Controller
     public function store(SaveAlumnoRequest $request): RedirectResponse
     {
         // Validar datos y crear usuario y alumno
-        $validated =  $request->validated();
-        $alumno = User::create([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'password'  => Hash::make($validated['password']),
-            'telefono'  => $validated['telefono'] ?? null,
-            'estatus'   => 'activo',
-        ]);
-        $alumno->assignRole('alumno');
+        DB::transaction(function () use ($request) {
+            $validated =  $request->validated();
+            $alumno = User::create([
+                'name'      => $validated['name'],
+                'email'     => $validated['email'],
+                'password'  => Hash::make($validated['password']),
+                'telefono'  => $validated['telefono'] ?? null,
+                'estatus'   => 'activo',
+            ]);
+            $alumno->assignRole('alumno');
 
-        // Crear el registro en la tabla alumnos
-        $alumno->alumno()->create([
-            'matricula'           => Alumno::generarMatricula(), // Llamamos a tu función
-            'grupo_id'            => $validated['grupo_id'] ?? null,
-            'fecha_nacimiento'    => $validated['fecha_nacimiento'],
-            'sexo'                => $validated['sexo'],
-            'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
-        ]);
+            // Crear el registro en la tabla alumnos
+            $alumno->alumno()->create([
+                // 'matricula'           => Alumno::generarMatricula(), // Llamamos a tu función
+                'matricula'           => $validated['matricula'] ?? null,
 
+                'grupo_id'            => $validated['grupo_id'] ?? null,
+                'fecha_nacimiento'    => $validated['fecha_nacimiento'],
+                'sexo'                => $validated['sexo'],
+                'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
+            ]);
+
+        });
         // Redirigir con mensaje de éxito
         return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno creado correctamente');
     }

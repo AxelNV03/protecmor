@@ -29,15 +29,18 @@ class AdminController extends Controller
 
     public function store(SaveAdminRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-        $admin = User::create([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'password'  => Hash::make($validated['password']),
-            'telefono'  => $validated['telefono'] ?? null,
-            'estatus'   => 'activo',
-        ]);
-        $admin->assignRole('admin');
+        DB::transaction(function () use ($request) {
+            $validated = $request->validated();
+            $admin = User::create([
+                'name'      => $validated['name'],
+                'email'     => $validated['email'],
+                'password'  => Hash::make($validated['password']),
+                'telefono'  => $validated['telefono'] ?? null,
+                'estatus'   => 'activo',
+            ]);
+            $admin->assignRole('admin');
+        });
+
 
         return redirect()->route('admin.index')->with('success', 'Administrador creado correctamente');
     }
