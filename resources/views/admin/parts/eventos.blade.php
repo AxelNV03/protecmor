@@ -1,72 +1,84 @@
-<!-- resources/views/admin/parts/eventos.blade.php -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Eventos</title>
 
-<!-- FullCalendar CSS -->
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
 
-<!-- FullCalendar JS -->
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+        @vite(['resources/css/pages/calendarioEventos.css'])
+</head>
+<body>
+    <div class="container">
+        <h1>Calendario de Eventos</h1>
+        <div id="calendar"></div>
+    </div>
 
-<div class="bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-4">Calendario de Eventos</h2>
+        <div id="modalForm" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalForm()">&times;</span>
+            <h2><span id="formTitle">Crear Evento</span></h2>
+            <form id="eventoForm">
+                @csrf
+                <input type="hidden" id="eventoId" name="eventoId">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+                <label for="tipo">Tipo:</label>
+                <input type="text" id="tipo" name="tipo" required>
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" name="fecha" required>
+                <label for="hora">Hora:</label>
+                <input type="time" id="hora" name="hora">
+                <label for="duracion">Duración:</label>
+                <input type="text" id="duracion" name="duracion">
+                <label for="costo">Costo:</label>
+                <input type="number" id="costo" name="costo">
+                <label for="lugar">Lugar:</label>
+                <input type="text" id="lugar" name="lugar">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion"></textarea>
+                <label for="publico">Público:</label>
+                <select id="publico" name="publico" required>
+                    <option value="alumnos">Alumnos</option>
+                    <option value="general">General</option>
+                </select>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="incluido_mensualidad" name="incluido_mensualidad" value="1">
+                    <label for="incluido_mensualidad">Incluido en mensualidad</label>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- Contenedor del calendario -->
-    <div id="calendar"></div>
-</div>
+        <div id="modalEvento" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalEvento()">&times;</span>
+            <h2>Detalles del Evento</h2>
+            <p><strong>Título:</strong> <span id="detalleTitulo"></span></p>
+            <p><strong>Tipo:</strong> <span id="detalleTipo"></span></p>
+            <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
+            <p><strong>Hora:</strong> <span id="detalleHora"></span></p>
+            <p><strong>Duración:</strong> <span id="detalleDuracion"></span></p>
+            <p><strong>Costo:</strong> <span id="detalleCosto"></span></p>
+            <p><strong>Lugar:</strong> <span id="detalleLugar"></span></p>
+            <p><strong>Descripción:</strong> <span id="detalleDescripcion"></span></p>
+            <p><strong>Público:</strong> <span id="detallePublico"></span></p>
+            <p><strong>Incluido mensualidad:</strong> <span id="detalleMensualidad"></span></p>
+            <div class="modal-actions">
+                <a id="modalWhatsapp" href="#" target="_blank" class="btn btn-primary">Contactar por WhatsApp</a>
+                <button id="btnEditar" class="btn btn-warning">Editar</button>
+                <button id="btnEliminar" class="btn btn-danger">Eliminar</button>
+                <button onclick="cerrarModalEvento()" class="btn btn-secondary">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
-<!-- Modal para mostrar la información del evento -->
-<div id="modalEvento" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-        <h2 id="modalTitulo" class="text-xl font-bold mb-2"></h2>
-        <p id="modalFecha" class="text-gray-600 mb-2"></p>
-        <p id="modalDescripcion" class="mb-4"></p>
-        
-        <div class="flex justify-between items-center">
-            <!-- Botón WhatsApp -->
-            <a id="modalWhatsapp" href="#" target="_blank" 
-               class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-                Contactar por WhatsApp
-            </a>
-
-            <!-- Botón Cerrar -->
-            <button onclick="cerrarModal()" 
-                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-                Cerrar
-            </button>
-        </div>
-    </div>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'es', // Español
-        events: '{{ route('admin.eventos.data') }}', // Ruta que devuelve JSON desde EventoController
-
-        eventClick: function(info) {
-            // Rellenar datos en el modal
-            document.getElementById('modalTitulo').innerText = info.event.title;
-            document.getElementById('modalFecha').innerText = 
-                new Date(info.event.start).toLocaleDateString('es-MX', {
-                    weekday:"long", year:"numeric", month:"long", day:"numeric"
-                });
-            document.getElementById('modalDescripcion').innerText = info.event.extendedProps.descripcion || "Sin descripción.";
-
-            // Generar link a WhatsApp
-            let numero = "5217771234567"; // Cambia este número por el de la escuela
-            let mensaje = encodeURIComponent("Hola, me interesa el evento: " + info.event.title);
-            document.getElementById('modalWhatsapp').href = "https://wa.me/" + numero + "?text=" + mensaje;
-
-            // Mostrar modal
-            document.getElementById('modalEvento').classList.remove('hidden');
-        }
-    });
-
-    calendar.render();
-});
-
-function cerrarModal() {
-    document.getElementById('modalEvento').classList.add('hidden');
-}
-</script>
+        @vite('resources/js/pages/calendarioEventos.js')
+</body>
+</html>

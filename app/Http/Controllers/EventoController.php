@@ -2,60 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Evento;
-use Illuminate\Support\Facades\Log;
 use App\Http\Requests\EventoRequest;
+use Illuminate\Support\Facades\Log;
 
 class EventoController extends Controller
 {
-    /**
-     * Retorna todos los eventos en JSON (usado por fetch en la vista).
-     */
     public function data()
     {
-        return response()->json(Evento::all());
+        $eventos = Evento::all()->map(function ($evento) {
+            return [
+                'id' => $evento->id,
+                'title' => $evento->nombre,
+                'start' => $evento->fecha->toDateString(),
+                'extendedProps' => [
+                    'tipo' => $evento->tipo,
+                    'hora' => $evento->hora ? $evento->hora->format('H:i') : null,
+                    'duracion' => $evento->duracion,
+                    'costo' => $evento->costo,
+                    'lugar' => $evento->lugar,
+                    'descripcion' => $evento->descripcion,
+                    'publico' => $evento->publico,
+                    'incluido_mensualidad' => $evento->incluido_mensualidad,
+                ]
+            ];
+        });
+
+        return response()->json($eventos);
     }
 
-    /**
-     * Almacena un nuevo evento en la base de datos.
-     */
     public function store(EventoRequest $request)
     {
         try {
             $evento = Evento::create($request->validated());
-
             return response()->json([
                 'success' => true,
-                'message' => 'Evento creado correctamente.',
-                'evento'  => $evento
-            ]);
+                'message' => 'Evento creado con éxito.',
+                'evento' => $evento
+            ], 201); // 201 es el código de éxito para "Created"
         } catch (\Exception $e) {
             Log::error('Error al crear evento: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
-                'message' => 'Ocurrió un error al crear el evento.'
+                'message' => 'Ocurrió un error al guardar el evento.'
             ], 500);
         }
     }
 
-    /**
-     * Actualiza un evento existente.
-     */
     public function update(EventoRequest $request, Evento $evento)
     {
         try {
             $evento->update($request->validated());
-
             return response()->json([
                 'success' => true,
-                'message' => 'Evento actualizado correctamente.',
-                'evento'  => $evento
+                'message' => 'Evento actualizado con éxito.',
+                'evento' => $evento
             ]);
         } catch (\Exception $e) {
             Log::error('Error al actualizar evento: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al actualizar el evento.'
@@ -63,21 +67,16 @@ class EventoController extends Controller
         }
     }
 
-    /**
-     * Elimina un evento.
-     */
     public function destroy(Evento $evento)
     {
         try {
             $evento->delete();
-
             return response()->json([
                 'success' => true,
-                'message' => 'Evento eliminado correctamente.'
+                'message' => 'Evento eliminado con éxito.'
             ]);
         } catch (\Exception $e) {
             Log::error('Error al eliminar evento: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al eliminar el evento.'
