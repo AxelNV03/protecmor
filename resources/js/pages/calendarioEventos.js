@@ -5,7 +5,21 @@ document.addEventListener('DOMContentLoaded', function () {
         locale: 'es',
         selectable: true,
         editable: true,
-        events: "{{ route('admin.eventos.data') }}",
+        events: '/admin/eventos/data',
+
+        displayEventTime: false, // Oculta la hora para que no aparezca el punto azul
+        eventBackgroundColor: '#cce5ff', // fondo azul claro
+        eventTextColor: '#000', // texto negro
+
+        eventDidMount: function(info) {
+            // Aplica estilos al evento
+            info.el.style.backgroundColor = '#cce5ff';
+            info.el.style.color = '#000';
+            info.el.style.padding = '2px 4px';
+            info.el.style.borderRadius = '4px';
+            info.el.style.fontSize = '0.9em';
+            info.el.style.border = 'none'; // elimina el punto azul predeterminado
+        },
 
         dateClick: function(info) {
             limpiarFormulario();
@@ -16,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         eventClick: function(info) {
             const evento = info.event;
+            document.getElementById('detalleId').value = evento.id;
             document.getElementById('detalleTitulo').innerText = evento.title;
             document.getElementById('detalleTipo').innerText = evento.extendedProps.tipo || 'No especificado';
             document.getElementById('detalleFecha').innerText = evento.start.toLocaleDateString('es-MX', {
@@ -30,39 +45,37 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('detalleMensualidad').innerText = evento.extendedProps.incluido_mensualidad ? 'Sí' : 'No';
 
             const numero = "5217771234567";
-            const mensaje = encodeURIComponent(`Hola, me interesa el evento: ${evento.title}`);
+            const mensaje = encodeURIComponent(`Hola, me interesa apartar un cupo para el evento: ${evento.title}`);
             document.getElementById('modalWhatsapp').href = `https://wa.me/${numero}?text=${mensaje}`;
 
-            document.getElementById('btnEditar').onclick = function () {
+            document.getElementById('btnEditar').onclick = function() {
                 cerrarModalEvento();
                 cargarEventoEnFormulario(evento);
             };
 
-            document.getElementById('btnEliminar').onclick = function () {
+            document.getElementById('btnEliminar').onclick = function() {
                 eliminarEvento(evento.id);
             };
 
             abrirModalEvento();
         },
-        
+
         eventDrop: function(info) {
             const evento = info.event;
             const data = new FormData();
             data.append('_method', 'PUT');
-            data.append('_token', document.querySelector('input[name=_token]').value);
             data.append('nombre', evento.title);
-            data.append('start', evento.startStr);
+            data.append('fecha', evento.startStr);
 
             fetch(`/admin/eventos/${evento.id}`, {
                 method: 'POST',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
                 body: data
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    calendar.refetchEvents();
-                } else {
-                    alert('Error al actualizar el evento.');
+            .then(res => res.json())
+            .then(response => {
+                if (!response.success) {
+                    Swal.fire('Error', 'No se pudo actualizar el evento.', 'error');
                     info.revert();
                 }
             });
@@ -71,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     calendar.render();
 
-    // Lógica para el formulario de Creación/Edición
+    // --- FORMULARIO GUARDAR/EDITAR ---
     document.getElementById('eventoForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('eventoId').value;
@@ -81,44 +94,37 @@ document.addEventListener('DOMContentLoaded', function () {
             data.append('incluido_mensualidad', 0);
         }
 
-        let url = id ? `/admin/eventos/${id}` : `/admin/eventos`;
-        if (id) {
-            data.append('_method', 'PUT');
-        }
+        const url = id ? `/admin/eventos/${id}` : `/admin/eventos`;
+        if (id) data.append('_method', 'PUT');
 
         fetch(url, {
             method: 'POST',
-            headers: { 'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value },
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
             body: data
         })
-        .then(res => {
-            if (!res.ok) {
-                // Si la respuesta no es exitosa, lanza un error para el bloque catch
-                throw new Error('Error en la respuesta del servidor.');
-            }
-            return res.json();
-        })
+        .then(res => res.json())
         .then(response => {
             if (response.success) {
-                alert(response.message);
+                Swal.fire('Éxito', response.message, 'success');
                 calendar.refetchEvents();
                 cerrarModalForm();
             } else {
-                alert(response.message);
+                Swal.fire('Error', response.message, 'error');
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ocurrió un error al guardar el evento. Por favor, revisa la consola para más detalles.');
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Error', 'Ocurrió un error al guardar el evento.', 'error');
         });
     });
 
+    // --- CARGAR EVENTO EN FORMULARIO ---
     window.cargarEventoEnFormulario = function(evento) {
         limpiarFormulario();
         document.getElementById('eventoId').value = evento.id;
         document.getElementById('nombre').value = evento.title;
         document.getElementById('tipo').value = evento.extendedProps.tipo || '';
-        document.getElementById('fecha').value = evento.startStr.slice(0, 10);
+        document.getElementById('fecha').value = evento.startStr.slice(0,10);
         document.getElementById('hora').value = evento.extendedProps.hora || '';
         document.getElementById('duracion').value = evento.extendedProps.duracion || '';
         document.getElementById('costo').value = evento.extendedProps.costo || '';
@@ -130,44 +136,50 @@ document.addEventListener('DOMContentLoaded', function () {
         abrirModalForm();
     };
 
+    // --- ELIMINAR EVENTO ---
     window.eliminarEvento = function(id) {
-        if (!confirm("¿Seguro que deseas eliminar este evento?")) return;
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const data = new FormData();
+                data.append('_method', 'DELETE');
 
-        const data = new FormData();
-        data.append('_method', 'DELETE');
-        data.append('_token', document.querySelector('input[name=_token]').value);
-
-        fetch(`/admin/eventos/${id}`, {
-            method: 'POST',
-            body: data
-        })
-        .then(res => res.json())
-        .then(response => {
-            if (response.success) {
-                alert(response.message);
-                calendar.refetchEvents();
-                cerrarModalEvento();
-            } else {
-                alert(response.message);
+                fetch(`/admin/eventos/${id}`, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                    body: data
+                })
+                .then(res => res.json())
+                .then(response => {
+                    if (response.success) {
+                        Swal.fire('Eliminado', response.message, 'success');
+                        calendar.refetchEvents();
+                        cerrarModalEvento();
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                });
             }
         });
     };
 
+    // --- FUNCIONES AUXILIARES ---
     function limpiarFormulario() {
         document.getElementById('eventoForm').reset();
         document.getElementById('eventoId').value = '';
+        document.getElementById('formTitle').innerText = 'Crear Evento';
     }
 
-    function abrirModalForm() {
-        document.getElementById('modalForm').classList.add('active');
-    }
-    window.cerrarModalForm = function() {
-        document.getElementById('modalForm').classList.remove('active');
-    }
-    function abrirModalEvento() {
-        document.getElementById('modalEvento').classList.add('active');
-    }
-    window.cerrarModalEvento = function() {
-        document.getElementById('modalEvento').classList.remove('active');
-    }
+    function abrirModalForm() { document.getElementById('modalForm').classList.add('active'); }
+    window.cerrarModalForm = function() { document.getElementById('modalForm').classList.remove('active'); }
+    function abrirModalEvento() { document.getElementById('modalEvento').classList.add('active'); }
+    window.cerrarModalEvento = function() { document.getElementById('modalEvento').classList.remove('active'); }
 });

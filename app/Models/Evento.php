@@ -47,7 +47,7 @@ class Evento extends Model
 		'costo',
 		'lugar',
 		'descripcion',
-		'publico',
+		'publico', //general o alumnos
 		'incluido_mensualidad'
 	];
 }
