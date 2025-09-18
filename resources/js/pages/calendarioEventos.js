@@ -93,6 +93,72 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     calendar.render();
+    // --- FILTROS POR TIPO ---
+    const filtros = document.querySelectorAll('.btn-filtro');
+    const listaEventos = document.getElementById('listaEventos');
+
+    filtros.forEach(boton => {
+        boton.addEventListener('click', () => {
+            const tipo = boton.dataset.tipo;
+            // Solo eventos futuros
+            const hoy = new Date();
+            const eventos = calendar.getEvents().filter(ev => 
+                ev.extendedProps.tipo === tipo && ev.start >= hoy
+            );
+
+            listaEventos.innerHTML = `
+                <div class="evento-container">
+                    <button class="cerrar-eventos" onclick="document.getElementById('listaEventos').innerHTML='';" style="float:right; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+                    <h3>Eventos de tipo: ${tipo}</h3>
+                    ${eventos.length ? `
+                        <div class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                                ${eventos.map(ev => `
+                                    <div class="swiper-slide">
+                                        <div class="evento-item">
+                                            <h4 style="text-align:center; font-weight:bold; font-size:1.2em;">${ev.title}</h4>
+                                            <p><strong>Tipo:</strong> ${ev.extendedProps.tipo}</p>
+                                            <p><strong>Fecha:</strong> ${ev.start.toLocaleDateString('es-MX')}</p>
+                                            <p><strong>Hora:</strong> ${ev.extendedProps.hora || 'No especificado'}</p>
+                                            <p><strong>Duración:</strong> ${ev.extendedProps.duracion || 'No especificado'}</p>
+                                            <p><strong>Costo:</strong> ${ev.extendedProps.costo || 'No especificado'}</p>
+                                            <p><strong>Lugar:</strong> ${ev.extendedProps.lugar || 'No especificado'}</p>
+                                            <p><strong>Descripción:</strong> ${ev.extendedProps.descripcion || 'Sin descripción'}</p>
+                                            <p><strong>Público:</strong> ${ev.extendedProps.publico || 'No especificado'}</p>
+                                            <p><strong>Incluido mensualidad:</strong> ${ev.extendedProps.incluido_mensualidad ? 'Sí' : 'No'}</p>
+                                        </div>
+                                    </div>
+                                `).join("")}
+                            </div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    ` : '<p>No hay eventos próximos de este tipo.</p>'}
+                </div>
+            `;
+
+            // Inicializar Swiper
+            new Swiper(".mySwiper", {
+                slidesPerView: 3,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev"
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true
+                },
+                breakpoints: {
+                    0: { slidesPerView: 1 },
+                    768: { slidesPerView: 2 },
+                    1024: { slidesPerView: 3 }
+                }
+            });
+        });
+    });
+
 
     document.getElementById('eventoForm').addEventListener('submit', function(e) {
         e.preventDefault();

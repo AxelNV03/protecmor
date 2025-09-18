@@ -10,12 +10,29 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 
     @vite(['resources/css/pages/calendarioEventos.css'])
 </head>
 <body>
 <div class="container">
     <h1>Calendario de Eventos</h1>
+<div id="filtrosEventos" class="filtros-eventos">
+    <button class="btn-filtro" data-tipo="Talleres prácticos" style="background-color:#A5D6A7;">Talleres prácticos</button>
+    <button class="btn-filtro" data-tipo="Diplomados/cursos" style="background-color:#90CAF9;">Diplomados/cursos</button>
+    <button class="btn-filtro" data-tipo="Simulacros" style="background-color:#FFCC80;">Simulacros</button>
+    <button class="btn-filtro" data-tipo="Seminarios/conferencias" style="background-color:#B39DDB;">Seminarios/conferencias</button>
+    <button class="btn-filtro" data-tipo="Campañas comunitarias" style="background-color:#FFAB91;">Campañas comunitarias</button>
+</div>
+
+<!-- Contenedor donde mostraremos la lista de eventos filtrados -->
+<div id="listaEventos" class="lista-eventos"></div>
+
     <div id="calendar"></div>
 </div>
 
