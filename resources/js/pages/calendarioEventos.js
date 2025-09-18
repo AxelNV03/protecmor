@@ -6,23 +6,33 @@ document.addEventListener('DOMContentLoaded', function () {
         selectable: true,
         editable: true,
         events: '/admin/eventos/data',
+        displayEventTime: false,
+        eventContent: function(arg) {
+            // Devuelve solo el nombre del evento, eliminando el número
+            return { html: `<div class="fc-daygrid-event-dot" style="border-color: transparent;"></div><div class="fc-event-title">${arg.event.title}</div>` };
+        },
 
-        displayEventTime: false, // Oculta la hora para que no aparezca el punto azul
-        eventBackgroundColor: '#cce5ff', // fondo azul claro
-        eventTextColor: '#000', // texto negro
-
+        // Mapeo de colores pastel para cada tipo de evento
         eventDidMount: function(info) {
-            // Aplica estilos al evento
-            info.el.style.backgroundColor = '#cce5ff';
+            const eventColors = {
+                'Talleres prácticos': '#A5D6A7', // Verde pastel
+                'Diplomados/cursos': '#90CAF9',  // Azul pastel
+                'Simulacros': '#FFCC80',         // Naranja pastel
+                'Seminarios/conferencias': '#B39DDB', // Púrpura pastel
+                'Campañas comunitarias': '#FFAB91', // Rosa pastel
+            };
+            const tipoEvento = info.event.extendedProps.tipo;
+            info.el.style.backgroundColor = eventColors[tipoEvento] || '#cce5ff';
             info.el.style.color = '#000';
             info.el.style.padding = '2px 4px';
             info.el.style.borderRadius = '4px';
             info.el.style.fontSize = '0.9em';
-            info.el.style.border = 'none'; // elimina el punto azul predeterminado
+            info.el.style.border = 'none';
         },
 
         dateClick: function(info) {
             limpiarFormulario();
+            // Corregido: La fecha ahora se asigna directamente
             document.getElementById('fecha').value = info.dateStr;
             document.getElementById('formTitle').innerText = 'Crear Evento';
             abrirModalForm();
@@ -84,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     calendar.render();
 
-    // --- FORMULARIO GUARDAR/EDITAR ---
     document.getElementById('eventoForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('eventoId').value;
@@ -118,13 +127,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- CARGAR EVENTO EN FORMULARIO ---
     window.cargarEventoEnFormulario = function(evento) {
         limpiarFormulario();
         document.getElementById('eventoId').value = evento.id;
         document.getElementById('nombre').value = evento.title;
         document.getElementById('tipo').value = evento.extendedProps.tipo || '';
-        document.getElementById('fecha').value = evento.startStr.slice(0,10);
+        document.getElementById('fecha').value = evento.startStr.slice(0, 10);
         document.getElementById('hora').value = evento.extendedProps.hora || '';
         document.getElementById('duracion').value = evento.extendedProps.duracion || '';
         document.getElementById('costo').value = evento.extendedProps.costo || '';
@@ -136,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function () {
         abrirModalForm();
     };
 
-    // --- ELIMINAR EVENTO ---
     window.eliminarEvento = function(id) {
         Swal.fire({
             title: '¿Estás seguro?',

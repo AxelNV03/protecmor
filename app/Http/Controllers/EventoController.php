@@ -18,8 +18,9 @@ class EventoController extends Controller
             return [
                 'id' => $evento->id,
                 'title' => $evento->nombre,
-                'start' => $evento->fecha,
-                'end' => $evento->fecha,
+                // Corregido: Usamos toDateString() para evitar la conversión de zona horaria
+                'start' => $evento->fecha->toDateString(), 
+                'end' => $evento->fecha->toDateString(),
                 'extendedProps' => [
                     'tipo' => $evento->tipo,
                     'hora' => $evento->hora ? $evento->hora->format('H:i') : null,
@@ -49,11 +50,12 @@ class EventoController extends Controller
                 'evento' => [
                     'id' => $evento->id,
                     'title' => $evento->nombre,
-                    'start' => $evento->fecha,
-                    'end' => $evento->fecha,
+                    // Corregido: Devolvemos la fecha como string para que el frontend no la interprete como un objeto Carbon.
+                    'start' => $evento->fecha->toDateString(), 
+                    'end' => $evento->fecha->toDateString(),
                     'extendedProps' => [
                         'tipo' => $evento->tipo,
-                        'hora' => $evento->hora,
+                        'hora' => $evento->hora ? $evento->hora->format('H:i') : null,
                         'duracion' => $evento->duracion,
                         'costo' => $evento->costo,
                         'lugar' => $evento->lugar,
