@@ -132,3 +132,20 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     margin-left: 20px; /* margen izquierdo agregado */
 }
+
+.btn-contactar {
+    display: inline-block;
+    background-color: #064420; /* Verde oscuro */
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-contactar:hover {
+    background-color: #fff;
+    color: #064420;
+    border: 1px solid #064420;
+}

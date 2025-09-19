@@ -108,11 +108,9 @@
         </div>
     </div>
 </div>
-
 <script>
-    // Estas variables son leídas por calendarioEventos.js
-    window.IS_ADMIN = {{ json_encode($isAdmin ?? true) }}; // admin por defecto si no se pasa
-    window.EVENTS_URL = "{{ $eventsDataUrl ?? '/admin/eventos/data' }}";
+    window.IS_ADMIN = {{ json_encode($isAdmin ?? false) }};
+    window.EVENTS_URL = "{{ $eventsDataUrl }}"; 
 </script>
 @vite('resources/js/pages/calendarioEventos.js')
 </body>

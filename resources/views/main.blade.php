@@ -28,7 +28,7 @@
             <a class="nav-link" href="#!">Talleres</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#!">Agenda académica</a>
+            <a href="{{ route('eventos.public.index') }}">Agenda Académica</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#!">TACTIKAR ZONE</a>

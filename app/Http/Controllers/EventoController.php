@@ -18,8 +18,7 @@ class EventoController extends Controller
             return [
                 'id' => $evento->id,
                 'title' => $evento->nombre,
-                // Corregido: Usamos toDateString() para evitar la conversión de zona horaria
-                'start' => $evento->fecha->toDateString(), 
+                'start' => $evento->fecha->toDateString(),
                 'end' => $evento->fecha->toDateString(),
                 'extendedProps' => [
                     'tipo' => $evento->tipo,
@@ -38,20 +37,28 @@ class EventoController extends Controller
     }
 
     /**
-     * Almacena un nuevo evento.
+     * Página de eventos para la vista pública o admin.
      */
+    public function indexPublic()
+    {
+        return view('eventosPublic', [  // nombre del archivo de la vista sin .blade.php
+            'isAdmin' => false, 
+            'eventsDataUrl' => route('eventos.public.data') // nombre de ruta definido
+        ]);
+    }
+
+    // Métodos CRUD para admin
     public function store(EventoRequest $request): JsonResponse
     {
         try {
             $evento = Evento::create($request->validated());
             return response()->json([
-                'success' => true, 
-                'message' => 'Evento guardado con éxito.', 
+                'success' => true,
+                'message' => 'Evento guardado con éxito.',
                 'evento' => [
                     'id' => $evento->id,
                     'title' => $evento->nombre,
-                    // Corregido: Devolvemos la fecha como string para que el frontend no la interprete como un objeto Carbon.
-                    'start' => $evento->fecha->toDateString(), 
+                    'start' => $evento->fecha->toDateString(),
                     'end' => $evento->fecha->toDateString(),
                     'extendedProps' => [
                         'tipo' => $evento->tipo,
@@ -71,9 +78,6 @@ class EventoController extends Controller
         }
     }
 
-    /**
-     * Actualiza un evento existente.
-     */
     public function update(EventoRequest $request, Evento $evento): JsonResponse
     {
         try {
@@ -85,9 +89,6 @@ class EventoController extends Controller
         }
     }
 
-    /**
-     * Elimina un evento.
-     */
     public function destroy(Evento $evento): JsonResponse
     {
         try {

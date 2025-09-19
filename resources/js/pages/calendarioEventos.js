@@ -1,11 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const isAdmin = window.IS_ADMIN === true || window.IS_ADMIN === 'true';
+    const eventsUrl = window.EVENTS_URL || '/admin/eventos/data';
     const calendarEl = document.getElementById('calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'es',
-        selectable: true,
-        editable: true,
-        events: '/admin/eventos/data',
+        selectable: window.IS_ADMIN,  // true para admin, false para público
+        editable: window.IS_ADMIN,    // true para admin, false para público
+        events: window.EVENTS_URL,    // URL de datos
         displayEventTime: false,
         eventContent: function(arg) {
             // Devuelve solo el nombre del evento, eliminando el número
@@ -58,14 +60,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const mensaje = encodeURIComponent(`Hola, me interesa apartar un cupo para el evento: ${evento.title}`);
             document.getElementById('modalWhatsapp').href = `https://wa.me/${numero}?text=${mensaje}`;
 
-            document.getElementById('btnEditar').onclick = function() {
-                cerrarModalEvento();
-                cargarEventoEnFormulario(evento);
-            };
+            // Solo asigna los botones si existen (solo admin)
+            const btnEditar = document.getElementById('btnEditar');
+            const btnEliminar = document.getElementById('btnEliminar');
 
-            document.getElementById('btnEliminar').onclick = function() {
-                eliminarEvento(evento.id);
-            };
+            if (btnEditar) {
+                btnEditar.onclick = function() {
+                    cerrarModalEvento();
+                    cargarEventoEnFormulario(evento);
+                };
+            }
+
+            if (btnEliminar) {
+                btnEliminar.onclick = function() {
+                    eliminarEvento(evento.id);
+                };
+            }
 
             abrirModalEvento();
         },
@@ -126,6 +136,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                             <p><strong>Descripción:</strong> ${ev.extendedProps.descripcion || 'Sin descripción'}</p>
                                             <p><strong>Público:</strong> ${ev.extendedProps.publico || 'No especificado'}</p>
                                             <p><strong>Incluido mensualidad:</strong> ${ev.extendedProps.incluido_mensualidad ? 'Sí' : 'No'}</p>
+                                            <div style="text-align:center; margin-top:10px;">
+                                                <a href="https://tuchat.com?mensaje=me%20interesa%20participar%20en%20${encodeURIComponent(ev.title)}"
+                                                class="btn-contactar" target="_blank">
+                                                    Contactar
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 `).join("")}

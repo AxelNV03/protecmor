@@ -24,7 +24,7 @@ class EventoRequest extends FormRequest
     {
         return [
             'nombre' => 'required|string|max:255',
-            'tipo' => ['required', Rule::in(['Talleres prácticos', 'Diplomados/cursos', 'Simulacros', 'Seminarios/conferencias', 'Campañas comunitarias'])],
+            'tipo' => 'required|string|max:255',
             'fecha' => 'required|date',
             'hora' => 'nullable|date_format:H:i',
             'duracion' => 'nullable|string|max:50',

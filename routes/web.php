@@ -26,3 +26,11 @@ require base_path('routes/grupos.php');
 
 // Rutas de campos
 require base_path('routes/campos.php');
+
+// Página pública de la agenda académica
+Route::get('/agenda-academica', [EventoController::class, 'indexPublic'])
+    ->name('eventos.public.index');
+
+// Datos de eventos para la vista pública (puede usar la misma función de admin)
+Route::get('/eventos/data', [EventoController::class, 'data'])
+    ->name('eventos.public.data');
