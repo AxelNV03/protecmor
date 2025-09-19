@@ -8,6 +8,8 @@ use App\Http\Requests\SaveAdminRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View; // <-- Importar View
+use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
+
 
 class AdminController extends Controller
 {

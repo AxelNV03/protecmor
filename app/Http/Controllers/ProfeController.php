@@ -11,6 +11,7 @@ use App\Http\Requests\SaveProfeRequest; // <-- CAMBIO CLAVE: Usar el request cor
 use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View; // <-- Importar View
+use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
 
 
 class ProfeController extends Controller

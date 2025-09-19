@@ -11,6 +11,8 @@ use App\Http\Requests\SaveAlumnoRequest; // <-- CAMBIO CLAVE: Usar el request co
 use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View; // <-- Importar View
+use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
+
 
 class AlumnoController extends Controller
 {
