@@ -98,14 +98,6 @@
                     <label class="block text-sm">Teléfono</label>
                     <input type="text" name="telefono" class="w-full border rounded p-2">
                 </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Contraseña</label>
-                    <input type="password" name="password" class="w-full border rounded p-2" required>
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Confirmar Contraseña</label>
-                    <input type="password" name="password_confirmation" class="w-full border rounded p-2" required>
-                </div>
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Guardar</button>

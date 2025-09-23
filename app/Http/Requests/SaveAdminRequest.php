@@ -32,7 +32,6 @@ class SaveAdminRequest extends FormRequest
         $rules = [
             'name'     => ['required', new NombreValido],
             'email'    => ['required', 'email', new EmailUnico($adminId)],
-            'password' => ['required', 'confirmed', new PasswordSegura],
             
             // 👇 REGLA ACTUALIZADA PARA TELÉFONO
             'telefono' => [
@@ -42,9 +41,11 @@ class SaveAdminRequest extends FormRequest
             ],
         ];
 
-       // Si estamos actualizando, la contraseña se vuelve opcional.
+        // Si es UPDATE, agregar regla de password opcional
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules['password'][0] = 'nullable';
+            return array_merge($rules, [
+                'password' => ['nullable', 'confirmed', new PasswordSegura]
+            ]);
         }
 
         return $rules;

@@ -9,6 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View; // <-- Importar View
 use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
+use Illuminate\Support\Facades\Mail; // ← Agregar esta línea
+use App\Mail\UserCredentialsMail;
 
 
 class AdminController extends Controller
@@ -32,15 +34,27 @@ class AdminController extends Controller
     public function store(SaveAdminRequest $request): RedirectResponse
     {
         DB::transaction(function () use ($request) {
+            // Validamos los datos
             $validated = $request->validated();
+
+            // Generamos una contraseña segura
+            $password = User::generatePassword();
+
+            // Creamos el admin
             $admin = User::create([
                 'name'      => $validated['name'],
                 'email'     => $validated['email'],
-                'password'  => Hash::make($validated['password']),
+                'password'  => bcrypt($password),
                 'telefono'  => $validated['telefono'] ?? null,
                 'estatus'   => 'activo',
             ]);
             $admin->assignRole('admin');
+            Mail::to($admin->email)->send(new UserCredentialsMail(
+                $admin->name,
+                $admin->email,
+                $password,
+                'administrador'  // ← Tipo de usuario
+            ));
         });
 
 
@@ -56,7 +70,7 @@ class AdminController extends Controller
 
 
 
-    public function update(SaveAdminRequest $request, User $admin): RedirectResponse // <-- Usando Route Model Binding
+    public function update(SaveAdminRequest $request, User $admin): RedirectResponse
     {
         $validated = $request->validated();
 
@@ -69,9 +83,21 @@ class AdminController extends Controller
         if (!empty($validated['password'])) {
             $admin->password = Hash::make($validated['password']);
             $admin->save();
+            
+            // Enviar email con la nueva contraseña
+            Mail::to($admin->email)->send(new UserCredentialsMail(
+                $admin->name,
+                $admin->email,
+                $validated['password'], // La contraseña en texto plano
+                'administrador'
+            ));
+
+            return redirect()->route('admin.index')
+                ->with('success', 'Administrador actualizado y nueva contraseña enviada por email');
         }
 
-        return redirect()->route('admin.index')->with('success', 'Administrador actualizado correctamente');
+        return redirect()->route('admin.index')
+            ->with('success', 'Administrador actualizado correctamente');
     }
 
 
