@@ -1,0 +1,38 @@
+version: '3.8'
+
+# ==============================================================================
+# SERVICIOS (CONTENEDORES)
+# ==============================================================================
+services:
+  # 1. Tu servicio de aplicación (construido desde tu Dockerfile)
+  app:
+    build:
+      context: . # Usa el Dockerfile en la carpeta actual
+      args:
+        HOST_UID: ${UID:-1000}
+        HOST_GID: ${GID:-1000}
+    volumes:
+      - .:/home/developer/project
+    command: bash
+    tty: true 
+
+  # 2. Tu servicio de base de datos (MariaDB)
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root_password_muy_segura'
+      MYSQL_DATABASE: 'laravel'
+      MYSQL_USER: 'nava'
+      MYSQL_PASSWORD: '1234'  # <-- Déjalo vacío
+      # MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # <-- Añade esta línea
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+# ==============================================================================
+# VOLÚMENES (DONDE SE GUARDAN LOS DATOS DE FORMA PERMANENTE)
+# ==============================================================================
+volumes:
+  mariadb_data:
