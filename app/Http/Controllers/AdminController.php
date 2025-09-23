@@ -61,6 +61,8 @@ class AdminController extends Controller
         return redirect()->route('admin.index')->with('success', 'Administrador creado correctamente');
     }
 
+
+
     public function update(SaveAdminRequest $request, User $admin): RedirectResponse
     {
         $validated = $request->validated();
@@ -69,6 +71,7 @@ class AdminController extends Controller
             'name'      => $validated['name'],
             'email'     => $validated['email'],
             'telefono'  => $validated['telefono'] ?? null,
+            'estatus'   => $validated['estatus'],
         ]);
 
         if (!empty($validated['password'])) {

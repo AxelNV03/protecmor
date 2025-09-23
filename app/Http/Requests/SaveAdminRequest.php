@@ -32,6 +32,8 @@ class SaveAdminRequest extends FormRequest
         $rules = [
             'name'     => ['required', new NombreValido],
             'email'    => ['required', 'email', new EmailUnico($adminId)],
+            'estatus'  => ['required'], // ← Solo required, sin más validaciones
+
             
             // 👇 REGLA ACTUALIZADA PARA TELÉFONO
             'telefono' => [

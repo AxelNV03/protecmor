@@ -33,12 +33,14 @@
     </div>
     @endif
 
-    <h2>Administración de administradores</h2>
 
+
+
+
+    <h2>Administración de administradores</h2>
     <div x-show="isLoading" class="text-center p-4">
         Cargando datos de administradores...
     </div>
-
     <table x-show="!isLoading" class="min-w-full bg-white">
         <thead>
             <tr>
@@ -78,9 +80,20 @@
             </tbody>
     </table>
 
+
+
+
+
+
+
+
+
+
+
+
+
     <br><br>
     <button @click="showModal = true" class="px-4 py-2 bg-green-500 text-white rounded">Agregar Administrador</button>
-
     <div x-show="showModal" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div @click.away="showModal = false" class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Nuevo Administrador</h3>
@@ -108,6 +121,12 @@
 
 
 
+
+
+
+
+
+
     <div x-show="showEdit" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div @click.away="showEdit = false" class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Editar Administrador</h3>
@@ -126,6 +145,13 @@
                     <label class="block text-sm">Teléfono</label>
                     <input type="text" name="telefono" x-model="editAdmin.telefono" class="w-full border rounded p-2">
                 </div>
+                <div>
+                    <label class="block text-sm">Estatus</label>
+                    <select name="estatus" x-model="editAdmin.estatus" class="w-full border rounded p-2">
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label class="block text-sm">Contraseña (dejar vacío para no cambiar)</label>
                     <input type="password" name="password" class="w-full border rounded p-2" placeholder="Nueva contraseña">
@@ -142,7 +168,12 @@
         </div>
     </div>
 
+
+
     
+
+
+
 
     <div x-show="showConfirmation" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div @click.away="showConfirmation = false" class="bg-white p-6 rounded shadow-md w-96">

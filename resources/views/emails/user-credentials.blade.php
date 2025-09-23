@@ -12,6 +12,7 @@
         .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -21,7 +22,7 @@
         <div class="content">
             <p>Hola <strong>{{ $userName }}</strong>,</p>
             
-            <p>Se ha creado una cuenta de <strong>{{ $userType }}</strong> para ti. Aquí están tus credenciales:</p>
+            <p>Se ha creado/actualizado tu cuenta de <strong>{{ $userType }}</strong> para ti. Aquí están tus credenciales:</p>
             
             <div class="credentials">
                 <p><strong>Email:</strong> {{ $email }}</p>

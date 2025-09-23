@@ -52,7 +52,8 @@ class User extends Authenticatable
 		'name',
 		'email',
 		'password',
-		'telefono'
+		'telefono',
+		'estatus' 
 	];
 	
 	// Función para generar una contraseña segura
