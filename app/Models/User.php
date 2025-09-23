@@ -6,7 +6,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; // ✅ Agregar esto
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -54,6 +54,33 @@ class User extends Authenticatable
 		'password',
 		'telefono'
 	];
+	
+	// Función para generar una contraseña segura
+	public static function generatePassword($length = 12)
+	{
+		$uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$lowercase = 'abcdefghijklmnopqrstuvwxyz';
+		$numbers = '0123456789';
+		$special = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+		
+		$all = $uppercase . $lowercase . $numbers . $special;
+		$password = '';
+		
+		// Asegurar al menos un carácter de cada tipo
+		$password .= $uppercase[rand(0, strlen($uppercase) - 1)];
+		$password .= $lowercase[rand(0, strlen($lowercase) - 1)];
+		$password .= $numbers[rand(0, strlen($numbers) - 1)];
+		$password .= $special[rand(0, strlen($special) - 1)];
+		
+		// Completar el resto de la longitud
+		for ($i = 4; $i < $length; $i++) {
+			$password .= $all[rand(0, strlen($all) - 1)];
+		}
+		
+		// Mezclar los caracteres
+		return str_shuffle($password);
+	}
+		
 
 	public function alumno(): HasOne
 	{
