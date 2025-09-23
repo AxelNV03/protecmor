@@ -1,27 +1,27 @@
 document.addEventListener('DOMContentLoaded', function () {
+    
+
     const isAdmin = window.IS_ADMIN === true || window.IS_ADMIN === 'true';
     const eventsUrl = window.EVENTS_URL || '/admin/eventos/data';
     const calendarEl = document.getElementById('calendar');
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'es',
-        selectable: window.IS_ADMIN,  // true para admin, false para público
-        editable: window.IS_ADMIN,    // true para admin, false para público
-        events: window.EVENTS_URL,    // URL de datos
+        selectable: isAdmin,
+        editable: isAdmin,
+        events: eventsUrl,
         displayEventTime: false,
         eventContent: function(arg) {
-            // Devuelve solo el nombre del evento, eliminando el número
             return { html: `<div class="fc-daygrid-event-dot" style="border-color: transparent;"></div><div class="fc-event-title">${arg.event.title}</div>` };
         },
-
-        // Mapeo de colores pastel para cada tipo de evento
         eventDidMount: function(info) {
             const eventColors = {
-                'Talleres prácticos': '#A5D6A7', // Verde pastel
-                'Diplomados/cursos': '#90CAF9',  // Azul pastel
-                'Simulacros': '#FFCC80',         // Naranja pastel
-                'Seminarios/conferencias': '#B39DDB', // Púrpura pastel
-                'Campañas comunitarias': '#FFAB91', // Rosa pastel
+                'Talleres prácticos': '#A5D6A7',
+                'Diplomados/cursos': '#90CAF9',
+                'Simulacros': '#FFCC80',
+                'Seminarios/conferencias': '#B39DDB',
+                'Campañas comunitarias': '#FFAB91',
             };
             const tipoEvento = info.event.extendedProps.tipo;
             info.el.style.backgroundColor = eventColors[tipoEvento] || '#cce5ff';
@@ -31,17 +31,18 @@ document.addEventListener('DOMContentLoaded', function () {
             info.el.style.fontSize = '0.9em';
             info.el.style.border = 'none';
         },
-
         dateClick: function(info) {
+            if (!isAdmin) return;
             limpiarFormulario();
-            // Corregido: La fecha ahora se asigna directamente
-            document.getElementById('fecha').value = info.dateStr;
-            document.getElementById('formTitle').innerText = 'Crear Evento';
+            const fechaInput = document.getElementById('fecha');
+            if (fechaInput) fechaInput.value = info.dateStr;
+            const title = document.getElementById('formTitle');
+            if (title) title.innerText = 'Crear Evento';
             abrirModalForm();
         },
-
         eventClick: function(info) {
             const evento = info.event;
+
             document.getElementById('detalleId').value = evento.id;
             document.getElementById('detalleTitulo').innerText = evento.title;
             document.getElementById('detalleTipo').innerText = evento.extendedProps.tipo || 'No especificado';
@@ -56,21 +57,21 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('detallePublico').innerText = evento.extendedProps.publico || 'No especificado';
             document.getElementById('detalleMensualidad').innerText = evento.extendedProps.incluido_mensualidad ? 'Sí' : 'No';
 
-            const numero = "5217771234567";
+            // WhatsApp link
+            const numero = "5217771234567"; // con código de país (52 para México)
             const mensaje = encodeURIComponent(`Hola, me interesa apartar un cupo para el evento: ${evento.title}`);
-            document.getElementById('modalWhatsapp').href = `https://wa.me/${numero}?text=${mensaje}`;
+            const whatsappLink = document.getElementById('modalWhatsapp');
+            if (whatsappLink) whatsappLink.href = `https://wa.me/${numero}?text=${mensaje}`;
 
-            // Solo asigna los botones si existen (solo admin)
+            // Solo admin
             const btnEditar = document.getElementById('btnEditar');
             const btnEliminar = document.getElementById('btnEliminar');
-
             if (btnEditar) {
                 btnEditar.onclick = function() {
                     cerrarModalEvento();
                     cargarEventoEnFormulario(evento);
                 };
             }
-
             if (btnEliminar) {
                 btnEliminar.onclick = function() {
                     eliminarEvento(evento.id);
@@ -79,8 +80,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             abrirModalEvento();
         },
-
         eventDrop: function(info) {
+            if (!isAdmin) return;
             const evento = info.event;
             const data = new FormData();
             data.append('_method', 'PUT');
@@ -103,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     calendar.render();
+
+    
+
     // --- FILTROS POR TIPO ---
     const filtros = document.querySelectorAll('.btn-filtro');
     const listaEventos = document.getElementById('listaEventos');
@@ -110,15 +114,14 @@ document.addEventListener('DOMContentLoaded', function () {
     filtros.forEach(boton => {
         boton.addEventListener('click', () => {
             const tipo = boton.dataset.tipo;
-            // Solo eventos futuros
             const hoy = new Date();
-            const eventos = calendar.getEvents().filter(ev => 
+            const eventos = calendar.getEvents().filter(ev =>
                 ev.extendedProps.tipo === tipo && ev.start >= hoy
             );
 
             listaEventos.innerHTML = `
                 <div class="evento-container">
-                    <button class="cerrar-eventos" onclick="document.getElementById('listaEventos').innerHTML='';" style="float:right; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+                    <button class="cerrar-eventos" style="float:right; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
                     <h3>Eventos de tipo: ${tipo}</h3>
                     ${eventos.length ? `
                         <div class="swiper mySwiper">
@@ -138,9 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                             <p><strong>Incluido mensualidad:</strong> ${ev.extendedProps.incluido_mensualidad ? 'Sí' : 'No'}</p>
                                             <div style="text-align:center; margin-top:10px;">
                                                 <a href="https://tuchat.com?mensaje=me%20interesa%20participar%20en%20${encodeURIComponent(ev.title)}"
-                                                class="btn-contactar" target="_blank">
-                                                    Contactar
-                                                </a>
+                                                class="btn-contactar" target="_blank">Contactar</a>
                                             </div>
                                         </div>
                                     </div>
@@ -154,60 +155,85 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
 
-            // Inicializar Swiper
-            new Swiper(".mySwiper", {
-                slidesPerView: 3,
-                spaceBetween: 20,
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev"
-                },
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true
-                },
-                breakpoints: {
-                    0: { slidesPerView: 1 },
-                    768: { slidesPerView: 2 },
-                    1024: { slidesPerView: 3 }
+            // Cerrar la visualización con el botón "X"
+            const btnCerrar = listaEventos.querySelector('.cerrar-eventos');
+            if (btnCerrar) {
+                btnCerrar.addEventListener('click', () => { listaEventos.innerHTML = ''; });
+            }
+
+            if (eventos.length) {
+                new Swiper(".mySwiper", {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                    pagination: { el: ".swiper-pagination", clickable: true },
+                    breakpoints: { 0: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
+                });
+            }
+        });
+    });
+
+    // --- FORMULARIO (solo admin) ---
+    const form = document.getElementById('eventoForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('eventoId').value;
+            const data = new FormData(this);
+            if (!data.has('incluido_mensualidad')) data.append('incluido_mensualidad', 0);
+
+            const url = id ? `/admin/eventos/${id}` : `/admin/eventos`;
+            if (id) data.append('_method', 'PUT');
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: data
+            })
+            .then(res => res.json())
+            .then(response => {
+                if (response.success) {
+                    Swal.fire('Éxito', response.message, 'success');
+                    calendar.refetchEvents();
+                    cerrarModalForm();
+                } else {
+                    Swal.fire('Error', response.message, 'error');
                 }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Ocurrió un error al guardar el evento.', 'error');
             });
         });
-    });
+    }
 
+    // --- FUNCIONES AUXILIARES ---
+    function limpiarFormulario() {
+        const form = document.getElementById('eventoForm');
+        if (form) form.reset();
+        const id = document.getElementById('eventoId');
+        if (id) id.value = '';
+        const title = document.getElementById('formTitle');
+        if (title) title.innerText = 'Crear Evento';
+    }
 
-    document.getElementById('eventoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const id = document.getElementById('eventoId').value;
-        const data = new FormData(this);
+    function abrirModalForm() {
+        const modal = document.getElementById('modalForm');
+        if (modal) modal.classList.add('active');
+    }
+    window.cerrarModalForm = function() {
+        const modal = document.getElementById('modalForm');
+        if (modal) modal.classList.remove('active');
+    }
 
-        if (!data.has('incluido_mensualidad')) {
-            data.append('incluido_mensualidad', 0);
-        }
-
-        const url = id ? `/admin/eventos/${id}` : `/admin/eventos`;
-        if (id) data.append('_method', 'PUT');
-
-        fetch(url, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-            body: data
-        })
-        .then(res => res.json())
-        .then(response => {
-            if (response.success) {
-                Swal.fire('Éxito', response.message, 'success');
-                calendar.refetchEvents();
-                cerrarModalForm();
-            } else {
-                Swal.fire('Error', response.message, 'error');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            Swal.fire('Error', 'Ocurrió un error al guardar el evento.', 'error');
-        });
-    });
+    function abrirModalEvento() {
+        const modal = document.getElementById('modalEvento');
+        if (modal) modal.classList.add('active');
+    }
+    window.cerrarModalEvento = function() {
+        const modal = document.getElementById('modalEvento');
+        if (modal) modal.classList.remove('active');
+    }
 
     window.cargarEventoEnFormulario = function(evento) {
         limpiarFormulario();
@@ -260,15 +286,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
-    // --- FUNCIONES AUXILIARES ---
-    function limpiarFormulario() {
-        document.getElementById('eventoForm').reset();
-        document.getElementById('eventoId').value = '';
-        document.getElementById('formTitle').innerText = 'Crear Evento';
-    }
+    // --- CERRAR MODALES CON "X" (Código 2 fusionado) ---
+    document.querySelectorAll('.modal .close').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modal = btn.closest('.modal');
+            if (modal) modal.classList.remove('active');
+        });
+    });
 
-    function abrirModalForm() { document.getElementById('modalForm').classList.add('active'); }
-    window.cerrarModalForm = function() { document.getElementById('modalForm').classList.remove('active'); }
-    function abrirModalEvento() { document.getElementById('modalEvento').classList.add('active'); }
-    window.cerrarModalEvento = function() { document.getElementById('modalEvento').classList.remove('active'); }
 });
