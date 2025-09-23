@@ -45,6 +45,7 @@
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Teléfono</th>
+                <th>Fecha de Creación</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -55,6 +56,7 @@
                     <td x-text="admin.name"></td>
                     <td x-text="admin.email"></td>
                     <td x-text="admin.telefono"></td>
+                    <td x-text="new Date(admin.created_at).toLocaleDateString('es-ES')"></td>
                     <td x-text="admin.estatus"></td>
                     <td>
                         <button 
