@@ -11,6 +11,9 @@ services:
       args:
         HOST_UID: ${UID:-1000}
         HOST_GID: ${GID:-1000}
+    ports: # <-- AÑADE ESTA SECCIÓN
+      - "5173:5173" # Para Vite (frontend)
+      - "8000:8000" # Para Artisan (backend, por si lo usas)
     volumes:
       - .:/home/developer/project
     command: bash
@@ -21,7 +24,8 @@ services:
     image: mariadb:11.4
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 'root_password_muy_segura'
+    #root_password_muy_segura
+      MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_DATABASE: 'laravel'
       MYSQL_USER: 'nava'
       MYSQL_PASSWORD: '1234'  # <-- Déjalo vacío

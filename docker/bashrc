@@ -1,0 +1,64 @@
+alias serve='npm run dev -- --host & php artisan serve --host=0.0.0.0 --port=8000'
+alias reload='sudo cp /home/developer/project/docker/bashrc /home/developer/.bashrc && source /home/developer/.bashrc'
+
+dbSet() {
+    local DB_ROOT_PASS="root"
+    local DB_USER_PASS="1234"
+
+    echo "--- Otorgando permisos a 'nava' (usando contraseña de root)..."
+    mariadb -h db -u root -p"$DB_ROOT_PASS" -e "GRANT ALL PRIVILEGES ON *.* TO 'nava'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+
+    if [ $? -ne 0 ]; then
+        echo "Error al dar permisos."
+        return 1
+    fi
+
+    echo "usuario 'nava' con permisos otorgados."
+}
+
+dbStart(){
+    echo "--- Conectando a la base de datos como 'nava' (usando contraseña de nava)..."
+    mariadb -h db -u nava -p1234 protecmor
+}
+
+# Restablece base en protecmor
+dbReset(){
+    local script_name="home/developer/project/docker/script.sql"
+    local DB_USER_PASS="1234"
+
+    echo "--- Ejecutando script $script_name..."
+    mariadb -h db -u nava -p"$DB_USER_PASS" < "$script_name" && \
+    echo "--- Ejecutando migraciones..." && \
+    php artisan migrate && \
+    echo "--- Ejecutando seeders base..." && \
+    php artisan db:seed --class=RoleSeeder && \
+    php artisan db:seed --class=UserSeeder && \
+    echo "--- ¡Base de datos restablecida con éxito! ---"
+}
+
+# Función para configurar un proyecto de Laravel desde cero
+start() {
+    echo "--- Creando archivo .env si no existe..."
+    if [ ! -f ".env" ]; then
+        cp .env.example .env
+        echo ".env creado a partir de .env.example"
+    fi
+
+    echo "--- Instalando dependencias de Composer..."
+    composer install && \
+    echo "--- Instalando dependencias de NPM..." && \
+    npm install && \
+    npm install -D sass && \
+    echo "--- Generando llave de la aplicación..." && \
+    php artisan key:generate && \
+    echo "--- Ejecutando script .sql..." && \
+    dbSet && \
+    mariadb -h db -u nava -p1234 laravel < /home/developer/project/docker/script.sql && \
+    echo "--- Ejecutando migraciones..." && \
+    php artisan migrate && \
+    echo "--- Ejecutando seeders base..." && \
+    php artisan db:seed --class=RoleSeeder && \
+    php artisan db:seed --class=UserSeeder && \
+    echo "" && \
+    echo "✅ ¡Proyecto configurado y listo para usar! ✅"
+}
