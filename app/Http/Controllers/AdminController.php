@@ -61,15 +61,6 @@ class AdminController extends Controller
         return redirect()->route('admin.index')->with('success', 'Administrador creado correctamente');
     }
 
-    public function edit(User $admin): View // <-- Usando Route Model Binding
-    {
-        //
-    }
-
-
-
-
-
     public function update(SaveAdminRequest $request, User $admin): RedirectResponse
     {
         $validated = $request->validated();
