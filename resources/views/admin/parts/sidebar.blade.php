@@ -1,7 +1,11 @@
 <div class="sidebar">
+
+    @role('super admin')
     <button @click="changeTab('admins')" :class="{ 'active': activeTab === 'admins' }">
         Administradores
     </button>
+    @endrole
+
     <button @click="changeTab('alumnos')" :class="{ 'active': activeTab === 'alumnos' }">
         Alumnos
     </button>
