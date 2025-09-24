@@ -22,4 +22,7 @@ Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
     
     // DELETE /admins/{admin} (Deletes an admin)
     Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
+
+    // Ruta para desactivar admin
+    Route::post('/admin/{admin}/deactivate', [AdminController::class, 'deactivate'])->name('admin.deactivate');
 });

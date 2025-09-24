@@ -127,10 +127,16 @@ class AdminController extends Controller
 
     
 
-    public function deactivate(User $admin): RedirectResponse // <-- Corregido el Type Hint
+    public function deactivate(User $admin): RedirectResponse
     {
+        // Verificar que sea super admin
+        if (!auth()->user()->hasRole('super admin')) {
+            abort(403, 'This action is unauthorized.');
+        }
+
         $admin->estatus = 'inactivo';
         $admin->save();
-        return redirect()->back()->with('success', 'Administrador desactivado');
+        
+        return redirect()->route('admin.index')->with('success', 'Administrador desactivado correctamente');
     }
 }
