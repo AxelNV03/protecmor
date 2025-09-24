@@ -65,7 +65,7 @@
             <template x-for="profe in profes" :key="profe.id">
                 <tr>
                     <td x-text="profe.user.name"></td>
-                    <td x-text="profe.user.sexo"></td>
+                    <td x-text="profe.sexo"></td>
                     <td x-text="profe.user.email"></td>
                     <td x-text="profe.user.telefono"></td>
                     <td x-text="profe.telefono_emergencia"></td>
