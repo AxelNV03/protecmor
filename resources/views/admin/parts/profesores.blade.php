@@ -70,7 +70,7 @@
                     <td x-text="profe.user.telefono"></td>
                     <td x-text="profe.telefono_emergencia"></td>
                     <td x-text="profe.especialidad"></td>
-                    <td x-text="new Date(profe.fecha_ingreso).toLocaleDateString('es-ES')"></td>
+                    <td x-text="new Date(profe.user.created_at).toLocaleDateString('es-ES')"></td>
                     <td x-text="profe.user.estatus"></td>
                     
                     <td>

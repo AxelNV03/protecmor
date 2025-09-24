@@ -54,7 +54,6 @@ class ProfeController extends Controller
             $profe->profesor()->create([
                 'especialidad'          => $validated['especialidad'],
                 'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
-                'fecha_ingreso' => now()->toDateString(), // ← Esto llena la fecha automáticamente
                 'sexo'                  => $validated['sexo'],
             ]);
 

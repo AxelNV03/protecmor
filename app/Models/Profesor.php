@@ -33,13 +33,11 @@ class Profesor extends Model
 
 	protected $casts = [
 		'user_id' => 'int',
-		'fecha_ingreso' => 'datetime'
 	];
 
 	protected $fillable = [
 		'user_id',
 		'especialidad',
-		'fecha_ingreso',
 		'telefono_emergencia', // <-- AÑADIR ESTE
         'sexo', 
 		'estatus' // <-- AÑADIR ESTE
