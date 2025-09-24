@@ -30,19 +30,21 @@ class SaveAlumnoRequest extends FormRequest
 
         $rules = [
             'name'                => ['required', new NombreValido],
-            //'matricula'           => ['nullable', 'string', 'max:255', Rule::unique('alumnos')->ignore($this->alumno?->id)],
-            'grupo_id'            => ['nullable', 'integer', 'exists:grupos,id'],
+            'apeP'                => ['required', new NombreValido],
+            'apeM'                => ['required', new NombreValido],
+            'direccion'           => ['nullable', 'string', 'max:255'],
             'email'               => ['required', 'email', Rule::unique('users')->ignore($userId)],
             'telefono'            => ['nullable', new TelefonoValido, Rule::unique('users', 'telefono')->ignore($userId)],
             'fecha_nacimiento'    => ['nullable', 'date'],
             'sexo'                => ['required', Rule::in(['Masculino', 'Femenino', 'Otro'])],
             'telefono_emergencia' => ['nullable', new TelefonoValido],
-            'password'            => ['required', 'confirmed', new PasswordSegura],
         ];
 
-        // Si estamos actualizando (método PUT o PATCH), la contraseña es opcional.
+        // Si es UPDATE, agregar regla de password opcional
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules['password'] = ['nullable', 'string', 'min:6', 'confirmed'];
+            return array_merge($rules, [
+                'password' => ['nullable', 'confirmed', new PasswordSegura]
+            ]);
         }
 
         return $rules;

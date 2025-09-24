@@ -47,11 +47,15 @@ class Alumno extends Model
 
 	protected $fillable = [
 		'user_id',
+		'apeP',
+		'apeM',
 		'matricula',
 		'grupo_id',
 		'fecha_nacimiento',
-		'telefono_emergencia',
 		'sexo',
+		'telefono_emergencia',
+		'estatus',
+		'direccion',
 	];
 
 	public function user(): BelongsTo
@@ -79,21 +83,25 @@ class Alumno extends Model
 		return $this->hasMany(Pago::class);
 	}
 
+
 	// Generar una matrícula única para el alumno
-	public static function generarMatricula(): string
-    {
-        // $letras = chr(rand(65, 90)) . chr(rand(65, 90)); // Genera 2 letras mayúsculas
-        // $anio = date('Y');
-        // $numeros = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT); // 4 números con ceros a la izquierda
-
-        // $matricula = $letras . $anio . $numeros;
-
-        // // Opcional: Verifica si la matrícula ya existe y genera una nueva si es necesario
-        // while (self::where('matricula', $matricula)->exists()) {
-        //     $numeros = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-        //     $matricula = $letras . $anio . $numeros;
-        // }
-
-        // return $matricula;
-    }
+	public static function generarMatricula($nombre, $apeP, $apeM): string
+	{
+		// Obtener las iniciales
+		$inicialApeP = $apeP ? strtoupper(substr(trim($apeP), 0, 1)) : 'X';
+		$inicialApeM = $apeM ? strtoupper(substr(trim($apeM), 0, 1)) : 'X';
+		$inicialNombre = $nombre ? strtoupper(substr(trim($nombre), 0, 1)) : 'X';
+		
+		// Obtener los últimos 2 dígitos del año actual
+		$anio = date('y'); // Ejemplo: 24 para 2024
+		
+		// Obtener el próximo ID (posición en la tabla)
+		$proximoId = self::max('id') + 1; // Último ID + 1
+		$numeroPosicion = str_pad($proximoId, 3, '0', STR_PAD_LEFT); // Formato 001, 002, etc.
+		
+		// Crear la matrícula
+		$matricula = "PTCMR{$anio}{$inicialApeP}{$inicialApeM}{$inicialNombre}{$numeroPosicion}";
+		
+		return $matricula;
+	}
 }

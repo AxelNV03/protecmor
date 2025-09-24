@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View; // <-- Importar View
 use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
-
+use Illuminate\Support\Facades\Mail; // ← Agregar esta línea
+use App\Mail\UserCredentialsMail;
 
 class AlumnoController extends Controller
 {
@@ -45,28 +46,56 @@ class AlumnoController extends Controller
      */
     public function store(SaveAlumnoRequest $request): RedirectResponse
     {
+
+
         // Validar datos y crear usuario y alumno
         DB::transaction(function () use ($request) {
+            // Validar datos y crear usuario y alumno
             $validated =  $request->validated();
+
+            // Generar una contraseña segura
+            $password = User::generatePassword();
+
+
+            // Crear el usuario asociado al alumno
             $alumno = User::create([
                 'name'      => $validated['name'],
                 'email'     => $validated['email'],
-                'password'  => Hash::make($validated['password']),
+                'password'  => Hash::make($password),
                 'telefono'  => $validated['telefono'] ?? null,
                 'estatus'   => 'activo',
             ]);
             $alumno->assignRole('alumno');
 
+
+            // Generar matrícula con los datos reales
+            $matricula = Alumno::generarMatricula(
+                $validated['name'],  // ← Pasar parámetros
+                $validated['apeP'], 
+                $validated['apeM']
+            );
+
             // Crear el registro en la tabla alumnos
             $alumno->alumno()->create([
-                // 'matricula'           => Alumno::generarMatricula(), // Llamamos a tu función
-                'matricula'           => $validated['matricula'] ?? null,
-
-                'grupo_id'            => $validated['grupo_id'] ?? null,
+                'apeP'                => $validated['apeP'], 
+                'apeM'                => $validated['apeM'],
+                'direccion'           => $validated['direccion'] ?? null,
+                'matricula'           => $matricula, // ← Asignar la matrícula generada
+                'grupo_id'            => NULL, // Se asigna después
                 'fecha_nacimiento'    => $validated['fecha_nacimiento'],
                 'sexo'                => $validated['sexo'],
                 'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
             ]);
+
+
+            // Enviar email con las credenciales
+            Mail::to($validated['email'])->send(new UserCredentialsMail(
+                $validated['name'],
+                $validated['email'],
+                $password,
+                'alumno'
+            ));
+
 
         });
         // Redirigir con mensaje de éxito
@@ -95,6 +124,7 @@ class AlumnoController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno creado correctamente');
     }
 
     /**

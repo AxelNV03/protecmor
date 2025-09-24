@@ -19,7 +19,9 @@ class AlumnoFactory extends Factory
         return [
             // Crea un nuevo usuario para cada alumno y luego usa su ID.
             'user_id' => User::factory(),
-
+            'apeM' => fake()->lastName(),
+            'apeM' => fake()->lastName(),
+            
             // Usa la GrupoFactory para crear un nuevo grupo y obtener su ID.
             'grupo_id' => Grupo::factory(),
 

@@ -38,18 +38,25 @@
 
 
 
+
+
     <div x-show="isLoading" class="loading-indicator">
         Cargando alumnos...
     </div>
-
     <table x-show="!isLoading">
         <thead>
             <tr>
                 <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Sexo</th>
                 <th>Matricula</th>
+                <th>grupo</th>
                 <th>Email</th>
                 <th>Teléfono</th>
+                <th>Dirección</th>
                 <th>Teléfono de Emergencia</th>
+                <th>Fecha de Ingreso</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -58,10 +65,16 @@
             <template x-for="alumno in alumnos" :key="alumno.id">
                 <tr>
                     <td x-text="alumno.user.name"></td>
+                    <td x-text="alumno.apeP"></td>
+                    <td x-text="alumno.apeM"></td>
+                    <td x-text="alumno.sexo"></td>
                     <td x-text="alumno.matricula"></td>
+                    <td x-text="alumno.grupo?.nombre || 'Sin grupo asignado'"></td>
                     <td x-text="alumno.user.email"></td>
                     <td x-text="alumno.user.telefono"></td>
+                    <td x-text="alumno.direccion"></td>
                     <td x-text="alumno.telefono_emergencia"></td>
+                    <td x-text="new Date(alumno.user.created_at).toLocaleDateString()"></td>
                     <td x-text="alumno.user.estatus"></td>
                     
                     <td>
@@ -93,8 +106,16 @@
                 {{-- Form fields for creating a new Alumno --}}
                 @csrf
                 <div class="mb-3">
-                    <label class="block text-sm">Nombre</label>
+                    <label class="block text-sm">Nombre(s)</label>
                     <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Paterno</label>
+                    <input type="text" name="apeP" class="w-full border rounded p-2" value="{{ old('apeP') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Materno</label>
+                    <input type="text" name="apeM" class="w-full border rounded p-2" value="{{ old('apeM') }}">
                 </div>
                 <div>
                     <label class="block text-sm">Sexo</label>
@@ -117,16 +138,13 @@
                     <input type="text" name="telefono_emergencia" class="w-full border rounded p-2">
                 </div>
                 <div class="mb-3">
+                    <label class="block text-sm">Dirección</label>
+                    <input type="text" name="direccion" class="w-full border rounded p-2" value="{{ old('direccion') }}">
+                </div>
+
+                <div class="mb-3">
                     <label class="block text-sm">Fecha Nacimiento</label>
                     <input type="date" name="fecha_nacimiento" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Contraseña</label>
-                    <input type="password" name="password" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Confirmar Contraseña</label>
-                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">
                 </div>
 
                 <div class="flex justify-end space-x-2">
