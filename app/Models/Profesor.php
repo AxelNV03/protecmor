@@ -42,6 +42,7 @@ class Profesor extends Model
 		'fecha_ingreso',
 		'telefono_emergencia', // <-- AÑADIR ESTE
         'sexo', 
+		'estatus' // <-- AÑADIR ESTE
 	];
 
 	public function user()

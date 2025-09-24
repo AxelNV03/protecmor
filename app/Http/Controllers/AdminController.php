@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\SaveAdminRequest;
 use Illuminate\Http\RedirectResponse;
@@ -49,6 +50,7 @@ class AdminController extends Controller
                 'estatus'   => 'activo',
             ]);
             $admin->assignRole('admin');
+
             Mail::to($admin->email)->send(new UserCredentialsMail(
                 $admin->name,
                 $admin->email,
@@ -71,7 +73,7 @@ class AdminController extends Controller
             'name'      => $validated['name'],
             'email'     => $validated['email'],
             'telefono'  => $validated['telefono'] ?? null,
-            'estatus'   => $validated['estatus'],
+            'estatus'   => $request->input('estatus'), // Asegurarse de que 'estatus' venga del formulario
         ]);
 
         if (!empty($validated['password'])) {

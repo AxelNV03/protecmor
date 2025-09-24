@@ -35,12 +35,14 @@
     </div>
     @endif
 
-    <h2>Administración de Profesores</h2>
 
+
+
+
+    <h2>Administración de Profesores</h2>
     <button @click="showModal = true" class="px-2 py-1 bg-blue-500 text-white rounded mb-4">
         Agregar Profesor
     </button>
-
     <div x-show="isLoading" class="text-center p-4">
         Cargando datos de profesores...
     </div>
@@ -48,7 +50,8 @@
     <table x-show="!isLoading">
         <thead>
             <tr>
-                <th>Nombre</th>
+                <th>Nombre completo</th>
+                <th>Genero</th>
                 <th>Email</th>
                 <th>Teléfono</th>
                 <th>Teléfono de Emergencia</th>
@@ -62,12 +65,12 @@
             <template x-for="profe in profes" :key="profe.id">
                 <tr>
                     <td x-text="profe.user.name"></td>
+                    <td x-text="profe.user.sexo"></td>
                     <td x-text="profe.user.email"></td>
-                    
                     <td x-text="profe.user.telefono"></td>
                     <td x-text="profe.telefono_emergencia"></td>
                     <td x-text="profe.especialidad"></td>
-                    <td x-text="profe.fecha_ingreso"></td>
+                    <td x-text="new Date(profe.fecha_ingreso).toLocaleDateString('es-ES')"></td>
                     <td x-text="profe.user.estatus"></td>
                     
                     <td>
@@ -102,7 +105,7 @@
                     <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name') }}">
                 </div>
                 <div>
-                    <label class="block text-sm">Sexo</label>
+                    <label class="block text-sm">Genero</label>
                     <select name="sexo" class="w-full border rounded p-2">
                         <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
                         <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
@@ -125,19 +128,6 @@
                     <label class="block text-sm">Teléfono de Emergencia</label>
                     <input type="text" name="telefono_emergencia" class="w-full border rounded p-2">
                 </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Fecha ingreso</label>
-                    <input type="date" name="fecha_ingreso" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Contraseña</label>
-                    <input type="password" name="password" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Confirmar Contraseña</label>
-                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">
-                </div>
-
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Guardar</button>
@@ -181,7 +171,7 @@
                     <input type="text" name="name" x-model="editProfe.user.name" class="w-full border rounded p-2">
                 </div>
                 <div>
-                    <label class="block text-sm">Sexo</label>
+                    <label class="block text-sm">Genero</label>
                     <select name="sexo" class="w-full border rounded p-2" x-model="editProfe.user.sexo">
                         <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
                         <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
@@ -204,9 +194,12 @@
                     <label class="block text-sm">Teléfono de Emergencia</label>
                     <input type="text" name="telefono_emergencia" class="w-full border rounded p-2" x-model="editProfe.telefono_emergencia">
                 </div>
-                <div class="mb-3">
-                    <label class="block text-sm">Fecha ingreso</label>
-                    <input type="date" name="fecha_ingreso" x-model="editProfe.fecha_ingreso" class="w-full border rounded p-2">
+                <div>
+                    <label class="block text-sm">Estatus</label>
+                    <select name="estatus" x-model="editProfe.estatus" class="w-full border rounded p-2">
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label class="block text-sm">Contraseña (dejar vacío para no cambiar)</label>

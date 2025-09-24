@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;        // <--- Agregar esto
 use App\Models\Profesor;   // <--- Si no lo agregaste todavía
-
 use App\Http\Requests\SaveProfeRequest; // <-- CAMBIO CLAVE: Usar el request correcto
 use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View; // <-- Importar View
 use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
-
+use Illuminate\Support\Facades\Mail; // ← Agregar esta línea
+use App\Mail\UserCredentialsMail;
 
 class ProfeController extends Controller
 {
@@ -36,22 +36,34 @@ class ProfeController extends Controller
         DB::transaction(function () use ($request) {
             // Validar datos y crear usuario y profesor
             $validated = $request->validated();
+
+            // Generar una contraseña segura
+            $password = User::generatePassword();
+
+            // Crear el usuario asociado al profesor
             $profe = User::create([
                 'name'      => $validated['name'],
                 'email'     => $validated['email'],
-                'password'  => Hash::make($validated['password']),
+                'password'  => bcrypt($password),
                 'telefono'  => $validated['telefono'] ?? null,
                 'estatus'   => 'activo',
             ]);
             $profe->assignRole('profesor');
-
+            
             // Crear el registro en la tabla profesores
             $profe->profesor()->create([
                 'especialidad'          => $validated['especialidad'],
                 'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
-                'fecha_ingreso'         => $validated['fecha_ingreso'],
+                'fecha_ingreso' => now()->toDateString(), // ← Esto llena la fecha automáticamente
                 'sexo'                  => $validated['sexo'],
             ]);
+
+            Mail::to($profe->email)->send(new UserCredentialsMail(
+                $profe->name,
+                $profe->email,
+                $password,
+                'profesor'  // ← Tipo de usuario
+            ));
         });
         return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor creado correctamente');
     }
@@ -69,26 +81,32 @@ class ProfeController extends Controller
            'name'       => $validated['name'],
            'email'      => $validated['email'],
            'telefono'   => $validated['telefono'] ?? null,
+           'estatus'    => $request->input('estatus'), // Asegurarse de que 'estatus' venga del formulario
        ]);
 
-       // 3. Si se proporcionó una nueva contraseña, la actualizamos.
-       if (!empty($validated['password'])) {
-           $profesor->user->password = Hash::make($validated['password']);
-           $profesor->user->save();
-       }
+        if (!empty($validated['password'])) {
+            $profesor->user->password = Hash::make($validated['password']);
+            $profesor->save();
+            
+            // Enviar email con la nueva contraseña
+            Mail::to($profesor->user->email)->send(new UserCredentialsMail(
+                $validated['name'],
+                $profesor->user->email,
+                $validated['password'], // La contraseña en texto plano
+                'profesor'
+            ));
 
-        // 4. Preparamos el array de datos solo para el Profesor
+            return redirect()->route('admin.index', ['tab' => 'profesores'])
+                ->with('success', 'Administrador actualizado y nueva contraseña enviada por email');
+        }
+       
+       // 4. Preparamos el array de datos solo para el Profesor
         $profesorData = [
             'especialidad'        => $validated['especialidad'],
             'sexo'                => $validated['sexo'],
             'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
         ];
 
-        // 5. Condicionalmente, añadimos la fecha de ingreso al array
-        if (!empty($validated['fecha_ingreso'])) {
-            $profesorData['fecha_ingreso'] = $validated['fecha_ingreso'];
-        }
-        
         // 6. Hacemos UNA SOLA llamada a update() con el array que construimos
         $profesor->update($profesorData);
 

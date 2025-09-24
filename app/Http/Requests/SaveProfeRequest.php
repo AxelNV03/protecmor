@@ -38,15 +38,15 @@ class SaveProfeRequest extends FormRequest
                 Rule::unique('users', 'telefono')->ignore($userId)
             ],
             'especialidad'        => ['required', 'string', 'max:255'],
-            'fecha_ingreso'       => ['nullable', 'date'],
             'sexo'                => ['required', Rule::in(['Masculino', 'Femenino', 'Otro'])],
             'telefono_emergencia' => ['nullable', new TelefonoValido],
-            'password' => ['required', 'confirmed', new PasswordSegura],
         ];
 
-        // Si estamos actualizando (método PUT o PATCH), la contraseña es opcional.
+        // Si es UPDATE, agregar regla de password opcional
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules['password'] = ['nullable', 'string', 'min:6', 'confirmed'];
+            return array_merge($rules, [
+                'password' => ['nullable', 'confirmed', new PasswordSegura]
+            ]);
         }
 
         return $rules;

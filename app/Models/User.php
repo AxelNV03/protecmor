@@ -98,9 +98,9 @@ class User extends Authenticatable
 		return $this->hasMany(Notificacione::class, 'usuario_id');
 	}
 
-	public function profesores()
+	public function profesor(): HasOne
 	{
-		return $this->hasMany(Profesore::class);
+		return $this->hasOne(Profesor::class);
 	}
 
 	public function respaldos()
