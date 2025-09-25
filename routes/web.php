@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController; // ✅ Import correcto
 use App\Http\Controllers\ProfeController; // ✅ Import correcto
-
+use App\Http\Controllers\GrupoController; // ✅ Import correcto
 
 Route::get('/', function () {
     return view('main');
@@ -20,3 +20,6 @@ require base_path('routes/alumno.php');
 
 // Rutas de profesores
 require base_path('routes/profesor.php');
+
+// Rutas de grupos
+require base_path('routes/grupos.php');

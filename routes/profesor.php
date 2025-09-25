@@ -3,7 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfeController;
 
-Route::prefix('profesores')->name('profesores.')->group(function () {
+Route::middleware('auth')
+    ->prefix('profesores')
+    ->name('profesores.')
+    ->group(function () {
+
     Route::get('/', [ProfeController::class, 'index'])->name('index');
     Route::post('/', [ProfeController::class, 'store'])->name('store');
     Route::get('/data', [ProfeController::class, 'data'])->name('data');

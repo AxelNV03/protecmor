@@ -7,6 +7,7 @@ Route::middleware('auth')
     ->prefix('alumnos')
     ->name('alumnos.')
     ->group(function () {
+
     // GET /alumnos  (Manda al dashboard de alumnos)
     Route::get('/', [AlumnoController::class, 'index'])->name('index');
 
