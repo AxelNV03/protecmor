@@ -150,6 +150,7 @@ class ProfeController extends Controller
             }
         });
 
+        // Redirigir con mensaje de éxito
         return redirect()->route('admin.index', ['tab' => 'profesores'])->with('success', 'Profesor eliminado correctamente');
     }
 }
