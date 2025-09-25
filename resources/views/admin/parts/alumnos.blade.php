@@ -50,6 +50,7 @@
                 <th>Apellido Paterno</th>
                 <th>Apellido Materno</th>
                 <th>Sexo</th>
+                <th>Edad</th>
                 <th>Matricula</th>
                 <th>grupo</th>
                 <th>Email</th>
@@ -157,6 +158,124 @@
 
 
 
+
+
+
+
+
+    <!-- Edicion -->
+    <div x-show="showEdit" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            {{-- The rest of your edit and delete modals are already well-structured for Alpine.js --}}
+            {{-- and don't need significant changes. --}}
+            <h3 class="text-lg font-bold mb-4">Editar Alumno</h3>
+            @if ($errors->alumnos->any())
+                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
+                    <ul>
+                        @foreach ($errors->alumnos->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form :action="'{{ route('alumnos.update', '') }}/' + editAlumno.id" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label class="block text-sm">Nombre</label>
+                    <input type="text" name="name" x-model="editAlumno.user.name" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Paterno</label>
+                    <input type="text" name="apeP" x-model="editAlumno.apeP" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Materno</label>
+                    <input type="text" name="apeM" x-model="editAlumno.apeM" class="w-full border rounded p-2">
+                </div>
+
+
+
+
+                <div>
+                    <label class="block text-sm">Genero</label>
+                    <select name="sexo" class="w-full border rounded p-2" x-model="editAlumno.sexo">
+                        <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
+                        <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
+                        <option value="Otro" {{ old('sexo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                    </select>
+                </div>
+                
+                
+                
+                
+                <!-- <div class="mb-3">
+                    <label class="block text-sm">feca_nacimiento</label>
+                    <input type="text" name="name" x-model="editAlumno.user.name" class="w-full border rounded p-2">
+                </div> -->
+
+
+                <div class="mb-3">
+                    <label class="block text-sm">Email</label>
+                    <input type="email" name="email" x-model="editAlumno.user.email" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Teléfono</label>
+                    <input type="text" name="telefono" class="w-full border rounded p-2" x-model="editAlumno.user.telefono">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Teléfono de Emergencia</label>
+                    <input type="text" name="telefono_emergencia" class="w-full border rounded p-2" x-model="editAlumno.telefono_emergencia">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Dirección</label>
+                    <input type="text" name="direccion" x-model="editAlumno.direccion" class="w-full border rounded p-2">
+                </div>
+                <div>
+                    <label class="block text-sm">Estatus</label>
+                    <select name="estatus" x-model="editAlumno.user.estatus" class="w-full border rounded p-2">
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Contraseña (dejar vacío para no cambiar)</label>
+                    <input type="password" name="password" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Confirmar Contraseña</label>
+                    <input type="password" name="password_confirmation" class="w-full border rounded p-2">
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" @click="showEdit = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h3 class="text-lg font-bold mb-4">Eliminar Profesor</h3>
+            <p>¿Estás seguro de que deseas eliminar a <span x-text="editAlumno.user.name"></span>?</p>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" @click="showConfirmation = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                <form :action="'{{ route('alumnos.destroy', '') }}/' + editAlumno.id" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">Sí, eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 

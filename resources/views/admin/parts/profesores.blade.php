@@ -172,7 +172,7 @@
                 </div>
                 <div>
                     <label class="block text-sm">Genero</label>
-                    <select name="sexo" class="w-full border rounded p-2" x-model="editProfe.user.sexo">
+                    <select name="sexo" class="w-full border rounded p-2" x-model="editProfe.sexo">
                         <option value="Masculino" {{ old('sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
                         <option value="Femenino" {{ old('sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
                         <option value="Otro" {{ old('sexo') == 'Otro' ? 'selected' : '' }}>Otro</option>
@@ -196,7 +196,7 @@
                 </div>
                 <div>
                     <label class="block text-sm">Estatus</label>
-                    <select name="estatus" x-model="editProfe.estatus" class="w-full border rounded p-2">
+                    <select name="estatus" x-model="editProfe.user.estatus" class="w-full border rounded p-2">
                         <option value="activo">Activo</option>
                         <option value="inactivo">Inactivo</option>
                     </select>
@@ -242,4 +242,6 @@
             </div>
         </div>
     </div>
+
+    
 </div>

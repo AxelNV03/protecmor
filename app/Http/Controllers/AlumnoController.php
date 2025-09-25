@@ -121,17 +121,60 @@ class AlumnoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(SaveAlumnoRequest $request, Alumno $alumno): RedirectResponse
     {
-        //
-        return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno creado correctamente');
+       // 1. La validación ya ocurrió. Obtenemos solo los datos seguros.
+       $validated = $request->validated();
+
+       // 2. Actualizamos los datos del modelo User.
+       $alumno->user->update([
+           'name'       => $validated['name'],
+           'email'      => $validated['email'],
+           'telefono'   => $validated['telefono'] ?? null,
+           'estatus'    => $request->input('estatus'), // Asegurarse de que 'estatus' venga del formulario
+       ]);
+
+        if (!empty($validated['password'])) {
+            $alumno->user->password = Hash::make($validated['password']);
+            $alumno->save();
+            
+            // Enviar email con la nueva contraseña
+            Mail::to($validated['email'])->send(new UserCredentialsMail(
+                $validated['name'],
+                $validated['email'],
+                $validated['password'], // La contraseña en texto plano
+                'alumno'
+            ));
+        }
+
+        $alumnoData = [
+            'apeP'                  => $validated['apeP'],  
+            'apeM'                  => $validated['apeM'],
+            'sexo'                  => $validated['sexo'],
+            'direccion'             => $validated['direccion'] ?? null,
+            'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
+        ];
+        $alumno->update($alumnoData);
+        return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno actualizado correctamente');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Alumno $alumno): RedirectResponse
     {
-        //
+        // Eliminar el alumno y su usuario asociado
+        $user = $alumno->user;
+
+        // Usar transaction para asegurar integridad
+        DB::transaction(function () use ($alumno, $user) {
+            // Eliminar alumno y usuario
+            $alumno->delete();
+            if ($user) {
+                $user->delete();
+            }
+        });
+
+        return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno eliminado correctamente');
     }
 }

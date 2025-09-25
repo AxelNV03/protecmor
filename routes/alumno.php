@@ -17,8 +17,8 @@ Route::middleware('auth')
     Route::post('/', [AlumnoController::class, 'store'])->name('store');
     
     // PUT /alumnos/{alumno} (Actualiza un alumno existente)
-    Route::put('/{alumno}', [AlumnoController::class, 'update'])->name('update');
-    
+    Route::put('/{alumno}', [AlumnoController::class, 'update'])->name('update');    
+
     // DELETE /alumnos/{alumno} (Elimina un alumno)
     Route::delete('/{alumno}', [AlumnoController::class, 'destroy'])->name('destroy');
 });

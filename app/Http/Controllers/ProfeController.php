@@ -94,9 +94,6 @@ class ProfeController extends Controller
                 $validated['password'], // La contraseña en texto plano
                 'profesor'
             ));
-
-            return redirect()->route('admin.index', ['tab' => 'profesores'])
-                ->with('success', 'Administrador actualizado y nueva contraseña enviada por email');
         }
        
        // 4. Preparamos el array de datos solo para el Profesor
