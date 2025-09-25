@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;        // <--- Agregar esto
 use App\Models\Alumno;   // <--- Si no lo agregaste todavía
-
 use App\Http\Requests\SaveAlumnoRequest; // <-- CAMBIO CLAVE: Usar el request correcto
 use Illuminate\Support\Facades\Hash; // <--- Para Hash::make
 use Illuminate\Http\RedirectResponse;
@@ -26,19 +25,13 @@ class AlumnoController extends Controller
         return view('alumnos.dashboard');
     }
 
-
+    /**
+     * Return JSON data for DataTables.
+     */
     public function data(): \Illuminate\Http\JsonResponse
     {
-        $alumnos = Alumno::with('user')->get(); 
+        $alumnos = Alumno::with(['user', 'grupo'])->get(); 
         return response()->json($alumnos);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -46,17 +39,12 @@ class AlumnoController extends Controller
      */
     public function store(SaveAlumnoRequest $request): RedirectResponse
     {
-
+        $validated =  $request->validated();  // Validar datos y crear usuario y alumno
+        $password = User::generatePassword(); // Generar una contraseña segura
+        $alumno = null; // Declarar la variable antes de la transacción
 
         // Validar datos y crear usuario y alumno
-        DB::transaction(function () use ($request) {
-            // Validar datos y crear usuario y alumno
-            $validated =  $request->validated();
-
-            // Generar una contraseña segura
-            $password = User::generatePassword();
-
-
+        DB::transaction(function () use ($validated, $password, &$alumno) { // Pasar por referencia
             // Crear el usuario asociado al alumno
             $alumno = User::create([
                 'name'      => $validated['name'],
@@ -66,7 +54,6 @@ class AlumnoController extends Controller
                 'estatus'   => 'activo',
             ]);
             $alumno->assignRole('alumno');
-
 
             // Generar matrícula con los datos reales
             $matricula = Alumno::generarMatricula(
@@ -86,8 +73,9 @@ class AlumnoController extends Controller
                 'sexo'                => $validated['sexo'],
                 'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
             ]);
+        });
 
-
+        if($alumno){
             // Enviar email con las credenciales
             Mail::to($validated['email'])->send(new UserCredentialsMail(
                 $validated['name'],
@@ -95,27 +83,10 @@ class AlumnoController extends Controller
                 $password,
                 'alumno'
             ));
+        }
 
-
-        });
         // Redirigir con mensaje de éxito
         return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno creado correctamente');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**
@@ -123,21 +94,37 @@ class AlumnoController extends Controller
      */
     public function update(SaveAlumnoRequest $request, Alumno $alumno): RedirectResponse
     {
-       // 1. La validación ya ocurrió. Obtenemos solo los datos seguros.
-       $validated = $request->validated();
+       $validated = $request->validated();  // Validar datos
+       
+        DB::transaction(function () use ($validated, $alumno) {
+       
+            // Actualizamos los datos del modelo User.
+            $alumno->user->update([
+                'name'       => $validated['name'],
+                'email'      => $validated['email'],
+                'telefono'   => $validated['telefono'] ?? null,
+                'estatus'    => $validated['estatus'], // Asegurarse de que 'estatus' venga del formulario
+            ]);
 
-       // 2. Actualizamos los datos del modelo User.
-       $alumno->user->update([
-           'name'       => $validated['name'],
-           'email'      => $validated['email'],
-           'telefono'   => $validated['telefono'] ?? null,
-           'estatus'    => $request->input('estatus'), // Asegurarse de que 'estatus' venga del formulario
-       ]);
+            // Preparamos el array de datos solo para el Alumno
+            $alumnoData = [
+                'apeP'                  => $validated['apeP'],  
+                'apeM'                  => $validated['apeM'],
+                'sexo'                  => $validated['sexo'],
+                'direccion'             => $validated['direccion'] ?? null,
+                'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
+            ];
+            $alumno->update($alumnoData);
+
+            // Si se proporcionó una nueva contraseña, actualizarla y enviar email
+            if (!empty($validated['password'])) {
+                $alumno->user->password = Hash::make($validated['password']);
+                $alumno->user->save();
+                
+            }
+        });
 
         if (!empty($validated['password'])) {
-            $alumno->user->password = Hash::make($validated['password']);
-            $alumno->save();
-            
             // Enviar email con la nueva contraseña
             Mail::to($validated['email'])->send(new UserCredentialsMail(
                 $validated['name'],
@@ -147,14 +134,7 @@ class AlumnoController extends Controller
             ));
         }
 
-        $alumnoData = [
-            'apeP'                  => $validated['apeP'],  
-            'apeM'                  => $validated['apeM'],
-            'sexo'                  => $validated['sexo'],
-            'direccion'             => $validated['direccion'] ?? null,
-            'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
-        ];
-        $alumno->update($alumnoData);
+        // Redirigir con mensaje de éxito
         return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno actualizado correctamente');
     }
 
@@ -163,14 +143,23 @@ class AlumnoController extends Controller
      */
     public function destroy(Alumno $alumno): RedirectResponse
     {
-        // Eliminar el alumno y su usuario asociado
-        $user = $alumno->user;
+        // Verificar que sea super admin o admin antes de eliminar
+        if (!auth()->user()->hasAnyRole(['super admin', 'admin'])) {
+            return redirect()->route('admin.index', ['tab' => 'alumnos'])
+                ->with('error', 'No tienes permiso para eliminar alumnos.');
+        }
 
         // Usar transaction para asegurar integridad
-        DB::transaction(function () use ($alumno, $user) {
-            // Eliminar alumno y usuario
+        DB::transaction(function () use ($alumno) {
+            
+            // Obtener el usuario asociado al alumno
+            $user = $alumno->user;  
+
+            // Eliminar el alumno y el usuario asociado
             $alumno->delete();
+
             if ($user) {
+                $user->roles()->detach(); // Primero, eliminamos los roles asociados
                 $user->delete();
             }
         });

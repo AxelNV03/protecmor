@@ -32,6 +32,7 @@ class SaveProfeRequest extends FormRequest
         $rules = [
             'name'                => ['required', new NombreValido],
             'email'               => ['required', 'email', Rule::unique('users')->ignore($userId)],
+            'estatus'             => ['nullable', Rule::in(['activo', 'inactivo'])],
             'telefono' => [
                 'nullable', 
                 new TelefonoValido, 

@@ -16,92 +16,103 @@ use App\Mail\UserCredentialsMail;
 
 class AdminController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(): View
     {
         return view('admin.dashboard');
     }
 
+    /**
+     * Return JSON data for DataTables.
+     */
     public function data(): \Illuminate\Http\JsonResponse
     {
         $admins = User::role(['admin', 'super admin'])->get();
         return response()->json($admins);
     }
 
-    public function create(): View
-    {
-        //
-    }
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(SaveAdminRequest $request): RedirectResponse
     {
-        DB::transaction(function () use ($request) {
-            // Validamos los datos
-            $validated = $request->validated();
+        $validated = $request->validated();
+        $password = User::generatePassword(); // Generate password outside
+        
+        // Declare the variable before the transaction
+        $admin = null;
 
-            // Generamos una contraseña segura
-            $password = User::generatePassword();
-
-            // Creamos el admin
+        DB::transaction(function () use ($validated, $password, &$admin) { // Pass by reference
+            // Create and assign the admin inside
             $admin = User::create([
                 'name'      => $validated['name'],
                 'email'     => $validated['email'],
-                'password'  => bcrypt($password),
+                'password'  => Hash::make($password),
                 'telefono'  => $validated['telefono'] ?? null,
                 'estatus'   => 'activo',
             ]);
             $admin->assignRole('admin');
+        });
 
+        // Now $admin is accessible here
+        if ($admin) {
             Mail::to($admin->email)->send(new UserCredentialsMail(
                 $admin->name,
                 $admin->email,
                 $password,
-                'administrador'  // ← Tipo de usuario
+                'administrador'
             ));
-        });
+        }
 
-
-        return redirect()->route('admin.index')->with('success', 'Administrador creado correctamente');
+        return redirect()->route('admin.index', ['tab' => 'admins'])
+            ->with('success', 'Administrador creado y credenciales enviadas.');
     }
 
-
-
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(SaveAdminRequest $request, User $admin): RedirectResponse
     {
-        $validated = $request->validated();
+        $validated = $request->validated();  // Validar datos
 
-        $admin->update([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'telefono'  => $validated['telefono'] ?? null,
-            'estatus'   => $request->input('estatus'), // Asegurarse de que 'estatus' venga del formulario
-        ]);
+        // Actualizamos los datos del modelo User dentro de una transacción
+        DB::transaction(function () use ($validated, $admin) {
+            $admin->update([
+                'name'      => $validated['name'],
+                'email'     => $validated['email'],
+                'telefono'  => $validated['telefono'] ?? null,
+                'estatus'   => $validated['estatus'], // Asegurarse de que 'estatus' venga del formulario
+            ]);       
 
+            if (!empty($validated['password'])) {
+                $admin->password = Hash::make($validated['password']);
+                $admin->save();  
+            }
+        });
+
+        // Si se actualiza enviar la nueva contraseña por email
         if (!empty($validated['password'])) {
-            $admin->password = Hash::make($validated['password']);
-            $admin->save();
-            
             // Enviar email con la nueva contraseña
-            Mail::to($admin->email)->send(new UserCredentialsMail(
-                $admin->name,
-                $admin->email,
+            Mail::to($validated['email'])->send(new UserCredentialsMail(
+                $validated['name'],
+                $validated['email'],
                 $validated['password'], // La contraseña en texto plano
                 'administrador'
             ));
-
-            return redirect()->route('admin.index')
-                ->with('success', 'Administrador actualizado y nueva contraseña enviada por email');
         }
 
         return redirect()->route('admin.index')
             ->with('success', 'Administrador actualizado correctamente');
     }
 
-
-
-
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(User $admin): RedirectResponse // <-- Usando Route Model Binding
     {
-            // ✅ La autorización ahora está en la Policy, más limpio.
+        // 1. Verificamos que el usuario autenticado sea un super-admin.
         if (!auth()->user()->hasRole('super admin')) {
             // Si no lo tiene, detenemos todo y mostramos un error 403.
             abort(403, 'This action is unauthorized.');
@@ -109,36 +120,18 @@ class AdminController extends Controller
 
         // 2. Verificamos que no se esté intentando eliminar a sí mismo.
         if (auth()->id() === $admin->id) {
-            return redirect()->route('admin.index')
+            return redirect()->route('admin.index', ['tab' => 'admins'])
                 ->with('error', 'No puedes eliminar tu propia cuenta de super-admin.');
         }
 
-        $admin->delete();
+        // 3. Usamos una transacción para asegurar la integridad de los datos.
+        DB::transaction(function () use ($admin) {
+            // Eliminamos el usuario
+            $admin->roles()->detach(); // Primero, eliminamos los roles asociados
+            $admin->delete(); // Luego, eliminamos el usuario
+        });
 
         return redirect()->route('admin.index')->with('success', 'Administrador eliminado correctamente');
     }
-
-
-
-    public function activate(User $admin): RedirectResponse // <-- Corregido el Type Hint
-    {
-        $admin->estatus = 'activo';
-        $admin->save();
-        return redirect()->back()->with('success', 'Administrador activado');
-    }
-
-    
-
-    public function deactivate(User $admin): RedirectResponse
-    {
-        // Verificar que sea super admin
-        if (!auth()->user()->hasRole('super admin')) {
-            abort(403, 'This action is unauthorized.');
-        }
-
-        $admin->estatus = 'inactivo';
-        $admin->save();
-        
-        return redirect()->route('admin.index')->with('success', 'Administrador desactivado correctamente');
-    }
 }
+

@@ -69,6 +69,7 @@
                     <td x-text="alumno.apeP"></td>
                     <td x-text="alumno.apeM"></td>
                     <td x-text="alumno.sexo"></td>
+                    <td x-text="alumno.edad"></td>
                     <td x-text="alumno.matricula"></td>
                     <td x-text="alumno.grupo?.nombre || 'Sin grupo asignado'"></td>
                     <td x-text="alumno.user.email"></td>

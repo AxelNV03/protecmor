@@ -32,7 +32,7 @@ class SaveAdminRequest extends FormRequest
         $rules = [
             'name'     => ['required', new NombreValido],
             'email'    => ['required', 'email', new EmailUnico($adminId)],
-
+            'estatus'  => ['nullable', Rule::in(['activo', 'inactivo'])],
             
             // 👇 REGLA ACTUALIZADA PARA TELÉFONO
             'telefono' => [

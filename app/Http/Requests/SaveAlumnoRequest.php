@@ -38,6 +38,7 @@ class SaveAlumnoRequest extends FormRequest
             'fecha_nacimiento'    => ['nullable', 'date'],
             'sexo'                => ['required', Rule::in(['Masculino', 'Femenino', 'Otro'])],
             'telefono_emergencia' => ['nullable', new TelefonoValido],
+            'estatus'             => ['nullable', Rule::in(['activo', 'inactivo'])],
         ];
 
         // Si es UPDATE, agregar regla de password opcional

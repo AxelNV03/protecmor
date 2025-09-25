@@ -42,9 +42,10 @@ class Alumno extends Model
 	protected $casts = [
 		'user_id' => 'int',
 		'grupo_id' => 'int',
-		'fecha_nacimiento' => 'datetime'
+		'fecha_nacimiento' => 'date',
 	];
 
+	protected $appends = ['edad'];
 	protected $fillable = [
 		'user_id',
 		'apeP',
@@ -103,5 +104,12 @@ class Alumno extends Model
 		$matricula = "PTCMR{$anio}{$inicialApeP}{$inicialApeM}{$inicialNombre}{$numeroPosicion}";
 		
 		return $matricula;
+	}
+
+	// 👇 4. Define el Accessor para 'edad'
+    public function getEdadAttribute(): int
+    {
+        // Carbon calcula la edad automáticamente
+        return $this->fecha_nacimiento->age;
 	}
 }
