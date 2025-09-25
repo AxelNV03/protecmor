@@ -98,7 +98,7 @@ class Alumno extends Model
 		
 		// Obtener el próximo ID (posición en la tabla)
 		$proximoId = self::max('id') + 1; // Último ID + 1
-		$numeroPosicion = str_pad($proximoId, 3, '0', STR_PAD_LEFT); // Formato 001, 002, etc.
+		$numeroPosicion = str_pad($proximoId, 4, '0', STR_PAD_LEFT); // Formato 001, 002, etc.
 		
 		// Crear la matrícula
 		$matricula = "PTCMR{$anio}{$inicialApeP}{$inicialApeM}{$inicialNombre}{$numeroPosicion}";
