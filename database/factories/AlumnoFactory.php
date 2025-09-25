@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Alumno; // Asegúrate de importar el modelo Grupo
 use App\Models\Grupo; // Asegúrate de importar el modelo Grupo
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,7 @@ class AlumnoFactory extends Factory
         return [
             // Crea un nuevo usuario para cada alumno y luego usa su ID.
             'user_id' => User::factory(),
-            'apeM' => fake()->lastName(),
+            'apeP' => fake()->lastName(),
             'apeM' => fake()->lastName(),
             
             // Usa la GrupoFactory para crear un nuevo grupo y obtener su ID.

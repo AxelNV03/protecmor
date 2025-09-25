@@ -19,13 +19,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- Añadido para usar
  * @property int $id
  * @property int $user_id
  * @property string|null $matricula
- * @property int $grupo_id
+ * @property int $alumno_id
  * @property Carbon $fecha_nacimiento
  * @property string|null $telefono
  * @property string|null $sexo
  * 
  * @property User $user
- * @property Grupo $grupo
+ * @property alumno $alumno
  * @property Collection|Calificacione[] $calificaciones
  * @property Collection|Constancia[] $constancias
  * @property Collection|Pago[] $pagos
@@ -92,16 +92,16 @@ class Alumno extends Model
 		$inicialApeP = $apeP ? strtoupper(substr(trim($apeP), 0, 1)) : 'X';
 		$inicialApeM = $apeM ? strtoupper(substr(trim($apeM), 0, 1)) : 'X';
 		$inicialNombre = $nombre ? strtoupper(substr(trim($nombre), 0, 1)) : 'X';
-		
-		// Obtener los últimos 2 dígitos del año actual
 		$anio = date('y'); // Ejemplo: 24 para 2024
 		
-		// Obtener el próximo ID (posición en la tabla)
-		$proximoId = self::max('id') + 1; // Último ID + 1
-		$numeroPosicion = str_pad($proximoId, 4, '0', STR_PAD_LEFT); // Formato 001, 002, etc.
-		
-		// Crear la matrícula
-		$matricula = "PTCMR{$anio}{$inicialApeP}{$inicialApeM}{$inicialNombre}{$numeroPosicion}";
+		do{
+			// Obtener el próximo ID (posición en la tabla)
+			$proximoId = self::max('id') + 1; // Último ID + 1
+			$numeroPosicion = str_pad($proximoId, 4, '0', STR_PAD_LEFT); // Formato 001, 002, etc.
+			
+			// Crear la matrícula
+			$matricula = "PTCMR{$anio}ALU{$inicialApeP}{$inicialApeM}{$inicialNombre}{$numeroPosicion}";
+		} while (self::where('matricula', $matricula)->exists());
 		
 		return $matricula;
 	}

@@ -25,4 +25,7 @@ Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
 
     // Ruta para desactivar admin
     Route::post('/admin/{admin}/deactivate', [AdminController::class, 'deactivate'])->name('admin.deactivate');
+
+    // Ruta para grupos
+    // Route::get('/grupos', function () 
 });

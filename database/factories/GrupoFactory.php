@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Grupo; // 👈 1. Importa el modelo
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class GrupoFactory extends Factory
