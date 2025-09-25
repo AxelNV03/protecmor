@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GrupoController;
 
-Route::middlesware('auth')
+Route::middleware('auth')
     ->prefix('grupos')
     ->name('grupos.')
     ->group(function () {
