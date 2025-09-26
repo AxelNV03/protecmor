@@ -167,6 +167,7 @@
     <!-- Edicion -->
     <div x-show="showEdit" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
+            
             {{-- The rest of your edit and delete modals are already well-structured for Alpine.js --}}
             {{-- and don't need significant changes. --}}
             <h3 class="text-lg font-bold mb-4">Editar Alumno</h3>

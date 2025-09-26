@@ -47,8 +47,8 @@ class GrupoController extends Controller
         DB::transaction(function () use ($validated) {
             // Crear el grupo
             Grupo::create([
-                'clave'         => Grupo::generarClave($validated['name']),
-                'nombre'        => $validated['name'],
+                'clave'         => Grupo::generarClave($validated['nombre']),
+                'nombre'        => $validated['nombre'],
                 'generacion'    => $validated['generacion_inicio'] . '-' . $validated['generacion_fin'],
                 'observaciones' => $validated['observaciones'] ?? null,
             ]);
@@ -78,9 +78,22 @@ class GrupoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Grupo $grupo)
+    public function update(SaveGrupoRequest $request, Grupo $grupo)
     {
-        //
+        $validated =  $request->validated();  // Validar datos y actualizar grupo
+
+        // Validar datos y actualizar grupo
+        DB::transaction(function () use ($validated, $grupo) {
+            // Actualizar el grupo
+            $grupo->update([
+                'nombre'        => $validated['nombre'],
+                'observaciones' => $validated['observaciones'] ?? null,
+            ]);
+        });
+
+        // Redirigir con mensaje de éxito
+        return redirect()->route('admin.index', ['tab' => 'grupos'])
+            ->with('success', 'Grupo actualizado exitosamente.');
     }
 
     /**

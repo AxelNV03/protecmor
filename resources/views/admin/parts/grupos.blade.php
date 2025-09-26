@@ -72,10 +72,15 @@
                     <td x-text="grupo.alumnos_count"></td>
                     
                     <td>
-                        <button @click="showEdit = true; editgrupo = { ...grupo }" class="px-2 py-1 bg-yellow-500 text-white rounded">
+                        <button @click="showEdit = true; editGrupo = { ...grupo }" 
+                            class="px-2 py-1 bg-yellow-500 text-white rounded
+                            const [inicio, fin] = grupo.generacion.split('-');
+                            editAñoInicio = inicio;
+                            editAñoFin = fin;
+                        ">
                             Editar
                         </button>
-                        <button @click="showConfirmation = true; editgrupo = grupo" class="px-2 py-1 bg-red-500 text-white rounded">
+                        <button @click="showConfirmation = true; editGrupo = grupo" class="px-2 py-1 bg-red-500 text-white rounded">
                             Eliminar
                         </button>
                         <button @click="window.location.href = '/admin/alumnos?grupo_id=' + grupo.id" class="px-2 py-1 bg-green-500 text-white rounded">
@@ -111,7 +116,7 @@
                 @csrf
                 <div class="mb-3">
                     <label class="block text-sm">Nombre del Grupo</label>
-                    <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name') }}">
+                    <input type="text" name="nombre" class="w-full border rounded p-2" value="{{ old('nombre') }}">
                 </div>
                 
                 <div class="flex space-x-4">
@@ -150,6 +155,61 @@
             </form>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Edicion -->
+    <div x-show="showEdit" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            
+            {{-- The rest of your edit and delete modals are already well-structured for Alpine.js --}}
+            {{-- and don't need significant changes. --}}
+            <h3 class="text-lg font-bold mb-4">Editar Grupo</h3>
+            @if ($errors->grupos->any())
+                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
+                    <ul>
+                        @foreach ($errors->grupos->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form :action="'{{ route('grupos.update', '') }}/' + editGrupo.id" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label class="block text-sm">Nombre</label>
+                    <input type="text" name="nombre" x-model="editGrupo.nombre" class="w-full border rounded p-2">
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-sm">Observaciones (opcional)</label>
+                    <textarea name="observaciones" x-model="editGrupo.observaciones" class="w-full border rounded p-2"></textarea>
+                </div>
+
+
+
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" @click="showEdit = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
 
 
 
