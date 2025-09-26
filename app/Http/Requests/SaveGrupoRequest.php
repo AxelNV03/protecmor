@@ -30,7 +30,7 @@ class SaveGrupoRequest extends FormRequest
         // Si la petición es un POST (es decir, estamos creando un grupo),
 
         if ($this->isMethod('POST')) {
-            $rules['generacion_inicio'] = ['required', 'integer', 'min:2020'];
+            $rules['generacion_inicio'] = ['required', 'integer', 'min:2015'];
             $rules['generacion_fin']    = ['required', 'integer', 'gt:generacion_inicio'];
         }
 

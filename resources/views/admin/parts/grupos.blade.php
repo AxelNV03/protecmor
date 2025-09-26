@@ -197,9 +197,6 @@
                     <textarea name="observaciones" x-model="editGrupo.observaciones" class="w-full border rounded p-2"></textarea>
                 </div>
 
-
-
-
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="showEdit = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Actualizar</button>
@@ -207,6 +204,26 @@
             </form>
         </div>
     </div>
+
+
+
+
+        <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h3 class="text-lg font-bold mb-4">Eliminar Grupo</h3>
+            <p>¿Estás seguro de que deseas eliminar a <span x-text="editGrupo.nombre"></span>?</p>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" @click="showConfirmation = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                <form :action="'{{ route('grupos.destroy', '') }}/' + editGrupo.id" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">Sí, eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 
 
 

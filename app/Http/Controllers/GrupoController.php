@@ -99,8 +99,23 @@ class GrupoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Grupo $grupo)
+    public function destroy(Grupo $grupo): RedirectResponse
     {
-        //
+        // 1. Autorización
+        if (!auth()->user()->hasAnyRole(['super admin', 'admin'])) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        // 2. Usar una transacción para la operación completa
+        DB::transaction(function () use ($grupo) {
+            // Paso A: Desvincular a todos los alumnos
+            Alumno::where('grupo_id', $grupo->id)->update(['grupo_id' => null]);
+            
+            // Paso B: Eliminar el grupo ahora que está vacío
+            $grupo->delete();
+        });
+
+        return redirect()->route('admin.index', ['tab' => 'grupos'])
+            ->with('success', 'Grupo eliminado y alumnos desvinculados correctamente.');
     }
 }
