@@ -13,4 +13,7 @@ Route::middleware('auth')
     Route::get('/data', [GrupoController::class, 'data'])->name('data');
     Route::put('/{grupo}', [GrupoController::class, 'update'])->name('update');
     Route::delete('/{grupo}', [GrupoController::class, 'destroy'])->name('destroy');
-});
+    Route::post('/{grupo}/attach-alumno/{alumno}', [GrupoController::class, 'attachAlumno'])->name('attachAlumno');
+    Route::post('/{grupo}/detach-alumno/{alumno}', [GrupoController::class, 'detachAlumno'])->name('detachAlumno');
+
+});// En tu archivo de rutas
