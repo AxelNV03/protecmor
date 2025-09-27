@@ -82,6 +82,7 @@
             <strong>Generación:</strong> <span x-text="grupo.generacion"></span>
         </p>
 
+        <h2>Observaciones</h2>
         <p x-text="grupo.observaciones"></p>
     </div>
 
@@ -89,21 +90,35 @@
 
     <div>
         <h3>Alumnos en este Grupo (<span x-text="alumnosInscritos.length"></span>)</h3>
-        <table>
+
+
+        <div x-show="alumnosInscritos.length === 0" class="alert alert-info my-3">
+            No hay alumnos registrados en el grupo.
+        </div>
+
+        <table x-show="alumnosInscritos.length > 0">
             <thead>
                 <tr>
                     <th>Nombre</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
                     <th>Matrícula</th>
-                    <th>Acción</th>
+                    <th>Correo</th>
+                    <th>Telefono</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <template x-for="alumno in alumnosInscritos" :key="alumno.id">
                     <tr>
                         <td x-text="alumno.user.name"></td>
+                        <td x-text="alumno.apeP"></td>
+                        <td x-text="alumno.apeM"></td>
                         <td x-text="alumno.matricula"></td>
+                        <td x-text="alumno.user.email"></td>
+                        <td x-text="alumno.user.telefono"></td>
                         <td>
-                            <button @click="detach(alumno)" class="btn-danger">- Desinscribir</button>
+                            <button @click="detach(alumno)" class="btn-danger"> Eliminar del Grupo</button>
                         </td>
                     </tr>
                 </template>
@@ -111,21 +126,28 @@
         </table>
     </div>
 
-    <hr class="my-4">
 
+
+
+
+
+
+
+
+
+    <hr class="my-4">
     <div>
         <h3>Alumnos Disponibles para Inscribir (<span x-text="alumnosDisponibles.length"></span>)</h3>
 
-
-        <button 
-            @click="attachSeleccionados" 
-            :disabled="alumnosSeleccionados.length === 0"
-            class="btn btn-primary mb-3"
-        >
-            Inscribir Seleccionados (<span x-text="alumnosSeleccionados.length"></span>)
+        <button @click="window.location.href = '{{ route('admin.index', ['tab' => 'grupos']) }}'"class="btn">
+            Regresar a la pagina anterior
         </button>
-
-
+        <button @click="attachSeleccionados" :disabled="alumnosSeleccionados.length === 0"class="btn btn-primary mb-3">
+            Agregar al grupo los Alumnos seleccionados (<span x-text="alumnosSeleccionados.length"></span>)
+        </button>
+        
+        
+        <br><br>
         {{-- 1. Mensaje que se muestra si no hay alumnos --}}
         <div x-show="alumnosDisponibles.length === 0" class="alert alert-info my-3">
             No hay alumnos sin grupo disponibles para inscribir.
@@ -135,19 +157,25 @@
         <table x-show="alumnosDisponibles.length > 0" >
             <thead>
                 <tr>
-                    <th></th>
-                    <th>Nombre del Alumno</th>
+                    <th>Nombre</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
                     <th>Matrícula</th>
-                    <th>Email</th>
+                    <th>Correo</th>
+                    <th>Telefono</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <template x-for="alumno in alumnosDisponibles" :key="alumno.id">
                     <tr>
-                        <td><input type="checkbox" :value="alumno.id" x-model="alumnosSeleccionados"></td>
                         <td x-text="alumno.user.name"></td>
+                        <td x-text="alumno.apeP"></td>
+                        <td x-text="alumno.apeM"></td>
                         <td x-text="alumno.matricula"></td>
                         <td x-text="alumno.user.email"></td>
+                        <td x-text="alumno.user.telefono"></td>
+                        <td><input type="checkbox" :value="alumno.id" x-model="alumnosSeleccionados"></td>
                     </tr>
                 </template>
             </tbody>
@@ -158,11 +186,6 @@
 
     <br>
 
-    <button 
-        @click="window.location.href = '{{ route('admin.index', ['tab' => 'grupos']) }}'"
-        class="btn"
-    >
-        Regresar
-    </button>
+
 
 </div>
