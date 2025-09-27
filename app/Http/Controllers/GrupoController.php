@@ -62,9 +62,29 @@ class GrupoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Grupo $grupo)
+    public function show(Grupo $grupo): View
     {
-        //
+        // 1. Cargar los alumnos inscritos que están activos
+        $alumnosInscritos = $grupo->alumnos()
+            ->whereHas('user', function ($query) {
+                $query->where('estatus', 'activo');
+            })
+            ->with('user')
+            ->get();
+
+        // 2. Cargar los alumnos disponibles que están activos
+        $alumnosDisponibles = Alumno::whereNull('grupo_id')
+            ->whereHas('user', function ($query) {
+                $query->where('estatus', 'activo');
+            })
+            ->with('user')
+            ->get();
+
+        return view('admin.parts.grupos_edit', [
+            'grupo' => $grupo,
+            'alumnosInscritos' => $alumnosInscritos,
+            'alumnosDisponibles' => $alumnosDisponibles,
+        ]);
     }
 
     /**
@@ -118,4 +138,40 @@ class GrupoController extends Controller
         return redirect()->route('admin.index', ['tab' => 'grupos'])
             ->with('success', 'Grupo eliminado y alumnos desvinculados correctamente.');
     }
+
+    // En app/Http/Controllers/GrupoController.php
+    public function attachAlumno(Grupo $grupo, Alumno $alumno): \Illuminate\Http\JsonResponse
+    {
+        $alumno->grupo_id = $grupo->id;
+        $alumno->save();
+        return response()->json(['success' => true]);
+        // return response()->json(['success' => true]);
+    }
+
+    public function detachAlumno(Grupo $grupo, Alumno $alumno): \Illuminate\Http\JsonResponse
+    {
+        $alumno->grupo_id = null;
+        $alumno->save();
+        return response()->json(['success' => true]);
+    }
+
+    // En app/Http/Controllers/GrupoController.php
+    public function attachAlumnos(Request $request, Grupo $grupo): \Illuminate\Http\JsonResponse
+    {
+        // 1. Validamos que nos envíen un array de IDs y que esos IDs existan en la tabla 'alumnos'
+        $validated = $request->validate([
+            'alumnos_ids'   => 'required|array',
+            'alumnos_ids.*' => 'exists:alumnos,id',
+        ]);
+
+        // 2. Usamos 'whereIn' para actualizar todos los alumnos seleccionados en una sola consulta
+        Alumno::whereIn('id', $validated['alumnos_ids'])
+              ->update(['grupo_id' => $grupo->id]);
+
+        // 3. Devolvemos una respuesta de éxito
+        return response()->json(['success' => true]);
+    }
+    
+
+    
 }

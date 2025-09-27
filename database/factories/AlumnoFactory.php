@@ -24,8 +24,8 @@ class AlumnoFactory extends Factory
             'apeM' => fake()->lastName(),
             
             // Usa la GrupoFactory para crear un nuevo grupo y obtener su ID.
-            'grupo_id' => Grupo::factory(),
-
+            // 'grupo_id' => Grupo::factory(),
+            'grupo_id' => NULL,
             // Genera una matrícula única de 10 dígitos.
             'matricula' => fake()->unique()->numerify('##########'),
 

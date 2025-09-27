@@ -83,9 +83,13 @@
                         <button @click="showConfirmation = true; editGrupo = grupo" class="px-2 py-1 bg-red-500 text-white rounded">
                             Eliminar
                         </button>
-                        <button @click="window.location.href = '/admin/alumnos?grupo_id=' + grupo.id" class="px-2 py-1 bg-green-500 text-white rounded">
+                        <button @click="window.location.href = `{{ route('grupos.show', '') }}/${grupo.id}`"
+                            class="px-2 py-1 bg-green-500 text-white rounded" 
+                        >
                             Gestionar Alumnos
                         </button>
+
+
                     </td>
                 </tr>
             </template>
@@ -231,3 +235,4 @@
 
 
 <div>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
