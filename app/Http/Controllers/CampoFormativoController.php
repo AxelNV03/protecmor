@@ -25,7 +25,7 @@ class CampoFormativoController extends Controller
 
     public function data()
     {
-        //
+        // $campos = CamposFormativo::
     }
 
     /**
