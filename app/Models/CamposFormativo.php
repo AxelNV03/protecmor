@@ -32,7 +32,8 @@ class CamposFormativo extends Model
 
 	protected $fillable = [
 		'nombre',
-		'tipo'
+		'tipo',
+		'descripcion'
 	];
 
 	public function clases()
