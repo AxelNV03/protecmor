@@ -212,7 +212,7 @@
 
 
 
-        <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
+    <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Eliminar Grupo</h3>
             <p>¿Estás seguro de que deseas eliminar a <span x-text="editGrupo.nombre"></span>?</p>
@@ -227,12 +227,4 @@
         </div>
     </div>
 
-
-
-
-
-
-
-
 <div>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>

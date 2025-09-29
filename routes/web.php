@@ -23,3 +23,6 @@ require base_path('routes/profesor.php');
 
 // Rutas de grupos
 require base_path('routes/grupos.php');
+
+// Rutas de campos
+require base_path('routes/camposF.php');

@@ -1,3 +1,4 @@
+
 <div 
     x-data="{ 
         campos: [], 
@@ -7,25 +8,25 @@
         showConfirmation: false, 
         editCampo: {} 
     }" 
-    x-show="activeTab === 'camposF'"
+    x-show="activeTab === 'campos'"
     x-init="
-        fetch('{{ route('grupos.data') }}')
+        fetch('{{ route('campos.data') }}')
             .then(response => response.json())
             .then(data => {
-                console.log('Datos de grupos recibidos:', data); 
-                grupos = data;
+                console.log('Datos de campos Formativos recibidos:', data); 
+                campos = data;
                 isLoading = false;
             })
             .catch(error => {
-                console.error('Error al cargar los grupos:', error);
+                console.error('Error al cargar los campos Formativos:', error);
                 isLoading = false;
             }
         )
     "
 >
 
-    <h2>Administración de Campos - Total de Grupos:</h2>
 
+<h1>Administración de Campos Formativos</h1>
 
 
 <div>

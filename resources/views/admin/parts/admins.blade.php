@@ -1,5 +1,5 @@
-<div 
-    x-data="{ 
+<!-- -------------------------------------------------------------------------------------------------------------------  -->
+<div x-data="{ 
         admins: [], 
         isLoading: true,
         showModal: false, 
@@ -19,8 +19,7 @@
                 console.error('Error al cargar los administradores:', error);
                 isLoading = false;
             })
-    "
->
+    ">
 
     @if($errors->any())
     <div class="alert alert-danger">

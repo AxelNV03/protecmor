@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\CamposFormativo;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View; // <-- Importar View
 
-class CampoFormativoController extends Controller
+class CamposFormativoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,7 +28,8 @@ class CampoFormativoController extends Controller
 
     public function data()
     {
-        // $campos = CamposFormativo::
+        $camposFormativos = CamposFormativo::withCount('clases')->get();
+        return response()->json($camposFormativos);
     }
 
     /**
