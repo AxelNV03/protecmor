@@ -15,18 +15,15 @@
     <button @click="changeTab('grupos')" :class="{ 'active': activeTab === 'grupos' }">
         Grupos
     </button>
+        <button @click="changeTab('camposF')" :class="{ 'active': activeTab === 'camposF' }">
+        Campos Formativos
+    </button>  
     <button @click="changeTab('clases')" :class="{ 'active': activeTab === 'clases' }">
         Clases
     </button>
     <button @click="changeTab('materiales')" :class="{ 'active': activeTab === 'materiales' }">
         Materiales
-    </button>
-    <button @click="changeTab('talleres')" :class="{ 'active': activeTab === 'talleres' }">
-        Talleres
-    </button>
-    <button @click="changeTab('materias')" :class="{ 'active': activeTab === 'materias' }">
-        Materias
-    </button>
+    </button>  
     <button @click="changeTab('eventos')" :class="{ 'active': activeTab === 'eventos' }">
         Eventos
     </button>
