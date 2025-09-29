@@ -25,4 +25,4 @@ require base_path('routes/profesor.php');
 require base_path('routes/grupos.php');
 
 // Rutas de campos
-require base_path('routes/camposF.php');
+require base_path('routes/campos.php');

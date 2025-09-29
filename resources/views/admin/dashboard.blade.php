@@ -48,8 +48,9 @@
                 @endphp
 
                 @foreach($sections as $section)
-                    @include("admin.parts.{$section}")
+                    @include('admin.parts.' . $section)
                 @endforeach
+
             </div>
         </div>
     </body>
