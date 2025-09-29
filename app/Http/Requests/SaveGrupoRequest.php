@@ -31,7 +31,7 @@ class SaveGrupoRequest extends FormRequest
 
         if ($this->isMethod('POST')) {
             $rules['generacion_inicio'] = ['required', 'integer', 'min:2015'];
-            $rules['generacion_fin']    = ['required', 'integer', 'gt:generacion_inicio'];
+            $rules['generacion_fin']    = ['required', 'integer', 'gte:generacion_inicio'];
         }
 
         return $rules;
