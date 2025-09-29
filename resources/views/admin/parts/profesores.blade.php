@@ -35,19 +35,17 @@
     </div>
     @endif
 
-
-
-
-
     <h2>Administración de Profesores</h2>
-    <button @click="showModal = true" class="px-2 py-1 bg-blue-500 text-white rounded mb-4">
-        Agregar Profesor
-    </button>
-    <div x-show="isLoading" class="text-center p-4">
-        Cargando datos de profesores...
+
+
+
+
+
+    <div x-show="profes.length === 0" class="alert alert-info my-3">
+        No hay profesores registrados en la base de datos.
     </div>
 
-    <table x-show="!isLoading">
+    <table x-show="profes.length > 0">
         <thead>
             <tr>
                 <th>Nombre completo</th>
@@ -91,8 +89,9 @@
 
 
 
-
-
+    <br><button @click="showModal = true" class="px-2 py-1 bg-blue-500 text-white rounded mb-4">
+        Agregar Profesor
+    </button>
 
     <div x-show="showModal" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">

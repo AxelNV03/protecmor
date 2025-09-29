@@ -40,10 +40,11 @@
 
 
 
-    <div x-show="isLoading" class="loading-indicator">
-        Cargando alumnos...
+    <div x-show="alumnos.length === 0" class="alert alert-info my-3">
+        No hay alumnos registrados en la base de datos.
     </div>
-    <table x-show="!isLoading">
+
+    <table x-show="alumnos.length > 0">
         <thead>
             <tr>
                 <th>Nombre</th>
