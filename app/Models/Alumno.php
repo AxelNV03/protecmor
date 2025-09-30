@@ -35,7 +35,8 @@ use Illuminate\Database\Eloquent\SoftDeletes; // <-- 1. Importa el trait
  */
 class Alumno extends Model
 {
-	use HasFactory, SoftDeletes; // <-- AÑADE ESTA LÍNE
+	use HasFactory, SoftDeletes; // <-- AÑADE ESTA LÍNEA
+
 
 	protected $table = 'alumnos';
 	public $timestamps = false;
