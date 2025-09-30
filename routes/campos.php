@@ -9,6 +9,7 @@ Route::middleware('auth')
     ->group(function () {
 
     Route::get('/data', [CamposFormativoController::class, 'data'])->name('data');
+    Route::post('/', [CamposFormativoController::class, 'store'])->name('store');
 
 
 

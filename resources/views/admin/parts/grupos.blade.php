@@ -147,7 +147,7 @@
 
                 <div class="mb-3">
                     <label class="block text-sm">Observaciones (opcional)</label>
-                    <input type="text" name="apeM" class="w-full border rounded p-2" value="{{ old('apeM') }}">
+                    <input type="text" name="observaciones" class="w-full border rounded p-2" value="{{ old('apeM') }}">
                 </div>
 
 

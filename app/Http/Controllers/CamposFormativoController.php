@@ -7,6 +7,9 @@ use App\Models\CamposFormativo;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View; // <-- Importar View
+use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
+use App\Http\Requests\SaveCampoFormativoRequest; 
+use Illuminate\Support\Str; // <-- No olvides importar la clase
 
 class CamposFormativoController extends Controller
 {
@@ -35,9 +38,22 @@ class CamposFormativoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SaveCampoFormativoRequest $request): RedirectResponse
     {
-        //
+        $validated = $request->validated();
+
+        DB::transaction(function () use ($validated) {
+            // Crear el campo formativo
+            CamposFormativo::create([
+                'nombre' => Str::upper($validated['nombre']),
+                'tipo'          => $validated['tipo'],
+                'descripcion'   => $validated['descripcion'] ?? NULL,
+            ]);
+        });
+
+        // Redireccion
+        return redirect()->route('admin.index', [ 'tab' => 'campos' ])
+            ->with('success', 'Campo creado correctamente');
     }
 
     /**

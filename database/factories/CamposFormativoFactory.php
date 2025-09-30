@@ -19,6 +19,9 @@ class CamposFormativoFactory extends Factory
             
             // Elige aleatoriamente entre 'materia' o 'taller'
             'tipo' => fake()->randomElement(['materia', 'taller']),
+
+            // En tu factory
+            'descripcion' => fake()->paragraph(),
         ];
     }
 }
