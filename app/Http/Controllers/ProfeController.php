@@ -145,7 +145,6 @@ class ProfeController extends Controller
 
             // Paso 2: Eliminar el registro 'padre' (de la tabla 'users')
             if ($user) {
-                $user->roles()->detach(); // Primero, eliminamos los roles asociados
                 $user->delete();
             }
         });

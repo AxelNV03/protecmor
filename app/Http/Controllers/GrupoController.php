@@ -139,6 +139,7 @@ class GrupoController extends Controller
             ->with('success', 'Grupo eliminado y alumnos desvinculados correctamente.');
     }
 
+    
     // En app/Http/Controllers/GrupoController.php
     public function attachAlumno(Grupo $grupo, Alumno $alumno): \Illuminate\Http\JsonResponse
     {

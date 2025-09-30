@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\SoftDeletes; // <-- 1. Importa el trait
  */
 class User extends Authenticatable
 {
-	use Notifiable, HasRoles, HasFactory, SoftDelete; // ← Agregar HasRoles aquí
+	use Notifiable, HasRoles, HasFactory, SoftDeletes; // ← Agregar HasRoles aquí
 
 	protected $table = 'users';
 	
