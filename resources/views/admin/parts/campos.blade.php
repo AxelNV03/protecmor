@@ -81,6 +81,20 @@
             <h3 class="text-lg font-bold mb-4">Nuevo Grupo</h3>
             <form method="POST" action="{{ route('campos.store') }}">
                 {{-- Form fields for creating a new Grupo --}}
+
+                    {{-- 👇 AÑADE ESTE BLOQUE PARA VER LOS ERRORES 👇 --}}
+    @if ($errors->any())
+        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 0.25rem; margin-bottom: 1rem;">
+            <strong>¡Error de validación!</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+
                 @csrf
                 <div class="mb-3">
                     <label class="block text-sm">Nombre del campo</label>
@@ -107,6 +121,48 @@
 
 
     <!-- Seccion de Edicion -->
+    <div x-show="showEdit" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">            
+            <h3 class="text-lg font-bold mb-4">Editar Campo</h3>
+            <form :action="'{{ route('campos.update', '') }}/' + editCampo.id" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label class="block text-sm">Nombre</label>
+                    <input type="text" name="nombre" x-model="editCampo.nombre" class="w-full border rounded p-2">
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-sm">Descripción (opcional)</label>
+                    <textarea name="descripcion" x-model="editCampo.descripcion" class="w-full border rounded p-2"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" @click="showEdit = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Borrar de la BD -->
+    <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h3 class="text-lg font-bold mb-4">Eliminar Campo</h3>
+            <p>¿Estás seguro de que deseas eliminar el campo: <span x-text="editCampo.nombre"></span>?</p>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" @click="showConfirmation = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                <form :action="'{{ route('campos.destroy', '') }}/' + editCampo.id" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">Sí, eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 
 </div>

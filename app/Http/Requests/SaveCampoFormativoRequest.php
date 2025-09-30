@@ -36,21 +36,23 @@ class SaveCampoFormativoRequest extends FormRequest
      */
     public function rules(): array
     {
-            // El nombre es obligatorio y debe ser único en la tabla,
-            // ignorando el registro actual al actualizar.
-            return [
-                'nombre' => [
-                    'required',
-                    'string',
-                    'max:100',
-                    Rule::unique('campos_formativos')->ignore($this->route('campo_formativo')),
+        // Reglas que aplican tanto para crear como para actualizar
+        $rules = [
+            'nombre' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('campos_formativos')->ignore($this->route('campo_formativo')),
             ],
-            
-            // El tipo es obligatorio y solo puede ser 'materia' o 'taller'.
-            'tipo' => ['required', Rule::in(['materia', 'taller'])],
-
-            // La descripción es opcional.
             'descripcion' => ['nullable', 'string'],
         ];
+    
+        // Si la petición es un POST (es decir, estamos creando),
+        // entonces añadimos la regla para el campo 'tipo'.
+        if ($this->isMethod('POST')) {
+            $rules['tipo'] = ['required', Rule::in(['materia', 'taller'])];
+        }
+    
+        return $rules;
     }
 }

@@ -75,16 +75,42 @@ class CamposFormativoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CampoFormativo $campoFormativo)
+    public function update(SaveCampoFormativoRequest $request, CamposFormativo $campoFormativo): RedirectResponse
     {
-        //
+        $validated = $request->validated();
+        
+        // dd($validated); // <-- AÑADE ESTA LÍNEA PARA DEPURAR
+
+            DB::enableQueryLog(); // <-- 1. Activa el registro de consultas
+
+        // Transaccion
+        DB::transaction(function () use ($validated, $campoFormativo) {
+            $campoFormativo->update([
+                'nombre'        => $validated['nombre'],
+                'descripcion'   => $validated['descripcion'] ?? NULL,
+            ]);
+        });
+
+        // Redireccion
+        return redirect()->route('admin.index', [ 'tab' => 'campos' ])
+        ->with('success', 'Campo Formativo actualizado de manera correcta');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CampoFormativo $campoFormativo)
+    public function destroy(CamposFormativo $campoFormativo): RedirectResponse
     {
-        //
+        // 1. Authorization (this part stays)
+        if (!auth()->user()->hasAnyRole(['super admin', 'admin'])) {
+            abort(403, 'Action unauthorized.');
+        }
+
+        // 2. Perform the "soft delete"
+        $campoFormativo->delete();
+
+        // 3. Redirect with a success message
+        return redirect()->route('admin.index', ['tab' => 'campos'])
+            ->with('success', 'Campo Formativo has been archived successfully.');
     }
 }
