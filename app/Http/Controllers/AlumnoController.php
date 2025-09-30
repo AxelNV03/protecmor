@@ -143,27 +143,25 @@ class AlumnoController extends Controller
      */
     public function destroy(Alumno $alumno): RedirectResponse
     {
-        // Verificar que sea super admin o admin antes de eliminar
+        // 1. Autorización (se mantiene igual)
         if (!auth()->user()->hasAnyRole(['super admin', 'admin'])) {
-            return redirect()->route('admin.index', ['tab' => 'alumnos'])
-                ->with('error', 'No tienes permiso para eliminar alumnos.');
+            abort(403, 'Acción no autorizada.');
         }
 
-        // Usar transaction para asegurar integridad
+        // 2. Usar una transacción para asegurar que ambas operaciones ocurran juntas
         DB::transaction(function () use ($alumno) {
-            
-            // Obtener el usuario asociado al alumno
-            $user = $alumno->user;  
+            $user = $alumno->user;
 
-            // Eliminar el alumno y el usuario asociado
+            // Paso A: Borrado lógico del perfil de alumno
             $alumno->delete();
 
+            // Paso B: Borrado lógico del usuario asociado
             if ($user) {
-                $user->roles()->detach(); // Primero, eliminamos los roles asociados
                 $user->delete();
             }
         });
 
-        return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno eliminado correctamente');
+        return redirect()->route('admin.index', ['tab' => 'alumnos'])
+            ->with('success', 'El alumno y su cuenta de usuario han sido archivados.');
     }
 }
