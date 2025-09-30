@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\HasOne; // <-- Importar HasOne\
+use Illuminate\Database\Eloquent\SoftDeletes; // <-- 1. Importa el trait
 
 
 /**
@@ -35,7 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne; // <-- Importar HasOne\
  */
 class User extends Authenticatable
 {
-	use Notifiable, HasRoles, HasFactory; // ← Agregar HasRoles aquí
+	use Notifiable, HasRoles, HasFactory, SoftDelete; // ← Agregar HasRoles aquí
 
 	protected $table = 'users';
 	

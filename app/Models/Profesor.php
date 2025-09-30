@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- 1. IMPORTA EL TRAIT
+use Illuminate\Database\Eloquent\SoftDeletes; // <-- 1. Importa el trait
+
 
 /**
  * Class Profesor
@@ -26,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- 1. IMPORTA EL TRAI
  */
 class Profesor extends Model
 {
-	use HasFactory; // <-- 2. USA EL TRAIT AQUÍ
+	use HasFactory, SoftDeletes; // <-- 2. USA EL TRAIT AQUÍ
 
 	protected $table = 'profesores';
 	public $timestamps = false;

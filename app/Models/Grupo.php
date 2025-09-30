@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- 1. Importar
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes; // <-- 1. Importa el trait
 
 
 /**
@@ -28,7 +29,7 @@ use Illuminate\Support\Str;
  */
 class Grupo extends Model
 {
-	use HasFactory; // <-- 2. Añadir esta línea
+	use HasFactory, SoftDeletes; // <-- 2. Añadir esta línea
 
 
 	protected $table = 'grupos';
