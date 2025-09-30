@@ -110,28 +110,27 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $admin): RedirectResponse // <-- Usando Route Model Binding
+    public function destroy(User $admin): RedirectResponse
     {
-        // 1. Verificamos que el usuario autenticado sea un super-admin.
+        // 1. Verificación de permisos (se mantiene igual)
         if (!auth()->user()->hasRole('super admin')) {
-            // Si no lo tiene, detenemos todo y mostramos un error 403.
             abort(403, 'This action is unauthorized.');
         }
 
-        // 2. Verificamos que no se esté intentando eliminar a sí mismo.
+        // 2. Verificación de auto-eliminación (se mantiene igual)
         if (auth()->id() === $admin->id) {
-            return redirect()->route('admin.index', ['tab' => 'admins'])
+            return redirect()->route('admins.index', ['tab' => 'admins'])
                 ->with('error', 'No puedes eliminar tu propia cuenta de super-admin.');
         }
 
-        // 3. Usamos una transacción para asegurar la integridad de los datos.
-        DB::transaction(function () use ($admin) {
-            // Eliminamos el usuario
-            $admin->roles()->detach(); // Primero, eliminamos los roles asociados
-            $admin->delete(); // Luego, eliminamos el usuario
-        });
+        // 3. Ejecutamos el borrado lógico
+        $admin->delete();
 
-        return redirect()->route('admin.index')->with('success', 'Administrador eliminado correctamente');
+        // Opcional: Cambiar el estatus
+        // $admin->update(['estatus' => 'inactivo']);
+
+        return redirect()->route('admins.index', ['tab' => 'admins'])
+            ->with('success', 'Administrador archivado correctamente.');
     }
 }
 
