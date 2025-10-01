@@ -50,7 +50,7 @@
                 <th>Nombre</th>
                 <th>Apellido Paterno</th>
                 <th>Apellido Materno</th>
-                <th>Sexo</th>
+                <th>Genero</th>
                 <th>Edad</th>
                 <th>Matricula</th>
                 <th>grupo</th>

@@ -48,9 +48,14 @@
     <table x-show="profes.length > 0">
         <thead>
             <tr>
-                <th>Nombre completo</th>
+                <th>Matricula</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
                 <th>Genero</th>
+                <th>Edad</th>
                 <th>Email</th>
+                <th>Direccion</th>
                 <th>Teléfono</th>
                 <th>Teléfono de Emergencia</th>
                 <th>Especialidad</th>
@@ -62,9 +67,14 @@
         <tbody>
             <template x-for="profe in profes" :key="profe.id">
                 <tr>
+                    <td x-text="profe.matricula"></td>
                     <td x-text="profe.user.name"></td>
+                    <td x-text="profe.apeP"></td>
+                    <td x-text="profe.apeM"></td>
                     <td x-text="profe.sexo"></td>
+                    <td x-text="profe.edad"></td>
                     <td x-text="profe.user.email"></td>
+                    <td x-text="profe.direccion"></td>
                     <td x-text="profe.user.telefono"></td>
                     <td x-text="profe.telefono_emergencia"></td>
                     <td x-text="profe.especialidad"></td>
@@ -103,6 +113,14 @@
                     <label class="block text-sm">Nombre</label>
                     <input type="text" name="name" class="w-full border rounded p-2" value="{{ old('name') }}">
                 </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Paterno</label>
+                    <input type="text" name="apeP" class="w-full border rounded p-2" value="{{ old('apeP') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Materno</label>
+                    <input type="text" name="apeM" class="w-full border rounded p-2" value="{{ old('apeM') }}">
+                </div>
                 <div>
                     <label class="block text-sm">Genero</label>
                     <select name="sexo" class="w-full border rounded p-2">
@@ -126,6 +144,14 @@
                 <div class="mb-3">
                     <label class="block text-sm">Teléfono de Emergencia</label>
                     <input type="text" name="telefono_emergencia" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Dirección</label>
+                    <input type="text" name="direccion" class="w-full border rounded p-2" value="{{ old('direccion') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Fecha Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" class="w-full border rounded p-2" value="{{ old('fecha_ingreso') }}">
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
@@ -169,6 +195,14 @@
                     <label class="block text-sm">Nombre</label>
                     <input type="text" name="name" x-model="editProfe.user.name" class="w-full border rounded p-2">
                 </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Paterno</label>
+                    <input type="text" name="apeP" x-model="editProfe.apeP" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Apellido Materno</label>
+                    <input type="text" name="apeM" x-model="editProfe.apeM" class="w-full border rounded p-2">
+                </div>
                 <div>
                     <label class="block text-sm">Genero</label>
                     <select name="sexo" class="w-full border rounded p-2" x-model="editProfe.sexo">
@@ -192,6 +226,10 @@
                 <div class="mb-3">
                     <label class="block text-sm">Teléfono de Emergencia</label>
                     <input type="text" name="telefono_emergencia" class="w-full border rounded p-2" x-model="editProfe.telefono_emergencia">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm">Dirección</label>
+                    <input type="text" name="direccion" x-model="editProfe.direccion" class="w-full border rounded p-2">
                 </div>
                 <div>
                     <label class="block text-sm">Estatus</label>

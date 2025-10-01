@@ -54,8 +54,19 @@ class ProfeController extends Controller
             ]);
             $profe->assignRole('profesor');
             
+            $matricula = Profesor::generarMatricula(
+                $validated['name'],  // ← Pasar parámetros
+                $validated['apeP'], 
+                $validated['apeM']
+            );
+
             // Crear el registro en la tabla profesores
             $profe->profesor()->create([
+                'apeP'                => $validated['apeP'], 
+                'apeM'                => $validated['apeM'],
+                'direccion'           => $validated['direccion'] ?? null,
+                'matricula'           => $matricula, // ← Asignar la matrícula generada
+                'fecha_nacimiento'    => $validated['fecha_nacimiento'],
                 'especialidad'          => $validated['especialidad'],
                 'telefono_emergencia'   => $validated['telefono_emergencia'] ?? null,
                 'sexo'                  => $validated['sexo'],
@@ -95,6 +106,10 @@ class ProfeController extends Controller
        
             // 3. Preparamos el array de datos solo para el Profesor
             $profesorData = [
+                'apeP'                  => $validated['apeP'],  
+                'apeM'                  => $validated['apeM'],
+                'sexo'                  => $validated['sexo'],
+                'direccion'             => $validated['direccion'] ?? null,
                 'especialidad'        => $validated['especialidad'],
                 'sexo'                => $validated['sexo'],
                 'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,

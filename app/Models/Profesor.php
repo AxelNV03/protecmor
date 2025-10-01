@@ -46,6 +46,7 @@ class Profesor extends Model
 		'apeP',
 		'apeM',
 		'matricula',
+		'direccion',
 		'fecha_nacimiento',
 		'especialidad',
 		'telefono_emergencia', // <-- AÑADIR ESTE
