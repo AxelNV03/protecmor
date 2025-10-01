@@ -109,9 +109,11 @@ class Alumno extends Model
 	}
 
 	// 👇 4. Define el Accessor para 'edad'
-    public function getEdadAttribute(): int
+    public function getEdadAttribute(): ?int // 👈 Es bueno usar ?int por si la fecha es nula
     {
-        // Carbon calcula la edad automáticamente
-        return $this->fecha_nacimiento->age;
-	}
+        if (!$this->fecha_nacimiento) {
+            return null;
+        }
+        return Carbon::parse($this->fecha_nacimiento)->age;
+    }
 }

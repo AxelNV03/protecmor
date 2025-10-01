@@ -21,6 +21,12 @@ class ProfesorFactory extends Factory
             // Esto se mantiene igual, crea un User para cada profesor.
             'user_id' => User::factory(),
 
+            'apeP' => fake()->lastName(),
+            'apeM' => fake()->lastName(),
+            'fecha_nacimiento' => fake()->date('Y-m-d', '2000-01-01'),
+
+            'matricula' => fake()->unique()->numerify('##########'),
+
             // Esto se mantiene igual.
             'especialidad' => fake()->randomElement(['Matemáticas', 'Historia', 'Ciencias', 'Literatura', 'Física']),
             

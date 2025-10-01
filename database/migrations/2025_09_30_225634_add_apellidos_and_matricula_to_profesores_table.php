@@ -15,6 +15,8 @@ return new class extends Migration
             $table->string('apeP')->after('user_id');
             $table->string('apeM')->after('apeP');
             $table->string('matricula')->unique()->nullable()->after('apeM');
+            $table->date('fecha_nacimiento')->after('matricula');
+            $table->text('direccion')->after('fecha_nacimiento');
         });
     }
 
@@ -24,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('profesores', function (Blueprint $table) {
-            $table->dropColumn(['apeP', 'apeM', 'matricula']);
+            $table->dropColumn(['apeP', 'apeM', 'matricula', 'fecha_nacimiento', 'direccion']);
         });
     }
 };

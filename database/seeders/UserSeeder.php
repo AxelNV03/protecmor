@@ -7,6 +7,9 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use App\Models\Profesor; // <-- Añade esta línea
+use App\Models\Alumno; // <-- Añade esta línea
+
 
 class UserSeeder extends Seeder
 {
@@ -39,20 +42,32 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         // 3. CREAR O BUSCAR USUARIO PROFESOR
-        $profesor = User::firstOrCreate(
+        $profesorUser = User::firstOrCreate(
             ['email' => 'profe1@protecmor.com'],
             [
-                'name' => 'Juan Profesor',
+                'name' => 'Juan',
                 'password' => Hash::make('profe123'),
                 'email_verified_at' => now(),
                 'telefono' => '1231231234',
                 'estatus' => 'activo'
             ]
         );
-        $profesor->assignRole('profesor');
+        $profesorUser->assignRole('profesor');
 
-        // 4. CREAR O BUSCAR USUARIO ALUMNO
-        $alumno = User::firstOrCreate(
+        // Si el perfil de profesor no existe, lo creamos con datos mínimos
+        $profesorUser->profesor()->firstOrCreate([],
+            [
+                'apeP' => 'Profe',
+                'apeM' => '',
+                'matricula' => Profesor::generarMatricula('Juan', 'Profe', 'Profe'),
+                'especialidad' => 'Matemáticas',
+                'fecha_nacimiento' => '1985-05-10',
+                'direccion' => 'Calle Falsa 123',
+            ]
+        );
+
+        // --- CREAR O BUSCAR USUARIO ALUMNO ---
+        $alumnoUser = User::firstOrCreate(
             ['email' => 'alumno1@protecmor.com'],
             [
                 'name' => 'Carlos Alumno',
@@ -62,16 +77,20 @@ class UserSeeder extends Seeder
                 'estatus' => 'activo'
             ]
         );
-        $alumno->assignRole('alumno');
+        $alumnoUser->assignRole('alumno');
 
-        // Actualizar contraseñas si ya existían (opcional)
-        $superAdmin->update(['password' => Hash::make('admin123')]);
-        $admin->update(['password' => Hash::make('admin123')]);
-        $profesor->update(['password' => Hash::make('profe123')]);
-        $alumno->update(['password' => Hash::make('alumno123')]);
+        // Si el perfil de alumno no existe, lo creamos con datos mínimos
+        $alumnoUser->alumno()->firstOrCreate([],
+            [
+                'apeP' => 'Sánchez',
+                'apeM' => 'López',
+                'fecha_nacimiento' => '2005-08-20',
+                'matricula' => Alumno::generarMatricula('Carlos Alumno', 'Sánchez', 'López'),
+            ]
+        );
 
         $this->command->info('✅ Usuarios de prueba creados exitosamente!');
-        $this->command->info('👑 Super Admin: sadmin@protecmor.com / admin123');
+        $this->command->info('👑 Super Admin: sadmin@protecmor.com / sadmin123');
         $this->command->info('👤 Admin: admin1@protecmor.com / admin123');
         $this->command->info('🎓 Profesor: profe1@protecmor.com / profe123');
         $this->command->info('📚 Alumno: alumno1@protecmor.com / alumno123');
