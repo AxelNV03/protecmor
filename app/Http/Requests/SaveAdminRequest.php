@@ -30,16 +30,10 @@ class SaveAdminRequest extends FormRequest
         
         // Usamos las reglas de "creación" como base.
         $rules = [
-            'name'     => ['required', new NombreValido],
-            'email'    => ['required', 'email', new EmailUnico($adminId)],
-            'estatus'  => ['nullable', Rule::in(['activo', 'inactivo'])],
-            
-            // 👇 REGLA ACTUALIZADA PARA TELÉFONO
-            'telefono' => [
-                'nullable', 
-                new TelefonoValido, 
-                Rule::unique('users', 'telefono')->ignore($adminId)
-            ],
+            'name'          => ['required', new NombreValido],
+            'email'         => ['required', 'email',    Rule::unique('users')->ignore($adminId)],          
+            'estatus'       => ['nullable', Rule::in(['activo', 'inactivo'])],            
+            'telefono'      => ['nullable', new TelefonoValido, Rule::unique('users', 'telefono')->ignore($adminId)],
         ];
 
         // Si es UPDATE, agregar regla de password opcional

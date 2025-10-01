@@ -11,6 +11,8 @@ use Illuminate\View\View; // <-- Importar View
 use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
 use App\Http\Requests\SaveGrupoRequest; // <-- CAMBIO CLAVE: Usar el request correcto
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str; // <-- No olvides importar la clase
+
 
 class GrupoController extends Controller
 {
@@ -48,7 +50,7 @@ class GrupoController extends Controller
             // Crear el grupo
             Grupo::create([
                 'clave'         => Grupo::generarClave($validated['nombre']),
-                'nombre'        => $validated['nombre'],
+                'nombre' => Str::upper($validated['nombre']),
                 'generacion'    => $validated['generacion_inicio'] . '-' . $validated['generacion_fin'],
                 'observaciones' => $validated['observaciones'] ?? null,
             ]);

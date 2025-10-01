@@ -99,11 +99,11 @@
 
 
     <br>
-    <button @click="showModal = true" class="px-2 py-1 bg-blue-500 text-white rounded mb-4">
+    <button @click="showModal = true" class="px-4 py-2 bg-green-500 text-white rounded">
         Agregar Alumno
     </button>
-    <div x-show="showModal" x-transition class="fixed inset-0 ...">
-        <div class="bg-white p-6 rounded shadow-md w-96">
+    <div x-show="showModal" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div @click.away="showModal = false" class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Nuevo Alumno</h3>
             <form method="POST" action="{{ route('alumnos.store') }}">
                 {{-- Form fields for creating a new Alumno --}}
@@ -167,7 +167,7 @@
 
     <!-- Edicion -->
     <div x-show="showEdit" x-transition class="fixed inset-0 ...">
-        <div class="bg-white p-6 rounded shadow-md w-96">
+        <div @click.away="showEdit = false" class="bg-white p-6 rounded shadow-md w-96">
             
             {{-- The rest of your edit and delete modals are already well-structured for Alpine.js --}}
             {{-- and don't need significant changes. --}}

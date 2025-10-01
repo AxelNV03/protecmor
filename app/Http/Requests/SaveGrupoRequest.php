@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str; // <-- AÑADE ESTA LÍNEA
+
 
 class SaveGrupoRequest extends FormRequest
 {
@@ -15,19 +17,36 @@ class SaveGrupoRequest extends FormRequest
         return auth()->check() && auth()->user()->hasAnyRole(['super admin', 'admin']);
     }
 
+    /** 
+     * Usa el nombre en mayusculas
+     */
+    protected function prepareForValidation(): void
+    {
+        // Si el campo 'nombre' existe en la petición,
+        // lo convertimos a mayúsculas antes de validar.
+        if ($this->has('nombre')) {
+            $this->merge([
+                'nombre' => Str::upper($this->input('nombre')),
+            ]);
+        }
+    }
+
+
     /**
      * Obtiene las reglas de validación que aplican a la petición.
      */
     public function rules(): array
     {
-        // Reglas base que aplican tanto para crear como para actualizar
         $rules = [
-            'nombre'        => ['required', 'string', 'max:100'],
+            // 👇 CORRECCIÓN AQUÍ
+            'nombre' => [
+                'required', 
+                'string', 
+                'max:100', 
+                Rule::unique('grupos')->ignore($this->route('grupo'))
+            ],
             'observaciones' => ['nullable', 'string'],
         ];
-
-        // 👇 Lógica Condicional
-        // Si la petición es un POST (es decir, estamos creando un grupo),
 
         if ($this->isMethod('POST')) {
             $rules['generacion_inicio'] = ['required', 'integer', 'min:2015'];

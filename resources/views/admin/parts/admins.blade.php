@@ -92,7 +92,9 @@
 
 
     <br><br>
-    <button @click="showModal = true" class="px-4 py-2 bg-green-500 text-white rounded">Agregar Administrador</button>
+    <button @click="showModal = true" class="px-4 py-2 bg-green-500 text-white rounded">
+        Agregar Administrador
+    </button>
     <div x-show="showModal" x-transition class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div @click.away="showModal = false" class="bg-white p-6 rounded shadow-md w-96">
             <h3 class="text-lg font-bold mb-4">Nuevo Administrador</h3>
