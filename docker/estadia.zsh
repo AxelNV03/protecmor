@@ -180,20 +180,12 @@ start(){
     npm run dev -- --host 0.0.0.0 --port 5173 &
 }
 
-stop()
-
-db(){
+database(){
     echo "--- Conectando a la base de datos como 'user'"
-    mariadb -h db -u user laravel
+    mariadb -h db -u user -p1234 protecmor
 }
 
 startconf() {
-    echo "--- Creando archivo .env si no existe..."
-    if [ ! -f ".env" ]; then
-        cp .env.example .env
-        echo ".env creado a partir de .env.example"
-    fi
-
     echo "--- Ajustando permisos de .ssh para Git/SSH..."
     if [ -d "/home/developer/.ssh" ]; then
         chown -R developer:developer /home/developer/.ssh

@@ -46,7 +46,6 @@ class UserSeeder extends Seeder
             ['email' => 'profe1@protecmor.com'],
             [
                 'name' => 'Juan',
-                'sexo' => 'Masculino',
                 'password' => Hash::make('profe123'),
                 'email_verified_at' => now(),
                 'telefono' => '1231231234',
@@ -60,6 +59,7 @@ class UserSeeder extends Seeder
             [
                 'apeP' => 'Profe',
                 'apeM' => 'Profe',
+                'sexo' => 'Masculino',
                 'matricula' => Profesor::generarMatricula('Juan', 'Profe', 'Profe'),
                 'especialidad' => 'Matemáticas',
                 'fecha_nacimiento' => '1985-05-10',
@@ -85,6 +85,7 @@ class UserSeeder extends Seeder
             [
                 'apeP' => 'Sánchez',
                 'apeM' => 'López',
+                'sexo' => 'Masculino',
                 'fecha_nacimiento' => '2005-08-20',
                 'matricula' => Alumno::generarMatricula('Carlos Alumno', 'Sánchez', 'López'),
             ]
