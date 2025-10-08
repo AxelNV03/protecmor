@@ -17,7 +17,7 @@ COPY docker/mirrorlist /etc/pacman.d/mirrorlist
 # --- Actualizar e instalar dependencias de sistema en una sola capa ---
 RUN pacman -Syyu --noconfirm && \
     pacman -S --noconfirm \
-    base-devel sudo curl wget zsh starship git unzip libxml2 sqlite libzip openssl \
+    base-devel sudo curl wget zsh starship git unzip libxml2 tzdata sqlite libzip openssl openssh \
     mariadb-clients oniguruma php php-intl php-gd 
 
 # --- Activar extensiones de PHP necesarias para Laravel ---
@@ -58,11 +58,17 @@ COPY docker/alias.zsh /home/developer/.config/zsh/alias.zsh
 COPY docker/functions.zsh /home/developer/.config/zsh/functions.zsh
 COPY docker/zsh-file.zsh /home/developer/.zshrc
 COPY docker/starship.toml /home/developer/.config/starship.toml
-COPY docker/gruvbox-rainbow.dircolors /home/developer/dircolors/gruvbox-rainbow.dircolors
+COPY docker/gruvbox-rainbow.dircolors /home/developer/.config/dircolors/gruvbox-rainbow.dircolors
+COPY docker/gitconf /home/developer/.gitconfig
+COPY docker/entorno /home/developer/project/.env
 
 # --- Ajustar permisos ---
 RUN chown -R developer:developer /home/developer && \
     chsh -s /usr/bin/zsh developer
+
+# Configurar zona horaria
+RUN ln -sf /usr/share/zoneinfo/America/Mexico_City /etc/localtime && \
+    echo "America/Mexico_City" > /etc/timezone
 
 # --- Final: usuario, directorio y shell ---
 USER developer

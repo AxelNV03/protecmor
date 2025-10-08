@@ -1,40 +1,54 @@
-1️⃣ Iniciar Proyecto usando docker
-Windows
+🚀 Iniciar Proyecto con Docker (Windows)
 
-    1.  Abre "Activar o desactivar las características de Windows".
-        Marca las siguientes opciones:
-            1.1 Plataforma de máquina virtual (Virtual Machine Platform)
-            1.2 Subsistema de Windows para Linux (WSL)
-        Haz clic en Aceptar y reinicia tu computadora.
+1️⃣ Activar WSL y Virtualización
+- Abrir "Activar o desactivar las características de Windows"
+- Marcar:
+  - Plataforma de máquina virtual (Virtual Machine Platform)
+  - Subsistema de Windows para Linux (WSL)
+- Aceptar y reiniciar
 
-    2. Instalar Docker Desktop
-        Ejecuta el instalador y sigue los pasos.
-        Al finalizar, abre Docker Desktop y regístrate o inicia sesión. Cierra La app
+2️⃣ Instalar Docker Desktop
+- Descargar e instalar desde la web oficial
+- Abrir, iniciar sesión y cerrar la app
 
-    3. Abrir una Terminal de powershell o CMD y navegar hasta la raíz del proyecto.
-        Dentor Ejecutar:
-            docker-compose build app
-        Esperas a que se construya el contenedor.
-        verificas con:
-            docker images
-    4. levantar contenedores
-        docker-compose up -d
-    borrar los contenedores
-        docker-compose down -v
+3️⃣ (Opcional) Configurar Git y SSH
+- Montar llaves SSH en docker-compose.yml:
+  <ruta_de_tus_llaves>:/home/developer/.ssh:cached  
+  ejemplo: 
+  /mnt/c/Users/user/.ssh:/home/developer/.ssh:cached
 
+- Colocar tu gitconfig en docker/gitconf (ejemplo):
+  [user]
+      name = user example
+      email = user@gmail.com
 
-    5. verificar que esten corriendo
-        docker-compose ps
+4️⃣ Construir contenedor
+- Desde la raíz del proyecto:
+  docker-compose build app
+- Verificar imágenes:
+  docker images
+- Para borrar todo:
+  docker-compose down --rmi all -v
 
-Con los contenedores levantados ya solo iniciar con
-docker-compose start
+5️⃣ Levantar y apagar contenedores (Esto solo se hace la primera vez despues del paso 4, posteriormente solo usar los comandos del paso 6)
+- Levantar:
+  docker-compose up -d
+- Apagar:
+  docker-compose down -v
 
-Cuando acabes de trabajar usas 
-docker-compose stop
-y actias con start cuando quieras retomar el proyetocto
+6️⃣ Uso diario
+- Iniciar contenedores existentes:
+  docker-compose start
+- Detener temporalmente:
+  docker-compose stop
+- Acceder a la terminal del contenedor:
+  docker-compose exec app zsh
 
-Para acceder a la terminal del proyecto usas
-docker-compose exec app zsh
-
-
-
+✅ Tips
+- Si montaste SSH y gitconfig, Git funciona automáticamente
+- Recargar Zsh:
+  source ~/.zshrc
+- Permisos SSH:
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/id_ed25519
+  chmod 644 ~/.ssh/id_ed25519.pub

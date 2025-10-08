@@ -114,7 +114,7 @@ gcdev() {
 
 # Restablece base en protecmor
 dbreset(){
-     mysql -u nava -p1234 < ~/escuela/estadia/protecmor_BD_REPRESENTACION_FINAL.sql
+     mysql -u user -p1234 < /home/developer/script.sql
      echo "Script de protecmor ejecutado."
      php artisan migrate
      echo "Migraciones ejecutadas."
@@ -179,45 +179,60 @@ start()
 
 stop()
 
-startconf() {
-    echo "--- Creando archivo .env si no existe..."
-    if [ ! -f ".env" ]; then
-        cp .env.example .env
-        echo ".env creado a partir de .env.example"
-    fi
+db(){
+    echo "--- Conectando a la base de datos como 'user'"
+    mariadb -h db -u user laravel
+}
 
+startconf() {
     echo "--- Ajustando permisos de .ssh para Git/SSH..."
     if [ -d "/home/developer/.ssh" ]; then
         chown -R developer:developer /home/developer/.ssh
         chmod 700 /home/developer/.ssh
-        chmod 600 /home/developer/.ssh/id_ed25519
-        chmod 644 /home/developer/.ssh/id_ed25519.pub
+        [ -f "/home/developer/.ssh/id_ed25519" ] && chmod 600 /home/developer/.ssh/id_ed25519
+        [ -f "/home/developer/.ssh/id_ed25519.pub" ] && chmod 644 /home/developer/.ssh/id_ed25519.pub
         echo "Permisos de .ssh ajustados correctamente."
     else
         echo "No se encontró la carpeta .ssh, se omitió el ajuste de permisos."
     fi
 
     echo "--- Instalando dependencias de Composer..."
-    composer install && \
-    echo "--- Instalando dependencias de NPM..." && \
-    npm install && \
-    npm install -D sass && \
-    echo "--- Generando llave de la aplicación..." && \
-    php artisan key:generate && \
-    echo "--- Ejecutando script .sql..." && \
-    dbSet && \
-    mariadb -h db -u user < /home/developer/project/docker/script.sql && \
-    echo "--- Ejecutando migraciones..." && \
-    php artisan migrate && \
-    echo "--- Ejecutando seeders base..." && \
-    php artisan db:seed --class=RoleSeeder && \
-    php artisan db:seed --class=UserSeeder && \
-    echo "" && \
+    composer install || { echo "Error: Composer falló"; return 1; }
+
+    echo "--- Instalando dependencias de NPM..."
+    npm install || { echo "Error: NPM falló"; return 1; }
+    npm install -D sass || { echo "Error: NPM dev-dependency falló"; return 1; }
+
+    echo "--- Generando llave de la aplicación..."
+    php artisan key:generate || { echo "Error: Falló key:generate"; return 1; }
+
+    echo "--- Asignando permisos y Ejecutando script .sql..."
+    mariadb -h db -u root -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'user'@'%' IDENTIFIED BY '1234' WITH GRANT OPTION; FLUSH PRIVILEGES;" || { echo "Error: Falló dando permisos sql"; return 1; }
+    
+    echo "--- Ejecutando script .sql..."
+    mariadb -h db -u user -p1234 < /home/developer/project/script.sql || { echo "Error: Falló import SQL"; return 1; }
+
+    echo "--- Ejecutando migraciones..."
+    php artisan migrate || { echo "Error: Falló migrate"; return 1; }
+
+    echo "--- Ejecutando seeders base..."
+    php artisan db:seed --class=RoleSeeder
+    php artisan db:seed --class=UserSeeder
+
+    echo "--- Configurando llaves Git/SSH..."
+    if [ -d "$HOME/.ssh" ] && [ -n "$(ls -A "$HOME/.ssh" 2>/dev/null)" ]; then
+        echo "Iniciando ssh-agent y cargando llaves..."
+        eval "$(ssh-agent -s)"
+        if [ -f "$HOME/.ssh/id_ed25519" ]; then
+            ssh-add "$HOME/.ssh/id_ed25519"
+        elif [ -f "$HOME/.ssh/id_rsa" ]; then
+            ssh-add "$HOME/.ssh/id_rsa"
+        else
+            echo "No se encontró llave SSH conocida."
+        fi
+    else
+        echo "No hay llaves SSH en $HOME/.ssh, se omite configuración de Git/SSH."
+    fi
+
     echo "✅ ¡Proyecto configurado y listo para usar! ✅"
-}
-
-
-db(){
-    echo "--- Conectando a la base de datos como 'user'"
-    mariadb -h db -u user laravel
 }
