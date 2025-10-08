@@ -29,12 +29,12 @@ class ProfesorFactory extends Factory
 
             // Esto se mantiene igual.
             'especialidad' => fake()->randomElement(['Matemáticas', 'Historia', 'Ciencias', 'Literatura', 'Física']),
-            
-            // CAMBIO: Ahora es opcional, lo generará el 50% de las veces.
-            'fecha_ingreso' => $fecha ? $fecha->format('Y-m-d') : null,
 
             // NUEVO: Genera un número de teléfono de emergencia.
             'telefono_emergencia' => fake()->phoneNumber(),
+
+            'direccion' => fake()->address(), // <-- AÑADE ESTA LÍNEA
+
 
             // NUEVO: Asigna un sexo aleatorio de la lista.
             'sexo' => fake()->randomElement(['Masculino', 'Femenino', 'Otro']),
