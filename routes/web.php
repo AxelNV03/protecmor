@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController; // ✅ Import correcto
 use App\Http\Controllers\ProfeController; // ✅ Import correcto
 use App\Http\Controllers\GrupoController; // ✅ Import correcto
+use App\Http\Controllers\EventoController; // ✅ Import correcto
+
 
 Route::get('/', function () {
     return view('main');
