@@ -59,8 +59,8 @@ COPY docker/functions.zsh /home/developer/.config/zsh/functions.zsh
 COPY docker/zsh-file.zsh /home/developer/.zshrc
 COPY docker/starship.toml /home/developer/.config/starship.toml
 COPY docker/gruvbox-rainbow.dircolors /home/developer/.config/dircolors/gruvbox-rainbow.dircolors
-COPY docker/gitconf /home/developer/.gitconfig
-COPY docker/entorno /home/developer/project/.env
+COPY docker/.gitconfig.example /home/developer/.gitconfig
+COPY docker/.env.example /home/developer/project/.env
 
 # --- Ajustar permisos ---
 RUN chown -R developer:developer /home/developer && \
