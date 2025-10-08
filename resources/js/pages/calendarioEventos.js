@@ -33,6 +33,18 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         dateClick: function(info) {
             if (!isAdmin) return;
+
+            const selectedDate = new Date(info.dateStr);
+            const today = new Date();
+            //la hora a 00:00:00 para comparar solo el día
+            selectedDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                Swal.fire('Atención', 'No puedes seleccionar una fecha pasada.', 'warning');
+                return; // Detiene la ejecución si la fecha es pasada
+            }
+
             limpiarFormulario();
             const fechaInput = document.getElementById('fecha');
             if (fechaInput) fechaInput.value = info.dateStr;
