@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 # ==============================================================================
 # SERVICIOS (CONTENEDORES)
@@ -16,6 +16,7 @@ services:
       - "8000:8000" # Para Artisan (backend, por si lo usas)
     volumes:
       - .:/home/developer/project
+      - /mnt/c/Users/axeln/.ssh:/home/developer/.ssh:ro   # <--- monta la carpeta .ssh
     command: bash
     tty: true 
 
@@ -27,9 +28,9 @@ services:
     #root_password_muy_segura
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_DATABASE: 'laravel'
-      MYSQL_USER: 'nava'
-      MYSQL_PASSWORD: '1234'  # <-- Déjalo vacío
-      # MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # <-- Añade esta línea
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: ''  # <-- Déjalo vacío
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # <-- Añade esta línea
     ports:
       - "3306:3306"
     volumes:

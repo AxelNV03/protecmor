@@ -1,64 +1,40 @@
-1️⃣ Prerrequisitos
+1️⃣ Iniciar Proyecto usando docker
 Windows
-    Instalar Docker Desktop: https://www.docker.com/products/docker-desktop
-    Habilitar WSL2 si estás en Windows 10/11 (Docker Desktop lo pide).
 
-Linux (Arch, Ubuntu, Debian, Fedora…)
-    # Instala Docker y Docker Compose
-    sudo pacman -S docker docker-compose       # Arch
-    sudo apt install docker docker-compose     # Ubuntu/Debian
-    sudo dnf install docker docker-compose     # Fedora
-    
-    sudo systemctl start docker.service
+    1.  Abre "Activar o desactivar las características de Windows".
+        Marca las siguientes opciones:
+            1.1 Plataforma de máquina virtual (Virtual Machine Platform)
+            1.2 Subsistema de Windows para Linux (WSL)
+        Haz clic en Aceptar y reinicia tu computadora.
 
-Mac
-    Instalar Docker Desktop: https://www.docker.com/products/docker-desktop
-    Asegurarse que Docker y Docker Compose estén accesibles en la terminal.
+    2. Instalar Docker Desktop
+        Ejecuta el instalador y sigue los pasos.
+        Al finalizar, abre Docker Desktop y regístrate o inicia sesión. Cierra La app
 
-2️⃣ Clonar el proyecto
-git clone <tu_repo_git>
-cd <nombre_del_proyecto>
-
-3️⃣ Construir y levantar los contenedores
-docker-compose build --no-cache
-docker-compose up -d
-
-
-4️⃣ Inicializar Laravel y la base de datos
-
-Dentro del contenedor app:
-# Abrir bash en el contenedor
-docker exec -it protecmor-app-1 bash
-# Recargar tus funciones del .bashrc
-source ~/.bashrc
-# Inicializar proyecto Laravel y base de datos
-start       # tu función start hace todo: composer install, npm install, migraciones, seeders
-
-Alternativa rápida para solo resetear DB:
-db_reset
-
-5️⃣ Acceder al proyecto
-
-Laravel: http://localhost:8000
-Vite (hot reload, desarrollo): http://localhost:5173
+    3. Abrir una Terminal de powershell o CMD y navegar hasta la raíz del proyecto.
+        Dentor Ejecutar:
+            docker-compose build app
+        Esperas a que se construya el contenedor.
+        verificas con:
+            docker images
+    4. levantar contenedores
+        docker-compose up -d
+    borrar los contenedores
+        docker-compose down -v
 
 
-7️⃣ Tips y recomendaciones
+    5. verificar que esten corriendo
+        docker-compose ps
 
-Siempre usar docker-compose down cuando termines, para limpiar contenedores.
+Con los contenedores levantados ya solo iniciar con
+docker-compose start
 
-Si cambias .env o dependencias, vuelve a correr:
+Cuando acabes de trabajar usas 
+docker-compose stop
+y actias con start cuando quieras retomar el proyetocto
 
-docker-compose build --no-cache
-docker-compose up -d
-
-
-En producción, compila los assets con:
-
-npm run build
+Para acceder a la terminal del proyecto usas
+docker-compose exec app zsh
 
 
-y no dependas del servidor de Vite (npm run dev).
 
-Desde el /
-alias devstart='DC_FILE=docker/docker-compose.yml; sudo docker compose -f $DC_FILE up -d && sudo docker compose -f $DC_FILE exec app bash'

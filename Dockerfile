@@ -17,8 +17,8 @@ COPY docker/mirrorlist /etc/pacman.d/mirrorlist
 # --- Actualizar e instalar dependencias de sistema en una sola capa ---
 RUN pacman -Syyu --noconfirm && \
     pacman -S --noconfirm \
-    base-devel sudo curl wget git unzip libxml2 sqlite libzip openssl \
-    mariadb-clients oniguruma php php-intl php-gd
+    base-devel sudo curl wget zsh starship git unzip libxml2 sqlite libzip openssl \
+    mariadb-clients oniguruma php php-intl php-gd 
 
 # --- Activar extensiones de PHP necesarias para Laravel ---
 RUN sed -i 's/^;extension=bcmath/extension=bcmath/' /etc/php/php.ini && \
@@ -39,19 +39,34 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     composer global require "laravel/installer:^5.0"
 ENV PATH="/home/developer/.config/composer/vendor/bin:$PATH"
 
+
 # --- Crear usuario developer ---
 RUN groupadd -g $HOST_GID developer && \
-    useradd -u $HOST_UID -g $HOST_GID -m -s /bin/bash developer && \
+    useradd -u $HOST_UID -g $HOST_GID -m -s /usr/bin/zsh developer && \
     echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-# --- Configuración de Bash y proyecto ---
-COPY docker/bashrc /home/developer/.bashrc
-COPY docker/script.sql /home/developer/project/
+# --- Configurar zsh ---
+# Clonar plugins zsh
+RUN git clone https://github.com/zsh-users/zsh-autosuggestions /usr/share/zsh/plugins/zsh-autosuggestions && \
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting /usr/share/zsh/plugins/zsh-syntax-highlighting
 
-# --- Copiar el proyecto Laravel (opcional, reemplaza contenido) ---
-# COPY . /home/developer/project/
+# Copiar archivos de configuración
+RUN mkdir -p /home/developer/.config/{zsh,dircolors}/
 
-# --- Final: usuario, directorio de trabajo y comando por defecto ---
+COPY docker/estadia.zsh /home/developer/.config/zsh/estadia.zsh
+COPY docker/alias.zsh /home/developer/.config/zsh/alias.zsh
+COPY docker/functions.zsh /home/developer/.config/zsh/functions.zsh
+COPY docker/zsh-file.zsh /home/developer/.zshrc
+COPY docker/starship.toml /home/developer/.config/starship.toml
+COPY docker/gruvbox-rainbow.dircolors /home/developer/dircolors/gruvbox-rainbow.dircolors
+
+# --- Ajustar permisos ---
+RUN chown -R developer:developer /home/developer && \
+    chsh -s /usr/bin/zsh developer
+
+# --- Final: usuario, directorio y shell ---
 USER developer
 WORKDIR /home/developer/project
-CMD ["/bin/bash"]
+SHELL ["/usr/bin/zsh", "-c"]
+CMD ["/usr/bin/zsh"]
+
