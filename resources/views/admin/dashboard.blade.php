@@ -47,9 +47,59 @@
                     ];
                 @endphp
 
-                @foreach($sections as $section)
-                    @include('admin.parts.' . $section)
-                @endforeach
+                @role('super admin')
+                <div x-show="activeTab === 'admins'">
+                    @include('admin.parts.admins')
+                </div>
+                @endrole
+
+                <div x-show="activeTab === 'alumnos'">
+                    @include('admin.parts.alumnos')
+                </div>
+
+                <div x-show="activeTab === 'profesores'">
+                    @include('admin.parts.profesores')
+                </div>
+
+                <div x-show="activeTab === 'grupos'">
+                    @include('admin.parts.grupos')
+                </div>
+
+                <div x-show="activeTab === 'campos'">
+                    @include('admin.parts.campos')
+                </div>
+
+                <div x-show="activeTab === 'clases'">
+                    @include('admin.parts.clases')
+                </div>
+
+                <div x-show="activeTab === 'materiales'">
+                    @include('admin.parts.materiales')
+                </div>
+
+                <div x-show="activeTab === 'eventos'">
+                    @include('admin.parts.eventos')
+                </div>
+
+                <div x-show="activeTab === 'pases_lista'">
+                    @include('admin.parts.pases_lista')
+                </div>
+
+                <div x-show="activeTab === 'pagos'">
+                    @include('admin.parts.pagos')
+                </div>
+
+                <div x-show="activeTab === 'calificaciones'">
+                    @include('admin.parts.calificaciones')
+                </div>
+
+                <div x-show="activeTab === 'reportes'">
+                    @include('admin.parts.reportes')
+                </div>
+
+                <div x-show="activeTab === 'respaldo_bd'">
+                    @include('admin.parts.respaldos')
+                </div>
 
             </div>
         </div>

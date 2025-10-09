@@ -33,6 +33,18 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         dateClick: function(info) {
             if (!isAdmin) return;
+
+            const selectedDate = new Date(info.dateStr);
+            const today = new Date();
+            //la hora a 00:00:00 para comparar solo el día
+            selectedDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                Swal.fire('Atención', 'No puedes seleccionar una fecha pasada.', 'warning');
+                return; // Detiene la ejecución si la fecha es pasada
+            }
+
             limpiarFormulario();
             const fechaInput = document.getElementById('fecha');
             if (fechaInput) fechaInput.value = info.dateStr;
@@ -61,7 +73,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const numero = "5217771234567"; // con código de país (52 para México)
             const mensaje = encodeURIComponent(`Hola, me interesa apartar un cupo para el evento: ${evento.title}`);
             const whatsappLink = document.getElementById('modalWhatsapp');
-            if (whatsappLink) whatsappLink.href = `https://wa.me/${numero}?text=${mensaje}`;
+            if (whatsappLink) {
+                if (isAdmin) {
+                    // Si es administrador, oculta el botón
+                    whatsappLink.style.display = 'none'; 
+                } else {
+                    // Si es público, muestra el botón y asigna el enlace
+                    whatsappLink.style.display = 'inline-block'; 
+                    whatsappLink.href = `https://wa.me/${numero}?text=${mensaje}`;
+                }
+            }
 
             // Solo admin
             const btnEditar = document.getElementById('btnEditar');

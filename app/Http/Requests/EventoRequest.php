@@ -22,10 +22,15 @@ class EventoRequest extends FormRequest
      */
     public function rules(): array
     {
+        $fechaRules = 'required|date|after_or_equal:today';
+        if ($this->isMethod('PUT') && $this->route('evento') && $this->route('evento')->fecha->toDateString() == $this->get('fecha')) {
+            $fechaRules = 'required|date'; // Permite mantener la fecha actual si ya es pasada
+        }
+
         return [
             'nombre' => 'required|string|max:255',
             'tipo' => 'required|string|max:255',
-            'fecha' => 'required|date',
+            'fecha' => $fechaRules,
             'hora' => 'nullable|date_format:H:i',
             'duracion' => 'nullable|string|max:50',
             'costo' => 'nullable|numeric|min:0',
@@ -33,6 +38,13 @@ class EventoRequest extends FormRequest
             'descripcion' => 'nullable|string',
             'publico' => ['required', Rule::in(['alumnos', 'general'])],
             'incluido_mensualidad' => 'boolean',
+            ];
+    }
+        
+    public function messages()
+    {
+        return [
+            'fecha.after_or_equal' => 'La fecha del evento no puede ser una fecha pasada.'
         ];
     }
 }
