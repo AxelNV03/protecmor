@@ -41,9 +41,11 @@
                     @include('admin.parts.admins')
                 @endrole
                 
+                @include('clases.dashboard')
+
                 @php
                     $sections = [
-                        'alumnos', 'profesores', 'grupos', 'campos', 'clases', 'materiales', 'eventos', 'pases_lista', 'pagos', 'calificaciones', 'reportes', 'respaldos'
+                        'alumnos', 'profesores', 'grupos', 'campos', 'materiales', 'eventos', 'pases_lista', 'pagos', 'calificaciones', 'reportes', 'respaldos'
                     ];
                 @endphp
 

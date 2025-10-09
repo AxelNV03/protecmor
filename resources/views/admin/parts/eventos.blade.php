@@ -1,3 +1,4 @@
+<div x-show="activeTab == 'eventos'">
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -117,3 +118,5 @@
 @vite('resources/js/pages/calendarioEventos.js')
 </body>
 </html>
+
+</div>

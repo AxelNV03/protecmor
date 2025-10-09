@@ -56,7 +56,7 @@ class ClaseController extends Controller
         // Carga todas las relaciones necesarias de forma eficiente
         $clase->load(['profesor.user', 'grupo', 'campoFormativo', 'materiales']);
     
-        return view('admin.parts.single_class', [
+        return view('clases.single_class', [
             'clase' => $clase
         ]);
     }
