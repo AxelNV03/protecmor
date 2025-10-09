@@ -5,7 +5,9 @@ use App\Http\Controllers\AdminController; // ✅ Import correcto
 use App\Http\Controllers\ProfeController; // ✅ Import correcto
 use App\Http\Controllers\GrupoController; // ✅ Import correcto
 use App\Http\Controllers\EventoController; // ✅ Import correcto
+use App\Http\Controllers\ClaseController; // ✅ Import correcto
 
+use App\Models\Clase; // Asegúrate de importar el modelo
 
 Route::get('/', function () {
     return view('main');
@@ -29,6 +31,9 @@ require base_path('routes/grupos.php');
 // Rutas de campos
 require base_path('routes/campos.php');
 
+// Rutas de Clases
+require base_path('routes/clases.php');
+
 // Página pública de la agenda académica
 Route::get('/agenda-academica', [EventoController::class, 'indexPublic'])
     ->name('eventos.public.index');
@@ -36,3 +41,20 @@ Route::get('/agenda-academica', [EventoController::class, 'indexPublic'])
 // Datos de eventos para la vista pública (puede usar la misma función de admin)
 Route::get('/eventos/data', [EventoController::class, 'data'])
     ->name('eventos.public.data');
+
+
+
+
+
+Route::get('/test-clase', function() {
+    // Tomamos la primera clase que exista en tu base de datos
+    $clase = Clase::first();
+
+    // Si no hay clases, nos detenemos
+    if (!$clase) {
+        return 'No hay clases en la base de datos para probar.';
+    }
+
+    // Intentamos cargar su relación 'grupo' y la mostramos
+    dd($clase);
+});

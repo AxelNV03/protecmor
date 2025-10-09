@@ -97,4 +97,9 @@ class Profesor extends Model
         }
         return Carbon::parse($this->fecha_nacimiento)->age;
     }
+
+	public function getFullNameAttribute(): string
+	{
+	    return "{$this->user->name} {$this->apeP} {$this->apeM}";
+	}
 }
