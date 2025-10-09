@@ -19,6 +19,12 @@ class ClaseFactory extends Factory
             'grupo_id'           => Grupo::factory(),
             'profesor_id'        => Profesor::factory(),
             'campo_formativo_id' => CamposFormativo::factory(),
+
+            'clave'              => 'CL-' . fake()->unique()->lexify('?????'),
+            'nombre'             => 'Clase de ' . fake()->word(),
+            'descripcion'        => fake()->sentence(),
+            'estado'             => 'en curso',
+      
             'fecha_inicio'       => fake()->date(),
             'fecha_fin'          => NULL,
         ];

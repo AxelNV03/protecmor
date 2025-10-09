@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Clase;
 use Illuminate\Http\Request;
-
+use Illuminate\Http\Response;
+use Illuminate\View\View; // <-- Importar View
+use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
+use App\Http\Requests\SaveGrupoRequest; // <-- CAMBIO CLAVE: Usar el request correcto
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str; // <-- No olvides importar la clase
 
 class ClaseController extends Controller
 {
@@ -18,8 +23,12 @@ class ClaseController extends Controller
 
     public function data(): \Illuminate\Http\JsonResponse
     {
-        $clases = ;
+        $clases = Clase::with(['grupo', 'profesor.user', 'campoFormativo'])->get();
+        
+
+        return response()->json($clases);
     }
+
 
     /**
      * Show the form for creating a new resource.

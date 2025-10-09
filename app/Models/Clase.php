@@ -38,21 +38,30 @@ class Clase extends Model
 	protected $table = 'clases';
 	public $timestamps = false;
 
-	protected $casts = [
-		'grupo_id' => 'int',
-		'profesor_id' => 'int',
-		'campo_formativo_id' => 'int',
-		'fecha_inicio' => 'datetime',
-		'fecha_fin' => 'datetime'
-	];
+    protected $casts = [
+        'grupo_id'           => 'int',
+        'profesor_id'        => 'int',
+        'campo_formativo_id' => 'int',
+        'fecha_inicio'       => 'date', // 'date' es más preciso que 'datetime'
+        'fecha_fin'          => 'date',
+    ];
 
-	protected $fillable = [
-		'grupo_id',
-		'profesor_id',
-		'campo_formativo_id',
-		'fecha_inicio',
-		'fecha_fin'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'grupo_id',
+        'profesor_id',
+        'campo_formativo_id',
+        'fecha_inicio',
+        'fecha_fin',
+        'clave',         // 👈 Añadido
+        'nombre',        // 👈 Añadido
+        'descripcion',   // 👈 Añadido
+        'estado',        // 👈 Añadido
+    ];
 
 	public function grupo()
 	{
@@ -64,7 +73,7 @@ class Clase extends Model
 		return $this->belongsTo(Profesor::class, 'profesor_id');
 	}
 
-	public function campos_formativo()
+	public function campoFormativo()
 	{
 		return $this->belongsTo(CamposFormativo::class, 'campo_formativo_id');
 	}
