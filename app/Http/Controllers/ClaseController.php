@@ -30,6 +30,8 @@ class ClaseController extends Controller
     }
 
 
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -49,9 +51,14 @@ class ClaseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Clase $clase)
+    public function show(Clase $clase): View
     {
-        //
+        // Carga todas las relaciones necesarias de forma eficiente
+        $clase->load(['profesor.user', 'grupo', 'campoFormativo', 'materiales']);
+    
+        return view('admin.parts.single_class', [
+            'clase' => $clase
+        ]);
     }
 
     /**

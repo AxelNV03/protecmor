@@ -62,35 +62,28 @@
         <tbody>
             <template x-for="clase in clases" :key="clase.id">
                 <tr>
-                    <td x-text="clase.clave"></td>
-                    <td x-text="clase.nombre"></td>
+                    <td x-text="clase.clave"></td>  
+                    <td><a :href="`{{ route('clases.show', '') }}/${clase.id}`" x-text="clase.nombre" class="text-blue-600 hover:underline"></a></td>
                     <td x-text="clase.campo_formativo.tipo"></td>
                     <td x-text="clase.grupo.nombre"></td>
                     <td x-text="clase.profesor.user.name"></td>
                     <td x-text="clase.estado"></td>
                     <td x-text="clase.fecha_inicio"></td>
-                    <td x-text="clase.fecha_fin"></td>
+                    <td x-text="clase?.fecha_fin || 'N/A' "></td>
 
                     <td>
-                        <button @click="showEdit = true; editGrupo = { ...grupo }" 
+                        <button @click="showEdit = true; editClase = { ...clase }" 
                             class="px-2 py-1 bg-yellow-500 text-white rounded
-                            const [inicio, fin] = grupo.generacion.split('-');
-                            editAñoInicio = inicio;
-                            editAñoFin = fin;
                         ">
                             Editar
                         </button>
-                        <button @click="showConfirmation = true; editGrupo = grupo" class="px-2 py-1 bg-red-500 text-white rounded">
+                    
+                    
+                        <button @click="showConfirmation = true; editClase = clase" class="px-2 py-1 bg-red-500 text-white rounded">
                             Eliminar
-                        </button>
-                        <button @click="window.location.href = `{{ route('grupos.show', '') }}/${grupo.id}`"
-                            class="px-2 py-1 bg-green-500 text-white rounded" 
-                        >
-                            Gestionar Alumnos
-                        </button>
-
-
+                        </button>                    
                     </td>
+
                 </tr>
             </template>
         </tbody>
