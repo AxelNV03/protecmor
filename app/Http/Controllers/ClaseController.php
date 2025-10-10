@@ -108,6 +108,18 @@ class ClaseController extends Controller
      */
     public function destroy(Clase $clase)
     {
-        //
+        // 1. Autorización
+        if (!auth()->user()->hasAnyRole(['super admin', 'admin'])) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        // 2. Usar una transacción para la operación completa
+        DB::transaction(function () use ($clase) {
+            // Paso B: Eliminar el grupo ahora que está vacío
+            $clase->delete();
+        });
+
+        return redirect()->route('admin.index', ['tab' => 'clases'])
+            ->with('success', 'Grupo eliminado y alumnos desvinculados correctamente.');
     }
 }

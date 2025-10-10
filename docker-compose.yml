@@ -16,7 +16,7 @@ services:
       - "8000:8000" # Para Artisan (backend, por si lo usas)
     volumes:
       - .:/home/developer/project
-      - C:\Users\axeln\.ssh:/home/developer/.ssh
+      - /home/asusnv/.ssh:/home/developer/.ssh
     command: bash
     tty: true 
 

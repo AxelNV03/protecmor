@@ -18,7 +18,7 @@
                 fetch('{{ route('clases.data') }}'),
                 fetch('{{ route('grupos.data') }}'),
                 fetch('{{ route('profesores.data') }}'),
-                fetch('{{ route('campos.data') }}') // Asumiendo el nombre de la ruta
+                fetch('{{ route('campos.data') }}') 
             ]);
 
             // Una vez que todas han respondido, las convertimos a JSON
@@ -231,6 +231,28 @@
 
 
 
+
+
+
+
+
+
+
+
+    <div x-show="showConfirmation" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            <h3 class="text-lg font-bold mb-4">Eliminar Clase</h3>
+            <p>¿Estás seguro de que deseas eliminar a <span x-text="editClase.nombre"></span>?</p>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" @click="showConfirmation = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                <form :action="'{{ route('clases.destroy', '') }}/' + editClase.id" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">Sí, eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 
