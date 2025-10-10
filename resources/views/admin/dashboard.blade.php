@@ -50,10 +50,11 @@
             @endrole
             
             @include('clases.dashboard')
+            @include('calificaciones.dashboard')
 
             @php
                 $sections = [
-                    'alumnos', 'profesores', 'grupos', 'campos', 'eventos', 'pases_lista', 'pagos', 'calificaciones', 'reportes', 'respaldos'
+                    'alumnos', 'profesores', 'grupos', 'campos', 'eventos', 'pases_lista', 'pagos', 'reportes', 'respaldos'
                 ];
             @endphp
 
