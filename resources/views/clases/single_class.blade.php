@@ -1,67 +1,59 @@
-<div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de la Clase</title>
+    
+    {{-- Estilos (ejemplo con Bootstrap para que se vea ordenado) --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    {{-- Script de Alpine.js --}}
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-    {{-- Información General --}}
-    <h2>
-        <strong>Clave:</strong> {{ $clase->clave }}
-    </h2>
-    <h1>
-        {{ $clase->nombre }}
-    </h1>
-    <p>
-        <strong>Descripción:</strong> {{ $clase->descripcion }}
-    </p>
-
-    <hr>
-
-    {{-- Detalles --}}
-    <ul>
-        <li>
-            <strong>Grupo:</strong> {{ $clase->grupo->nombre ?? 'Sin grupo' }}
-        </li>
-        <li>
-            <strong>Campo Formativo:</strong> {{ $clase->campoFormativo->nombre ?? 'N/A' }} 
-            (<em>Tipo: {{ $clase->campoFormativo->tipo ?? 'N/A' }}</em>)
-        </li>
-        <li>
-            <strong>Profesor:</strong> {{ $clase->profesor->full_name ?? 'Sin Asignar' }}
-        </li>
-        <li>
-            <strong>Estado:</strong> {{ Str::ucfirst($clase->estado) }} {{-- 'ucfirst' pone la primera letra en mayúscula --}}
-        </li>
-        <li>
-            <strong>Inicio:</strong> {{ $clase->fecha_inicio ? \Carbon\Carbon::parse($clase->fecha_inicio)->format('d/m/Y') : 'N/A' }}
-        </li>
-        <li>
-            <strong>Fin:</strong>
-            {{-- Condicional para mostrar la fecha de fin o 'N/A' --}}
-            @if($clase->estado === 'finalizada' && $clase->fecha_fin)
-                {{ \Carbon\Carbon::parse($clase->fecha_fin)->format('d/m/Y') }}
-            @else
-                N/A
+    <!-- <style>
+        .active {
+            font-weight: bold;
+            text-decoration: underline;
+            color: blue;
+        }
+    </style> -->
+</head>
+<body class="container mt-4">
+    {{-- Componente principal de Alpine.js --}}
+    <div x-data="{ activeTab: 'inicio' }">
+        
+        {{-- Este @if solo se evaluará si el usuario tiene el rol correcto --}}
+        @hasanyrole('super admin|profesor')
+            @if($clase->estado === 'en curso')
+                <a href="{{-- tu ruta para finalizar --}}" class="btn btn-primary mb-3">
+                    Finalizar Clase
+                </a>
             @endif
-        </li>
-    </ul>
-    <hr>
+        @endhasanyrole
+
+        {{-- Barra de Pestañas --}}
+        @include('clases.pestanias')
+        <hr>
+
+
+        {{-- Contenido de las Pestañas --}}
+        <div class="tab-content p-3 border">
+            @include('clases.inicio')
+            @include('clases.material')            
+            @hasanyrole('profesor')
+                @include('clases.asistencias')           
+            @endhasanyrole 
+            @include('clases.alumnos')            
+            @include('clases.chat')            
 
 
 
-
-
-
-
-
-
-
-
-
-
-    {{-- Boton para chat grupal--}}
-    <button>Material</button>
-    <button>Asistencias</button>
-    <button>Alumnos</button>
-    <button>Chat</button>
-
-
-
-
-</div>
+            {{-- Botón para regresar a la lista de administración --}}
+            <a href="{{ route('admin.index', ['tab' => 'clases']) }}" class="btn btn-primary mb-3">
+                &larr; Regresar al Listado
+            </a>
+        </div>
+    </div>
+</body>
+</html>

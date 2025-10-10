@@ -23,9 +23,19 @@
     "
 >
 
-    <h1>clases</h1>
+    <h1>Clases</h1>
     
-    <h2>Administración de Clases - Total de clases: <span x-text="clases.length"></span></h2>
+
+    <h2>
+        @hasanyrole('super admin|admin')
+            Administración de Clases
+        @else
+            Clases
+        @endhasanyrole
+        - Total: <span x-text="clases.length"></span>
+    </h2>
+
+
     @if($errors->any())
     <div class="alert alert-danger">
         <h6>Por favor corrige los siguientes errores:</h6>
@@ -56,7 +66,9 @@
                 <th>Estado</th>
                 <th>Fecha de inicio</th>
                 <th>Fecha de fin</th>
-                <th>Acciones</th>
+                @hasanyrole('super admin|admin')
+                    <th>Acciones</th>
+                @endhasanyrole
             </tr>
         </thead>
         <tbody>
@@ -70,7 +82,8 @@
                     <td x-text="clase.estado"></td>
                     <td x-text="clase.fecha_inicio"></td>
                     <td x-text="clase?.fecha_fin || 'N/A' "></td>
-
+                    
+                    @hasanyrole('super admin|admin')
                     <td>
                         <button @click="showEdit = true; editClase = { ...clase }" 
                             class="px-2 py-1 bg-yellow-500 text-white rounded
@@ -83,11 +96,10 @@
                             Eliminar
                         </button>                    
                     </td>
+                    @endhasanyrole
 
                 </tr>
             </template>
         </tbody>
     </table>
-
-
 </div>

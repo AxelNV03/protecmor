@@ -58,6 +58,8 @@ class ClaseController extends Controller
     
         return view('clases.single_class', [
             'clase' => $clase
+        ], [ 
+            'tab' => 'inicio' 
         ]);
     }
 
