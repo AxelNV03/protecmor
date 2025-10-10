@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str; // <-- AÑADE ESTA LÍNEA
 
 
 /**
@@ -92,4 +93,26 @@ class Clase extends Model
 	{
 		return $this->hasMany(Mensaje::class);
 	}
+
+    public static function generarClave(string $nombre): string
+    {
+        do {
+            $anio = date('y'); // Año en 2 dígitos
+
+            // Genera 3 iniciales a partir del nombre
+            $slug = Str::slug($nombre, '');
+            $iniciales = Str::upper(substr($slug, 0, 3));
+            $iniciales = str_pad($iniciales, 3, 'X'); // Rellena si el nombre es corto
+
+            // Genera 3 caracteres aleatorios para asegurar unicidad
+            $random = Str::upper(Str::random(3));
+            
+            $clave = "CL{$anio}-{$iniciales}-{$random}";
+
+        // Vuelve a generar si la clave ya existe
+        } while (self::where('clave', $clave)->exists());
+        
+        return $clave;
+    }
+
 }
