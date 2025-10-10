@@ -33,14 +33,14 @@ class Profesor extends Model
 	use HasFactory, SoftDeletes; // <-- 2. USA EL TRAIT AQUÍ
 
 	protected $table = 'profesores';
-	public $timestamps = false;
+	public $timestamps = false;   
 
 	protected $casts = [
 		'user_id' => 'int',
 		'fecha_nacimiento' => 'date', // 👈 Añade esto
 	];
 
-	protected $appends = ['edad'];
+	protected $appends = ['edad', 'full_name'];
 	protected $fillable = [
 		'user_id',
 		'apeP',

@@ -86,9 +86,21 @@ class ClaseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Clase $clase)
+// En app/Http/Controllers/ClaseController.php
+
+    public function update(SaveClaseRequest $request, Clase $clase): RedirectResponse
     {
-        //
+        // Los datos ya están validados
+        $validated = $request->validated();
+
+        // Actualizamos únicamente los campos permitidos
+        $clase->update([
+            'nombre'      => $validated['nombre'],
+            'profesor_id' => $validated['profesor_id'],
+        ]);
+
+        return redirect()->route('admin.index', ['tab' => 'clases'])
+            ->with('success', 'Clase actualizada correctamente.');
     }
 
     /**

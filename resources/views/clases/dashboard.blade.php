@@ -59,7 +59,7 @@
 
     <!-- Mostrar -->
     <div x-show="clases.length === 0" class="alert alert-info my-3">
-        No hay grupos registrados en la base de datos.
+        No hay clases registrados en la base de datos.
     </div>
     <table x-show="clases.length > 0">
         <thead>
@@ -114,7 +114,7 @@
     <!--  Formulario para crear -->
     <br>
     <button @click="showModal = true" class="px-2 py-1 bg-blue-500 text-white rounded mb-4">
-        Agregar Grupo
+        Agregar Clase
     </button>
     <div x-show="showModal" x-transition class="fixed inset-0 ...">
         <div class="bg-white p-6 rounded shadow-md w-96">
@@ -143,7 +143,7 @@
                         <option value="">-- Selecciona un profesor --</option>
                         {{-- 👇 Usa directamente la variable 'profesores' --}}
                         <template x-for="profesor in profesores.filter(p => p.user.estatus === 'activo')" :key="profesor.id">
-                             <option :value="profesor.id" x-text="profesor.user.name"></option>
+                             <option :value="profesor.id" x-text="profesor.full_name"></option>
                         </template>
                     </select>
                 </div>
@@ -161,9 +161,10 @@
                 
                 {{-- ... (otros campos como descripción) ... --}}
 
-                <div class="flex justify-end space-x-4">
-                    <button type="button" @click="showModal = false" class="btn btn-secondary">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Clase</button>
+                <br>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Guardar</button>
                 </div>
             </form>
 
@@ -172,6 +173,53 @@
 
     
 
+
+    <!-- Edicion -->
+    <div x-show="showEdit" x-transition class="fixed inset-0 ...">
+        <div class="bg-white p-6 rounded shadow-md w-96">
+            
+            {{-- The rest of your edit and delete modals are already well-structured for Alpine.js --}}
+            {{-- and don't need significant changes. --}}
+            <h3 class="text-lg font-bold mb-4">Editar Grupo</h3>
+            @if ($errors->clases->any())
+                <div class="bg-red-100 text-red-600 p-2 mb-3 rounded">
+                    <ul>
+                        @foreach ($errors->clases->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form :action="'{{ route('clases.update', '') }}/' + editClase.id" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="mb-4">
+                    <label for="edit_nombre" class="block mb-2">Nombre de la Clase</label>
+                    <input type="text" name="nombre" id="edit_nombre" x-model="editClase.nombre" class="form-input w-full" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit_profesor_id" class="block mb-2">Profesor</label>
+                    {{-- x-model enlaza el <select> al 'profesor_id' de la clase que estás editando --}}
+                    <select name="profesor_id" id="edit_profesor_id" x-model="editClase.profesor_id" class="form-select w-full" required>
+                        <option value="">-- Selecciona un profesor --</option>
+                        <template x-for="profesor in profesores" :key="profesor.id">
+                            <option :value="profesor.id" x-text="profesor.full_name"></option>
+                        </template>
+                    </select>
+                </div>
+
+
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" @click="showEdit = false" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 
 
