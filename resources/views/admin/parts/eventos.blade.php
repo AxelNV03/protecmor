@@ -1,3 +1,4 @@
+<div x-show= "activeTab == 'eventos'">
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -54,8 +55,8 @@
                 <option value="Seminarios/conferencias">Seminarios/conferencias</option>
                 <option value="Campañas comunitarias">Campañas comunitarias</option>
             </select>
-            <label>Fecha:</label>
-            <input type="date" id="fecha" name="fecha" required>
+            <label>Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required min="{{ now()->toDateString() }}">
             <label>Hora:</label>
             <input type="time" id="hora" name="hora">
             <label>Duración:</label>
@@ -117,3 +118,4 @@
 @vite('resources/js/pages/calendarioEventos.js')
 </body>
 </html>
+</div>

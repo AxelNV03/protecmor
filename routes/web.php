@@ -42,6 +42,10 @@ Route::get('/agenda-academica', [EventoController::class, 'indexPublic'])
 Route::get('/eventos/data', [EventoController::class, 'data'])
     ->name('eventos.public.data');
 
+// Ruta para el catálogo público de productos
+Route::get('/productos', [App\Http\Controllers\Admin\ProductoController::class, 'catalogoPublico'])
+    ->name('productos.public');
+
 
 
 
