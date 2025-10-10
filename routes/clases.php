@@ -17,9 +17,4 @@ Route::middleware('auth')
     
     
     Route::get('/{clase}', [ClaseController::class, 'show'])->name('show');
-    // Esta ruta recibirá un array de IDs de alumnos para inscribir en un grupo
-    Route::post('/{grupo}/attach-alumnos', [ClaseController::class, 'attachAlumnos'])->name('grupos.attachAlumnos'); 
-
-
-
 });// En tu archivo de rutas
