@@ -53,7 +53,7 @@
 
             @php
                 $sections = [
-                    'alumnos', 'profesores', 'grupos', 'campos', 'materiales', 'eventos', 'pases_lista', 'pagos', 'calificaciones', 'reportes', 'respaldos'
+                    'alumnos', 'profesores', 'grupos', 'campos', 'eventos', 'pases_lista', 'pagos', 'calificaciones', 'reportes', 'respaldos'
                 ];
             @endphp
 

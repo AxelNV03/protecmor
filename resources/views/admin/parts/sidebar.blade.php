@@ -19,9 +19,6 @@
     <button @click="changeTab('clases')" :class="{ 'active': activeTab === 'clases' }">
         Clases
     </button>
-    <button @click="changeTab('materiales')" :class="{ 'active': activeTab === 'materiales' }">
-        Materiales
-    </button>  
     <button @click="changeTab('eventos')" :class="{ 'active': activeTab === 'eventos' }">
         Eventos
     </button>
