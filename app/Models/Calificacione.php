@@ -45,8 +45,8 @@ class Calificacione extends Model
 		return $this->belongsTo(Alumno::class);
 	}
 
-	public function clase()
+	public function campoFormativo()
 	{
-		return $this->belongsTo(Clase::class);
+		return $this->belongsTo(CamposFormativo::class, 'campo_id');
 	}
 }

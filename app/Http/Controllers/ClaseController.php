@@ -84,22 +84,22 @@ class ClaseController extends Controller
         //
     }
 
-    public function panelCalificaciones(Clase $clase)
+   public function panelCalificaciones(Clase $clase): View
     {
-        // Ya no necesitamos el 'if' para comprobar el rol aquí.
-        // El middleware de la ruta ya se encargó de la autorización.
-
-        $alumnos = $clase->grupo->alumnos()->with([
-            'user', 
-            'calificaciones' => fn($query) => $query->where('campo_formativo_id', $clase->campo_formativo_id)
-        ])->get();
-
-        return view('calificaciones.groupC', [
-            'clase' => $clase,
-            'alumnos' => $alumnos
+        $clase->load([
+            'grupo.alumnos' => function ($query) use ($clase) {
+                $query->with(['user', 'calificaciones' => function($q) use ($clase) {
+                    // 👇 CORRECCIÓN AQUÍ: Usamos 'campo_id'
+                    $q->where('campo_id', $clase->campo_id);
+                }]);
+            },
+            'profesor.user',
+            'campoFormativo'
         ]);
 
+        return view('calificaciones.groupC', ['clase' => $clase]);
     }
+
 
     /**
      * Update the specified resource in storage.

@@ -9,12 +9,38 @@
 <body>
 
 {{-- 👇 El x-data ahora envuelve toda la página --}}
-<div x-data="{ showModal: false, alumnoSeleccionado: null }">
-
+<div 
+    x-data="{ 
+        showModal: false, 
+        showEditModal: false, // <-- Añadir para el nuevo modal
+        alumnoSeleccionado: null,
+        calificacionAEditar: {} // <-- Añadir para guardar los datos de la calificación
+    }"
+>
     <h1>Clase: {{ $clase->nombre }}</h1>
     <p>Profesor: {{ $clase->profesor->user->name }}</p>
     <p>Estatus: {{ $clase->estado }}</p>
 
+    {{-- Detalles --}}
+    <ul>
+        <li><strong>Grupo:</strong> {{ $clase->grupo->nombre ?? 'Sin grupo' }}</li>
+        <li>
+            <strong>Campo Formativo:</strong> {{ $clase->campoFormativo->nombre ?? 'N/A' }} 
+            (<em>Tipo: {{ $clase->campoFormativo->tipo ?? 'N/A' }}</em>)
+        </li>
+        <li><strong>Profesor:</strong> {{ $clase->profesor->full_name ?? 'Sin Asignar' }}</li>
+        <li><strong>Estado:</strong> {{ Str::ucfirst($clase->estado) }} {{-- 'ucfirst' pone la primera letra en mayúscula --}}</li>
+        <li><strong>Inicio:</strong> {{ $clase->fecha_inicio ? \Carbon\Carbon::parse($clase->fecha_inicio)->format('d/m/Y') : 'N/A' }}</li>
+        <li>
+            <strong>Fin:</strong>
+            {{-- Condicional para mostrar la fecha de fin o 'N/A' --}}
+            @if($clase->estado === 'finalizada' && $clase->fecha_fin)
+                {{ \Carbon\Carbon::parse($clase->fecha_fin)->format('d/m/Y') }}
+            @else
+                N/A
+            @endif
+        </li>
+    </ul>
     <hr>
 
     <h2>Alumnos Inscritos</h2>
@@ -49,9 +75,16 @@
                         <td>
                             @if ($clase->estado === 'en curso')
                                 @if ($calificacion)
-                                    <a href="{{-- route('calificaciones.edit', $calificacion->id) --}}" class="btn btn-warning btn-sm">
+                                    <button 
+                                        @click="
+                                            showEditModal = true; 
+                                            calificacionAEditar = {{ json_encode($calificacion) }};
+                                        " 
+                                        class="btn btn-warning btn-sm"
+                                    >
                                         Editar
-                                    </a>
+                                    </button>
+
                                 @else
                                     {{-- El botón ahora guarda el ID del alumno y abre el modal --}}
                                     <button @click="showModal = true; alumnoSeleccionado = {{ $alumno->id }}" class="btn btn-primary btn-sm">
@@ -75,20 +108,7 @@
             <form action="{{ route('calificaciones.store') }}" method="POST">
                 @csrf
 
-                    {{-- 👇 AÑADE ESTE BLOQUE PARA VER LOS ERRORES 👇 --}}
-    @if ($errors->any())
-        <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 0.25rem; margin-bottom: 1rem;">
-            <strong>¡Error de validación!</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-                
-                
-                <input type="hidden" name="campo_id" value="{{ $clase->campo_formativo_id }}">
+                <input type="hidden" name="campo_id" value="{{ $clase->campo_id }}">
                 <input type="hidden" name="alumno_id" :value="alumnoSeleccionado">
 
                 <div>
@@ -111,7 +131,54 @@
         </div>
     </div>
 
+    <div 
+    x-show="showEditModal" 
+    @click.away="showEditModal = false" 
+    class="modal" 
+    style="display: none;"
+>
+    <div class="modal-content">
+        <h3>Editar Calificación</h3>
+
+        <form :action="`{{ url('/calificaciones') }}/${calificacionAEditar.id}`" method="POST">            
+            @csrf
+            @method('PUT')
+            
+            <div>
+                <label>Calificación:</label>
+                @if ($clase->campoFormativo->tipo === 'materia')
+                    <input 
+                        type="number" 
+                        name="calificacion" 
+                        min="0" max="10" step="1" 
+                        x-model="calificacionAEditar.calificacion" 
+                        required
+                    >
+                @else
+                    <select 
+                        name="nivel_desempeno" 
+                        x-model="calificacionAEditar.nivel_desempeno" 
+                        required
+                    >
+                        <option value="Bajo">Bajo</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Bueno">Bueno</option>
+                        <option value="Excelente">Excelente</option>
+                    </select>
+                @endif
+            </div>
+
+            <button type="button" @click="showEditModal = false">Cancelar</button>
+            <button type="submit">Actualizar Calificación</button>
+        </form>
+    </div>
+</div>
+
+    
 </div> {{-- Fin del div de x-data --}}
+
+
+
 
 </body>
 </html>
