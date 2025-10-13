@@ -14,5 +14,8 @@ Route::middleware('auth')
     Route::post('/', [CalificacionController::class, 'store'])->name('store');
     Route::put('/{calificacion}', [CalificacionController::class, 'update'])->name('update');
 
+
+    Route::get('/mis-calificaciones', [CalificacionController::class, 'calificacionesAlumno'])->name('calificacionesAlumno');
+
     // Aquí podrías añadir más rutas como update, destroy, etc.
 });

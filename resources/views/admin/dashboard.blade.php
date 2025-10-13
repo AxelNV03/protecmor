@@ -9,29 +9,6 @@
     {{-- Estilos (ejemplo con Bootstrap para que se vea ordenado) --}}
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 
-<<<<<<< HEAD
-            <!-- Menú lateral -->
-            @include('admin.parts.sidebar')
-                
-            <!-- Contenido dinámico -->
-            <br><hr class="my-5">
-            <div class="content">
-                @role('super admin')
-                    @include('admin.parts.admins')
-                @endrole
-                
-                @php
-                    $sections = [
-                        'alumnos', 'profesores', 'grupos', 'campos', 'clases', 'materiales', 'eventos', 'pases_lista', 'pagos', 'calificaciones', 'productos','reportes', 'respaldos'
-                    ];
-                @endphp
-
-                @foreach($sections as $section)
-                    @include('admin.parts.' . $section)
-                @endforeach
-            </div>
-    </body>
-=======
     {{-- Script de Alpine.js --}}
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
@@ -88,6 +65,5 @@
         </div>
     </div>
 </body>
->>>>>>> e3c82ffdd033e32b65cc89c77d9589af48fd6472
 </html>
 

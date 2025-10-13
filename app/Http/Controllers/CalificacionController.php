@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Calificacione;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse; // 👈 Cambia el tipo de retorno
 use Illuminate\View\View; // <-- Importar View
 use Illuminate\Support\Facades\Auth; // <-- ¡IMPORTANTE!
 use App\Http\Requests\SaveClaseRequest; // <-- CAMBIO CLAVE: Usar el request correcto
@@ -50,5 +51,18 @@ class CalificacionController extends Controller
 
         // 4. Redirigimos a la página anterior con un mensaje de éxito
         return back()->with('success', 'Calificación actualizada correctamente.');
+    }
+
+    public function calificacionesAlumno(): JsonResponse
+    {
+        $alumno = Auth::user()->alumno;
+        $calificaciones = $alumno->calificaciones()->with('campoFormativo')->get();
+        $calificacionesAgrupadas = $calificaciones->groupBy('campoFormativo.tipo');
+
+        // 👇 Devuelve un objeto JSON con las dos listas
+        return response()->json([
+            'materias' => $calificacionesAgrupadas->get('materia', []),
+            'talleres' => $calificacionesAgrupadas->get('taller', []),
+        ]);
     }
 }

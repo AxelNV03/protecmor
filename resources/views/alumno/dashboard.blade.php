@@ -51,9 +51,7 @@
                     @include('alumno.parts.clases-y-materiales')
                 </div>
                 
-                <div x-show="activeTab === 'calificaciones'">
-                    @include('alumno.parts.calificaciones')
-                </div>
+                @include('alumno.parts.calificaciones')
 
                 <div x-show="activeTab === 'mis-pagos'">
                     @include('alumno.parts.mis-pagos')
