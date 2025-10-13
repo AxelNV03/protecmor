@@ -106,7 +106,7 @@ CREATE TABLE clases (
     fecha_fin DATE NULL,
     FOREIGN KEY (grupo_id) REFERENCES grupos(id),
     FOREIGN KEY (profesor_id) REFERENCES profesores(id),
-    FOREIGN KEY (campo_formativo_id) REFERENCES campos_formativos(id)
+    FOREIGN KEY (campo_id) REFERENCES campos_formativos(id)
 );
 
 -- Tabla de calificaciones
