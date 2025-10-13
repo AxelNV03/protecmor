@@ -149,8 +149,8 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="campo_formativo_id" class="block mb-2">Campo Formativo</label>
-                    <select name="campo_formativo_id" id="campo_formativo_id" class="form-select w-full" required>
+                    <label for="campo_id" class="block mb-2">Campo Formativo</label>
+                    <select name="campo_id" id="campo_id" class="form-select w-full" required>
                         <option value="">-- Selecciona un campo --</option>
                         {{-- 👇 Usa directamente la variable 'campos' --}}
                         <template x-for="campo in campos" :key="campo.id">
