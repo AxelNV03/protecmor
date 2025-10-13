@@ -42,7 +42,7 @@ class Clase extends Model
     protected $casts = [
         'grupo_id'           => 'int',
         'profesor_id'        => 'int',
-        'campo_formativo_id' => 'int',
+        'campo_id' => 'int',
         'fecha_inicio'       => 'date', // 'date' es más preciso que 'datetime'
         'fecha_fin'          => 'date',
     ];
@@ -55,7 +55,7 @@ class Clase extends Model
     protected $fillable = [
         'grupo_id',
         'profesor_id',
-        'campo_formativo_id',
+        'campo_id',
         'fecha_inicio',
         'fecha_fin',
         'clave',         // 👈 Añadido
@@ -76,7 +76,7 @@ class Clase extends Model
 
 	public function campoFormativo()
 	{
-		return $this->belongsTo(CamposFormativo::class, 'campo_formativo_id');
+		return $this->belongsTo(CamposFormativo::class, 'campo_id');
 	}
 
 	public function calificaciones()

@@ -6,6 +6,8 @@ use App\Http\Controllers\ProfeController; // ✅ Import correcto
 use App\Http\Controllers\GrupoController; // ✅ Import correcto
 use App\Http\Controllers\EventoController; // ✅ Import correcto
 use App\Http\Controllers\ClaseController; // ✅ Import correcto
+use App\Http\Controllers\CalificacionController; // ✅ Import correcto
+
 
 use App\Models\Clase; // Asegúrate de importar el modelo
 
@@ -30,6 +32,11 @@ require base_path('routes/grupos.php');
 
 // Rutas de campos
 require base_path('routes/campos.php');
+
+// Califs
+require base_path('routes/calificaciones.php');
+
+
 
 // Rutas de Clases
 require base_path('routes/clases.php');

@@ -39,7 +39,7 @@ class CamposFormativo extends Model
 
 	public function clases()
 	{
-		return $this->hasMany(Clase::class, 'campo_formativo_id');
+		return $this->hasMany(Clase::class, 'campo_id');
 	}
 
 	public function constancias()

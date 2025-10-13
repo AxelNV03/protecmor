@@ -28,7 +28,7 @@ class SaveClaseRequest extends FormRequest
         // Si la petición es POST (estamos creando), añadimos las reglas adicionales.
         if ($this->isMethod('POST')) {
             $rules['grupo_id'] = ['required', 'exists:grupos,id'];
-            $rules['campo_formativo_id'] = ['required', 'exists:campos_formativos,id'];
+            $rules['campo_id'] = ['required', 'exists:campos_formativos,id'];
         }
 
         return $rules;

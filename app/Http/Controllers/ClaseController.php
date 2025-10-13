@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View; // <-- Importar View
 use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
+use Illuminate\Support\Facades\Auth; // <-- ¡IMPORTANTE!
 use App\Http\Requests\SaveClaseRequest; // <-- CAMBIO CLAVE: Usar el request correcto
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str; // <-- No olvides importar la clase
@@ -50,7 +51,7 @@ class ClaseController extends Controller
             'nombre'             => $validated['nombre'],
             'grupo_id'           => $validated['grupo_id'],
             'profesor_id'        => $validated['profesor_id'],
-            'campo_formativo_id' => $validated['campo_formativo_id'],
+            'campo_id'           => $validated['campo_id'],
             'estado'             => 'en curso', // Asignado automáticamente
             'fecha_inicio'       => now(),      // Asignado automáticamente
         ]);
@@ -82,6 +83,23 @@ class ClaseController extends Controller
     {
         //
     }
+
+   public function panelCalificaciones(Clase $clase): View
+    {
+        $clase->load([
+            'grupo.alumnos' => function ($query) use ($clase) {
+                $query->with(['user', 'calificaciones' => function($q) use ($clase) {
+                    // 👇 CORRECCIÓN AQUÍ: Usamos 'campo_id'
+                    $q->where('campo_id', $clase->campo_id);
+                }]);
+            },
+            'profesor.user',
+            'campoFormativo'
+        ]);
+
+        return view('calificaciones.groupC', ['clase' => $clase]);
+    }
+
 
     /**
      * Update the specified resource in storage.

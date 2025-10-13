@@ -29,13 +29,13 @@ class Calificacione extends Model
 
 	protected $casts = [
 		'alumno_id' => 'int',
-		'clase_id' => 'int',
+		'campo_id' => 'int',
 		'calificacion' => 'float'
 	];
 
 	protected $fillable = [
 		'alumno_id',
-		'clase_id',
+		'campo_id',
 		'calificacion',
 		'nivel_desempeno'
 	];
@@ -45,8 +45,8 @@ class Calificacione extends Model
 		return $this->belongsTo(Alumno::class);
 	}
 
-	public function clase()
+	public function campoFormativo()
 	{
-		return $this->belongsTo(Clase::class);
+		return $this->belongsTo(CamposFormativo::class, 'campo_id');
 	}
 }

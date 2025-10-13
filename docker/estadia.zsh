@@ -114,7 +114,8 @@ gcdev() {
 
 # Restablece base en protecmor
 dbreset(){
-     mysql -u user -p1234 < /home/developer/script.sql
+     mariadb -h db -u user -p1234 < /home/developer/project/script.sql
+     mariadb -h db -u user -p1234 protecmor
      echo "Script de protecmor ejecutado."
      php artisan migrate
      echo "Migraciones ejecutadas."
