@@ -101,7 +101,7 @@ CREATE TABLE clases (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     grupo_id BIGINT NOT NULL,
     profesor_id BIGINT NOT NULL,
-    campo_formativo_id BIGINT NOT NULL,
+    campo_id BIGINT NOT NULL,
     fecha_inicio DATE NULL,
     fecha_fin DATE NULL,
     FOREIGN KEY (grupo_id) REFERENCES grupos(id),

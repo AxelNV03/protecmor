@@ -15,7 +15,7 @@ Route::middleware('auth')
     Route::put('/{clase}', [ClaseController::class, 'update'])->name('update');
     Route::delete('/{clase}', [ClaseController::class, 'destroy'])->name('destroy');
     
-    Route::get('/{clase}/calificaciones', [ClaseController::class, 'panelCalificaciones'])->name('panel_calificaciones');
+    Route::get('/{clase}/panelCalificaciones', [ClaseController::class, 'panelCalificaciones'])->name('panelCalificaciones');
     
     Route::get('/{clase}', [ClaseController::class, 'show'])->name('show');
 });// En tu archivo de rutas

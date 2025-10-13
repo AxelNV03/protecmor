@@ -58,7 +58,7 @@
             <template x-for="clase in clases" :key="clase.id">
                 <tr>
                     <td x-text="clase.clave"></td>  
-                    <td><a :href="`/clases/${clase.id}/calificaciones`" x-text="clase.nombre" class="text-blue-600 hover:underline"></a></td>
+                    <td><a :href="`/clases/${clase.id}/panelCalificaciones`" x-text="clase.nombre" class="text-blue-600 hover:underline"></a></td>
                     <td x-text="clase.campo_formativo.tipo"></td>
                     <td x-text="clase.grupo.nombre"></td>
                     <td x-text="clase.profesor.full_name"></td>

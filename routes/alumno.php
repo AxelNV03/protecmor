@@ -22,4 +22,6 @@ Route::middleware('auth')
 
     // DELETE /alumnos/{alumno} (Elimina un alumno)
     Route::delete('/{alumno}', [AlumnoController::class, 'destroy'])->name('destroy');
+
+    Route::get('/{alumno}', [AlumnoController::class, 'listaCalificaciones'])->name('listaCalificaciones');
 });

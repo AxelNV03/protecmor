@@ -164,4 +164,9 @@ class AlumnoController extends Controller
         return redirect()->route('admin.index', ['tab' => 'alumnos'])
             ->with('success', 'El alumno y su cuenta de usuario han sido archivados.');
     }
+
+    public function listaCalificaciones(Alumno $alumno): View
+    {
+        
+    }
 }

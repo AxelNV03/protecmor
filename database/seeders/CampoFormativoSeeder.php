@@ -14,6 +14,6 @@ class CampoFormativoSeeder extends Seeder
     public function run(): void
     {
         // Crea 20 campos formativos usando la factory
-        CamposFormativo::factory()->count(20)->create();
+        CamposFormativo::factory()->count(5)->create();
     }
 }
