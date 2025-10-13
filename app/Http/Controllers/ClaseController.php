@@ -51,7 +51,7 @@ class ClaseController extends Controller
             'nombre'             => $validated['nombre'],
             'grupo_id'           => $validated['grupo_id'],
             'profesor_id'        => $validated['profesor_id'],
-            'campo_formativo_id' => $validated['campo_formativo_id'],
+            'campo_id'           => $validated['campo_id'],
             'estado'             => 'en curso', // Asignado automáticamente
             'fecha_inicio'       => now(),      // Asignado automáticamente
         ]);
@@ -86,27 +86,19 @@ class ClaseController extends Controller
 
     public function panelCalificaciones(Clase $clase)
     {
-        // Verificamos si el usuario tiene rol de admin o profesor
-        if (Auth::user()->hasAnyRole(['super admin', 'admin', 'profesor'])) {
-            // Carga los datos necesarios para la vista del profesor/admin
-            $alumnos = $clase->grupo()->with('alumnos.user')->first()->alumnos;
+        // Ya no necesitamos el 'if' para comprobar el rol aquí.
+        // El middleware de la ruta ya se encargó de la autorización.
 
-            return view('calificaciones.groupC', [
-                'clase' => $clase,
-                'alumnos' => $alumnos
-            ]);
-        }
+        $alumnos = $clase->grupo->alumnos()->with([
+            'user', 
+            'calificaciones' => fn($query) => $query->where('campo_formativo_id', $clase->campo_formativo_id)
+        ])->get();
 
-        // Si no es admin o profesor, asumimos que es alumno
-        // y cargamos solo su calificación.
-        $calificacion = $clase->calificaciones()
-            ->where('alumno_id', Auth::user()->alumno->id)
-            ->first();
-
-        return view('calificaciones.student', [
+        return view('calificaciones.groupC', [
             'clase' => $clase,
-            'calificacion' => $calificacion
+            'alumnos' => $alumnos
         ]);
+
     }
 
     /**
