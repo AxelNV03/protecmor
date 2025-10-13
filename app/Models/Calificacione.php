@@ -29,13 +29,13 @@ class Calificacione extends Model
 
 	protected $casts = [
 		'alumno_id' => 'int',
-		'clase_id' => 'int',
+		'campo_id' => 'int',
 		'calificacion' => 'float'
 	];
 
 	protected $fillable = [
 		'alumno_id',
-		'clase_id',
+		'campo_id',
 		'calificacion',
 		'nivel_desempeno'
 	];

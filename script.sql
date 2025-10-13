@@ -113,11 +113,11 @@ CREATE TABLE clases (
 CREATE TABLE calificaciones (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     alumno_id BIGINT NOT NULL,
-    clase_id BIGINT NOT NULL,
+    campo_id BIGINT NOT NULL,
     calificacion DECIMAL(5,2) NULL,
     nivel_desempeno ENUM('Bajo','Regular','Bueno','Excelente') NULL,
     FOREIGN KEY (alumno_id) REFERENCES alumnos(id),
-    FOREIGN KEY (clase_id) REFERENCES clases(id)
+    FOREIGN KEY (campo_id) REFERENCES campos_formativos(id)
 );
 
 -- Tabla de materiales y pase de lista

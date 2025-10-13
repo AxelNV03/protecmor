@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View; // <-- Importar View
 use Illuminate\Support\Facades\DB; // <-- ¡IMPORTANTE!
+use Illuminate\Support\Facades\Auth; // <-- ¡IMPORTANTE!
 use App\Http\Requests\SaveClaseRequest; // <-- CAMBIO CLAVE: Usar el request correcto
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str; // <-- No olvides importar la clase
@@ -81,6 +82,31 @@ class ClaseController extends Controller
     public function edit(Clase $clase)
     {
         //
+    }
+
+    public function panelCalificaciones(Clase $clase)
+    {
+        // Verificamos si el usuario tiene rol de admin o profesor
+        if (Auth::user()->hasAnyRole(['super admin', 'admin', 'profesor'])) {
+            // Carga los datos necesarios para la vista del profesor/admin
+            $alumnos = $clase->grupo()->with('alumnos.user')->first()->alumnos;
+
+            return view('calificaciones.groupC', [
+                'clase' => $clase,
+                'alumnos' => $alumnos
+            ]);
+        }
+
+        // Si no es admin o profesor, asumimos que es alumno
+        // y cargamos solo su calificación.
+        $calificacion = $clase->calificaciones()
+            ->where('alumno_id', Auth::user()->alumno->id)
+            ->first();
+
+        return view('calificaciones.student', [
+            'clase' => $clase,
+            'calificacion' => $calificacion
+        ]);
     }
 
     /**

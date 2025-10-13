@@ -12,7 +12,7 @@ class ClaseSeeder extends Seeder
     public function run(): void
     {
         // Crea 50 clases de ejemplo
-        Clase::factory()->count(50)->create();
+        Clase::factory()->count(5)->create();
     }
 }
 
