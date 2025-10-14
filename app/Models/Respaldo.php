@@ -8,6 +8,8 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // <-- 1. Importación correcta
+use App\Models\User; // <-- 2. Importación correcta
 
 /**
  * Class Respaldo
@@ -28,6 +30,7 @@ class Respaldo extends Model
 	protected $table = 'respaldos';
 	public $timestamps = false;
 
+	protected $appends = ['tamano_formateado'];
 	protected $casts = [
 		'usuario_id' => 'int',
 		'fecha_creacion' => 'datetime',
@@ -37,13 +40,24 @@ class Respaldo extends Model
 	protected $fillable = [
 		'nombre_archivo',
 		'usuario_id',
-		'fecha_creacion',
 		'ruta',
 		'tamano_bytes'
 	];
 
-	public function user()
+	public function usuario(): BelongsTo
 	{
 		return $this->belongsTo(User::class, 'usuario_id');
 	}
+
+	public function getTamanoFormateadoAttribute(): string
+    {
+        $kb = $this->tamano_bytes / 1024;
+        
+        if ($kb < 1024) {
+            return round($kb, 2) . ' KB';
+        }
+        
+        $mb = $kb / 1024;
+        return round($mb, 2) . ' MB';
+    }
 }

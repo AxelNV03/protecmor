@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdminController; // ✅ Import correcto
-use App\Http\Controllers\ProfeController; // ✅ Import correcto
-use App\Http\Controllers\GrupoController; // ✅ Import correcto
-use App\Http\Controllers\EventoController; // ✅ Import correcto
-use App\Http\Controllers\ClaseController; // ✅ Import correcto
-use App\Http\Controllers\CalificacionController; // ✅ Import correcto
+use App\Http\Controllers\AdminController;           // ✅ Import correcto
+use App\Http\Controllers\ProfeController;           // ✅ Import correcto
+use App\Http\Controllers\GrupoController;           // ✅ Import correcto
+use App\Http\Controllers\EventoController;          // ✅ Import correcto
+use App\Http\Controllers\ClaseController;           // ✅ Import correcto
+use App\Http\Controllers\CalificacionController;    // ✅ Import correcto
+use App\Http\Controllers\RespaldoController;        // ✅ Import correcto
 
 
 use App\Models\Clase; // Asegúrate de importar el modelo
@@ -55,17 +56,6 @@ Route::get('/productos', [App\Http\Controllers\Admin\ProductoController::class, 
 
 
 
-
-
-Route::get('/test-clase', function() {
-    // Tomamos la primera clase que exista en tu base de datos
-    $clase = Clase::first();
-
-    // Si no hay clases, nos detenemos
-    if (!$clase) {
-        return 'No hay clases en la base de datos para probar.';
-    }
-
-    // Intentamos cargar su relación 'grupo' y la mostramos
-    dd($clase);
-});
+Route::post('/respaldos/generar', [RespaldoController::class, 'generar'])->name('respaldos.generar');
+Route::get('/respaldos/data', [RespaldoController::class, 'data'])->name('respaldos.data');
+Route::get('/respaldos/descargar', [RespaldoController::class, 'descargar'])->name('respaldos.descargar');

@@ -37,7 +37,7 @@
     <button @click="changeTab('reportes')" :class="{ 'active': activeTab === 'reportes' }">
         Reportes
     </button>
-    <button @click="changeTab('respaldo_bd')" :class="{ 'active': activeTab === 'respaldo_bd' }">
+    <button @click="changeTab('respaldos')" :class="{ 'active': activeTab === 'respaldos' }">
         Respaldo de Base de Datos
     </button>
 </div>
