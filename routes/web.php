@@ -58,4 +58,5 @@ Route::get('/productos', [App\Http\Controllers\Admin\ProductoController::class, 
 
 Route::post('/respaldos/generar', [RespaldoController::class, 'generar'])->name('respaldos.generar');
 Route::get('/respaldos/data', [RespaldoController::class, 'data'])->name('respaldos.data');
-Route::get('/respaldos/descargar', [RespaldoController::class, 'descargar'])->name('respaldos.descargar');
+Route::get('/respaldos/descargar', [RespaldoController::class, 'descargar'])->name('respaldos.descargar');// Reemplaza la ruta de restauración anterior por esta
+Route::post('/respaldos/{respaldo}/restaurar', [RespaldoController::class, 'restaurar'])->name('respaldos.restaurar');
