@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
 use App\Http\Controllers\AdminController;           // ✅ Import correcto
 use App\Http\Controllers\ProfeController;           // ✅ Import correcto
 use App\Http\Controllers\GrupoController;           // ✅ Import correcto
@@ -9,17 +8,8 @@ use App\Http\Controllers\EventoController;          // ✅ Import correcto
 use App\Http\Controllers\ClaseController;           // ✅ Import correcto
 use App\Http\Controllers\CalificacionController;    // ✅ Import correcto
 use App\Http\Controllers\RespaldoController;        // ✅ Import correcto
-
-=======
-use App\Http\Controllers\AdminController; // ✅ Import correcto
-use App\Http\Controllers\ProfeController; // ✅ Import correcto
-use App\Http\Controllers\GrupoController; // ✅ Import correcto
-use App\Http\Controllers\EventoController; // ✅ Import correcto
-use App\Http\Controllers\ClaseController; // ✅ Import correcto
-use App\Http\Controllers\CalificacionController; // ✅ Import correcto
 use App\Http\Controllers\ProductoPublicController; // Importa el controlador público de productos
 use App\Http\Controllers\ProductoController;
->>>>>>> 0a13b14 ( crud de prodcutos incompleto)
 
 use App\Models\Clase; // Asegúrate de importar el modelo
 
