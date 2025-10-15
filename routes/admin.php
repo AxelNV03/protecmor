@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EventoController; 
-use App\Http\Controllers\ProductoController;
 
 Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
     ->prefix('admin')
@@ -28,9 +27,5 @@ Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
     // Rutas para la Gestión de Eventos
     Route::get('eventos/data', [EventoController::class, 'data'])->name('eventos.data');
     Route::resource('eventos', EventoController::class);
-
-    // Rutas para la Gestión de Productos
-    Route::get('productos/data', [ProductoController::class, 'data'])->name('productos.data'); // 🚩 NUEVA RUTA AJAX
-    Route::resource('productos', ProductoController::class); 
-
+ 
 });

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
 use App\Http\Controllers\AdminController;           // ✅ Import correcto
 use App\Http\Controllers\ProfeController;           // ✅ Import correcto
 use App\Http\Controllers\GrupoController;           // ✅ Import correcto
@@ -9,6 +10,16 @@ use App\Http\Controllers\ClaseController;           // ✅ Import correcto
 use App\Http\Controllers\CalificacionController;    // ✅ Import correcto
 use App\Http\Controllers\RespaldoController;        // ✅ Import correcto
 
+=======
+use App\Http\Controllers\AdminController; // ✅ Import correcto
+use App\Http\Controllers\ProfeController; // ✅ Import correcto
+use App\Http\Controllers\GrupoController; // ✅ Import correcto
+use App\Http\Controllers\EventoController; // ✅ Import correcto
+use App\Http\Controllers\ClaseController; // ✅ Import correcto
+use App\Http\Controllers\CalificacionController; // ✅ Import correcto
+use App\Http\Controllers\ProductoPublicController; // Importa el controlador público de productos
+use App\Http\Controllers\ProductoController;
+>>>>>>> 0a13b14 ( crud de prodcutos incompleto)
 
 use App\Models\Clase; // Asegúrate de importar el modelo
 
@@ -37,6 +48,9 @@ require base_path('routes/campos.php');
 // Califs
 require base_path('routes/calificaciones.php');
 
+// Rutas de productos (admin)
+require base_path('routes/productos.php');
+
 
 
 // Rutas de Clases
@@ -50,10 +64,8 @@ Route::get('/agenda-academica', [EventoController::class, 'indexPublic'])
 Route::get('/eventos/data', [EventoController::class, 'data'])
     ->name('eventos.public.data');
 
-// Ruta para el catálogo público de productos
-Route::get('/productos', [App\Http\Controllers\Admin\ProductoController::class, 'catalogoPublico'])
-    ->name('productos.public');
-
+// Ruta para la visualización pública de productos
+Route::get('/productos', [ProductoPublicController::class, 'index'])->name('productos.public.index');
 
 
 Route::post('/respaldos/generar', [RespaldoController::class, 'generar'])->name('respaldos.generar');

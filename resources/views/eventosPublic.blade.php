@@ -104,9 +104,9 @@
                 <button id="btnEditar" class="btn btn-warning">Editar</button>
                 <button id="btnEliminar" class="btn btn-danger">Eliminar</button>
             @endif
-            <button onclick="cerrarModalEvento()" class="btn btn-secondary">Cerrar</button>
-        </div>
-    </div>
+            <button onclick="cerrarModalEvento()" class="btn btn-secondary">Cerrar</button>
+        </div>
+    </div>
 </div>
 <script>
     window.IS_ADMIN = {{ json_encode($isAdmin ?? false) }};

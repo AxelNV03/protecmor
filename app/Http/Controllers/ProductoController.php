@@ -2,124 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Producto;
+use App\Http\Requests\SaveProductoRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-// 🚩 CRÍTICO: Importar el Form Request corregido
-use App\Http\Requests\SaveProductoRequest; 
+use App\Http\Controllers\Controller;
 
 class ProductoController extends Controller
 {
     /**
-     * Mostrar la vista de gestión de productos (index).
-     * Esta vista cargará los datos de forma asíncrona.
-     */
-    public function index()
-    {
-        // Solo devuelve la vista, los datos se cargan vía AJAX
-        return view('admin.parts.productos');
-    }
-
-    /**
-     * Obtener los productos en formato JSON (usado por Alpine.js para la carga inicial y paginación).
+     * Devuelve la lista de productos como JSON para la carga asíncrona de Alpine.js.
      */
     public function data(Request $request)
     {
-        $query = Producto::query();
+        // Retorna todos los productos para la gestión del administrador
+        $productos = Producto::latest()->get(); 
 
-        // Lógica de filtrado y ordenación
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where('nombre', 'LIKE', "%{$search}%")
-                  ->orWhere('categoria', 'LIKE', "%{$search}%")
-                  ->orWhere('descripcion', 'LIKE', "%{$search}%");
-        }
-        
-        if ($request->has('ordenar_por')) {
-            $orden = $request->ordenar_por;
-            // 🚩 NOTA: Aquí tu modelo usa 'precio' pero tu consulta usa 'precio_venta'. 
-            // Si tu columna es 'precio', DEBES usar 'precio' aquí también. Asumo que tu tabla tiene 'precio'.
-            if ($orden === 'precio') {
-                $query->orderBy('precio', 'asc'); 
-            } elseif ($orden === 'categoria') {
-                $query->orderBy('categoria', 'asc');
-            }
-        }
-        
-        $productos = $query->paginate(12);
-
-        return response()->json(['productos' => $productos]);
+        return response()->json($productos);
+    }
+    
+    /**
+     * Este método solo redirige o se mantiene vacío, ya que la vista principal
+     * se carga por el dashboard con Alpine.js.
+     */
+    public function index()
+    {
+        return view('admin.parts.productos'); // la ruta de tu blade
     }
 
-    //---------------------------------------------------------
-
     /**
-     * Guardar un nuevo producto. (Usa SaveProductoRequest)
+     * Almacena un nuevo producto.
      */
-    // 🚩 Usamos el Request corregido para la validación automática
-    public function store(SaveProductoRequest $request) 
+    public function store(SaveProductoRequest $request)
     {
-        $validated = $request->validated(); 
-        
-        // 🚩 CRÍTICO: Convertir el string '1' o '0' a booleano.
-        $validated['disponible'] = (bool)$validated['disponible']; 
-        
-        // El FormRequest ya validó que el archivo sea una imagen
+        $data = $request->validated();
+
+        // Manejo de la subida de la imagen
         if ($request->hasFile('imagen')) {
-            $validated['imagen'] = $request->file('imagen')->store('productos', 'public');
+            $data['imagen'] = $request->file('imagen')->store('public/productos');
+            $data['imagen'] = Storage::url($data['imagen']); // Obtiene la URL pública
         }
-        
-        $producto = Producto::create($validated);
-        // Respuesta HTTP 201 (Created)
-        return response()->json(['producto' => $producto, 'message' => 'Producto creado con éxito.'], 201);
+
+        Producto::create($data);
+
+        // Redirige al dashboard con el estado activo para la pestaña 'productos'
+        return redirect()->route('admin.dashboard', ['tab' => 'productos'])->with('success', 'Producto creado exitosamente.');
     }
 
     /**
-     * Mostrar información detallada de un producto (por ID).
+     * Actualiza el producto especificado.
      */
-    public function show($id)
+    public function update(SaveProductoRequest $request, Producto $producto)
     {
-        $producto = Producto::findOrFail($id);
-        return response()->json($producto);
-    }
+        $data = $request->validated();
 
-    /**
-     * Actualizar un producto existente.
-     */
-    // 🚩 Usamos el Request corregido para la validación automática
-    public function update(SaveProductoRequest $request, $id) 
-    {
-        $producto = Producto::findOrFail($id);
-
-        $validated = $request->validated();
-        
-        // 🚩 CRÍTICO: Convertir el string '1' o '0' a booleano.
-        $validated['disponible'] = (bool)$validated['disponible']; 
-
+        // Manejo de la actualización de la imagen
         if ($request->hasFile('imagen')) {
-            // Eliminar la imagen anterior si existe
+            // Eliminar imagen anterior si existe
             if ($producto->imagen) {
-                Storage::disk('public')->delete($producto->imagen);
+                $path = str_replace('/storage', 'public', $producto->imagen);
+                Storage::delete($path);
             }
-            $validated['imagen'] = $request->file('imagen')->store('productos', 'public');
+
+            $data['imagen'] = $request->file('imagen')->store('public/productos');
+            $data['imagen'] = Storage::url($data['imagen']);
         }
-        
-        $producto->update($validated);
-        return response()->json(['producto' => $producto, 'message' => 'Producto actualizado con éxito.']);
+
+        $producto->update($data);
+
+        return redirect()->route('admin.dashboard', ['tab' => 'productos'])->with('success', 'Producto actualizado exitosamente.');
     }
 
     /**
-     * Eliminar un producto.
+     * Elimina el producto especificado.
      */
-    public function destroy($id)
+    public function destroy(Producto $producto)
     {
-        $producto = Producto::findOrFail($id);
-
+        // Eliminar imagen del almacenamiento
         if ($producto->imagen) {
-            Storage::disk('public')->delete($producto->imagen);
+            $path = str_replace('/storage', 'public', $producto->imagen);
+            Storage::delete($path);
         }
 
         $producto->delete();
-        return response()->json(['message' => 'Producto eliminado con éxito.']);
+
+        return redirect()->route('admin.dashboard', ['tab' => 'productos'])->with('success', 'Producto eliminado exitosamente.');
     }
 }
