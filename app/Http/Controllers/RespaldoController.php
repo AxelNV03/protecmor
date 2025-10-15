@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
@@ -11,6 +12,8 @@ use Illuminate\View\View;
 use App\Models\Respaldo;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 
 class RespaldoController extends Controller
@@ -29,47 +32,54 @@ class RespaldoController extends Controller
     /**
      * Genera un nuevo respaldo de la base de datos.
      */
-public function generar(Request $request): RedirectResponse
-{
-    $request->validate([
-        'nombre_personalizado' => 'nullable|string|alpha_dash',
-    ]);
+    public function generar(Request $request): RedirectResponse
+    {
 
-    $nombrePersonalizado = $request->input('nombre_personalizado');
-    $nombreArchivo = $nombrePersonalizado ? $nombrePersonalizado . '.zip' : null;
+        $nombrePersonalizado = $request->input('nombre_personalizado');
+        $nombreArchivoFinal = $nombrePersonalizado ? $nombrePersonalizado . '.zip' : null;
 
-    Artisan::call('backup:run', [
-        '--only-db' => true,
-        '--filename' => $nombreArchivo,
-    ]);
-    
-    // --- LÓGICA CORREGIDA ---
-    $diskName = config('backup.backup.destination.disks')[0];
-    $disk = Storage::disk($diskName);
-    $folder = config('backup.backup.name');
-    
-    $filePath = '';
+        // 1. Crear el validador manualmente
+        $validator = Validator::make(
+            ['nombre_final' => $nombreArchivoFinal], // Datos a validar
+            ['nombre_final' => ['nullable', 'unique:respaldos,nombre_archivo']] // Reglas
+        );
 
-    if ($nombreArchivo) {
-        // Si hay un nombre personalizado, construimos la ruta directamente.
-        $filePath = $folder . '/' . $nombreArchivo;
-    } else {
-        // Si no, buscamos el archivo más reciente (comportamiento anterior).
-        $filePath = collect($disk->allFiles($folder))->last();
-    }
-
-    if ($filePath && $disk->exists($filePath)) {
-        Respaldo::create([
-            'usuario_id' => Auth::id(),
-            'nombre_archivo' => basename($filePath),
-            'ruta' => $filePath,
-            'tamano_bytes' => $disk->size($filePath),
+        // 2. Si la validación falla, lanzar una excepción que redirige automáticamente
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        Artisan::call('backup:run', [
+            '--only-db' => true,
+            '--filename' => $nombreArchivo,
         ]);
-    }
-    // --- FIN ---
+        
+        // --- LÓGICA CORREGIDA ---
+        $diskName = config('backup.backup.destination.disks')[0];
+        $disk = Storage::disk($diskName);
+        $folder = config('backup.backup.name');
+        
+        $filePath = '';
 
-    return back()->with('success', 'Respaldo generado y registrado correctamente.');
-}
+        if ($nombreArchivo) {
+            // Si hay un nombre personalizado, construimos la ruta directamente.
+            $filePath = $folder . '/' . $nombreArchivo;
+        } else {
+            // Si no, buscamos el archivo más reciente (comportamiento anterior).
+            $filePath = collect($disk->allFiles($folder))->last();
+        }
+
+        if ($filePath && $disk->exists($filePath)) {
+            Respaldo::create([
+                'usuario_id' => Auth::id(),
+                'nombre_archivo' => basename($filePath),
+                'ruta' => $filePath,
+                'tamano_bytes' => $disk->size($filePath),
+            ]);
+        }
+        // --- FIN ---
+
+        return back()->with('success', 'Respaldo generado y registrado correctamente.');
+    }
     /**
      * Descarga un archivo de respaldo específico.
      */
@@ -82,73 +92,84 @@ public function generar(Request $request): RedirectResponse
         return Storage::disk('local')->download($path);
     }
 
-public function restaurar(Respaldo $respaldo): RedirectResponse
-{
-    $diskName = config('backup.backup.destination.disks')[0];
-    $disk = Storage::disk($diskName);
-    $path = $respaldo->ruta;
-    $tempDir = null;
+    public function restaurar(Request $request, Respaldo $respaldo): RedirectResponse
+    {
 
-    try {
-        if (!$disk->exists($path)) {
-            return back()->with('error', 'El archivo de respaldo no se encontró.');
+        // 1. Valida que la contraseña venga en la petición
+        $request->validate(['password' => 'required|string']);
+
+
+
+        $diskName = config('backup.backup.destination.disks')[0];
+        $disk = Storage::disk($diskName);
+        $path = $respaldo->ruta;
+        $tempDir = null;
+
+            // 2. Comprueba si la contraseña es correcta
+        if (!Hash::check($request->password, Auth::user()->password)) {
+            return back()->with('error', 'La contraseña es incorrecta.');
         }
 
-        Artisan::call('down');
+        try {
+            if (!$disk->exists($path)) {
+                return back()->with('error', 'El archivo de respaldo no se encontró.');
+            }
 
-        // --- Toda tu lógica de descompresión y restauración va aquí dentro ---
-        $tempDir = storage_path('app/backup-temp/restore-' . time());
-        mkdir($tempDir, 0755, true);
-        
-        $zip = new \ZipArchive;
-        if ($zip->open($disk->path($path)) === TRUE) {
-            $zip->extractTo($tempDir);
-            $zip->close();
-        } else {
-            throw new \Exception('No se pudo abrir el archivo ZIP.');
-        }
-        
-        $sqlFile = collect(File::allFiles($tempDir))
-                    ->first(fn($file) => str_ends_with($file->getPathname(), '.sql'));
+            Artisan::call('down');
 
-        if (!$sqlFile) {
-            throw new \Exception('No se encontró un archivo .sql válido en el respaldo.');
-        }
-        
-        $dbConfig = config("database.connections.mysql");
-        $mysqlPath = $dbConfig['dump']['dump_binary_path'] ?? '';
-        $mysqlCommand = empty($mysqlPath) ? 'mysql' : rtrim($mysqlPath, '/\\') . DIRECTORY_SEPARATOR . 'mysql';
-        
-        $command = sprintf(
-            '%s -h %s -u %s %s %s < %s',
-            $mysqlCommand,
-            escapeshellarg($dbConfig['host']),
-            escapeshellarg($dbConfig['username']),
-            $dbConfig['password'] ? '-p' . escapeshellarg($dbConfig['password']) : '',
-            escapeshellarg($dbConfig['database']),
-            escapeshellarg($sqlFile->getPathname())
-        );
+            // --- Toda tu lógica de descompresión y restauración va aquí dentro ---
+            $tempDir = storage_path('app/backup-temp/restore-' . time());
+            mkdir($tempDir, 0755, true);
+            
+            $zip = new \ZipArchive;
+            if ($zip->open($disk->path($path)) === TRUE) {
+                $zip->extractTo($tempDir);
+                $zip->close();
+            } else {
+                throw new \Exception('No se pudo abrir el archivo ZIP.');
+            }
+            
+            $sqlFile = collect(File::allFiles($tempDir))
+                        ->first(fn($file) => str_ends_with($file->getPathname(), '.sql'));
 
-        exec($command, $output, $returnVar);
-        
-        if ($returnVar !== 0) {
-            throw new \Exception('Error al ejecutar el comando de restauración SQL: ' . implode("\n", $output));
-        }
-        // --- Fin de la lógica ---
+            if (!$sqlFile) {
+                throw new \Exception('No se encontró un archivo .sql válido en el respaldo.');
+            }
+            
+            $dbConfig = config("database.connections.mysql");
+            $mysqlPath = $dbConfig['dump']['dump_binary_path'] ?? '';
+            $mysqlCommand = empty($mysqlPath) ? 'mysql' : rtrim($mysqlPath, '/\\') . DIRECTORY_SEPARATOR . 'mysql';
+            
+            $command = sprintf(
+                '%s -h %s -u %s %s %s < %s',
+                $mysqlCommand,
+                escapeshellarg($dbConfig['host']),
+                escapeshellarg($dbConfig['username']),
+                $dbConfig['password'] ? '-p' . escapeshellarg($dbConfig['password']) : '',
+                escapeshellarg($dbConfig['database']),
+                escapeshellarg($sqlFile->getPathname())
+            );
 
-        Artisan::call('up');
-        File::deleteDirectory($tempDir);
-        
-        return back()->with('success', 'Restauración completada exitosamente.');
+            exec($command, $output, $returnVar);
+            
+            if ($returnVar !== 0) {
+                throw new \Exception('Error al ejecutar el comando de restauración SQL: ' . implode("\n", $output));
+            }
+            // --- Fin de la lógica ---
 
-    } catch (\Exception $e) {
-        Artisan::call('up');
-        if ($tempDir && File::exists($tempDir)) {
+            Artisan::call('up');
             File::deleteDirectory($tempDir);
+            
+            return back()->with('success', 'Restauración completada exitosamente.');
+
+        } catch (\Exception $e) {
+            Artisan::call('up');
+            if ($tempDir && File::exists($tempDir)) {
+                File::deleteDirectory($tempDir);
+            }
+            return back()->with('error', 'La restauración falló: ' . $e->getMessage());
         }
-        return back()->with('error', 'La restauración falló: ' . $e->getMessage());
     }
-}
 
 
 
