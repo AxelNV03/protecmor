@@ -6,7 +6,6 @@ use App\Models\Producto;
 use App\Http\Requests\SaveProductoRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Controller;
 
 class ProductoController extends Controller
 {
@@ -27,7 +26,7 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        return view('admin.parts.productos'); // la ruta de tu blade
+        return view('admin.parts.productos');
     }
 
     /**
@@ -40,13 +39,14 @@ class ProductoController extends Controller
         // Manejo de la subida de la imagen
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('public/productos');
-            $data['imagen'] = Storage::url($data['imagen']); // Obtiene la URL pública
+            $data['imagen'] = Storage::url($data['imagen']);
         }
 
         Producto::create($data);
 
         // Redirige al dashboard con el estado activo para la pestaña 'productos'
-        return redirect()->route('admin.dashboard', ['tab' => 'productos'])->with('success', 'Producto creado exitosamente.');
+        return redirect()->route('admin.index', ['tab' => 'productos'])
+            ->with('success', 'Producto creado exitosamente.');
     }
 
     /**
@@ -70,7 +70,8 @@ class ProductoController extends Controller
 
         $producto->update($data);
 
-        return redirect()->route('admin.dashboard', ['tab' => 'productos'])->with('success', 'Producto actualizado exitosamente.');
+        return redirect()->route('admin.index', ['tab' => 'productos'])
+            ->with('success', 'Producto actualizado exitosamente.');
     }
 
     /**
@@ -86,6 +87,7 @@ class ProductoController extends Controller
 
         $producto->delete();
 
-        return redirect()->route('admin.dashboard', ['tab' => 'productos'])->with('success', 'Producto eliminado exitosamente.');
+        return redirect()->route('admin.index', ['tab' => 'productos'])
+            ->with('success', 'Producto eliminado exitosamente.');
     }
 }

@@ -42,9 +42,6 @@ require base_path('routes/campos.php');
 // Califs
 require base_path('routes/calificaciones.php');
 
-// Rutas de productos (admin)
-require base_path('routes/productos.php');
-
 
 
 // Rutas de Clases
@@ -59,7 +56,7 @@ Route::get('/eventos/data', [EventoController::class, 'data'])
     ->name('eventos.public.data');
 
 // Ruta para la visualización pública de productos
-Route::get('/productos', [ProductoPublicController::class, 'index'])->name('productos.public.index');
+//Route::get('/productos', [ProductoPublicController::class, 'index'])->name('productos.public.index');
 
 
 Route::post('/respaldos/generar', [RespaldoController::class, 'generar'])->name('respaldos.generar');

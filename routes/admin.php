@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EventoController; 
+use App\Http\Controllers\ProductoController; // ✅ Import correcto
 
 Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
     ->prefix('admin')
@@ -28,4 +29,9 @@ Route::middleware('auth') // <-- AÑADE ESTA LÍNEA
     Route::get('eventos/data', [EventoController::class, 'data'])->name('eventos.data');
     Route::resource('eventos', EventoController::class);
  
+    //  RUTAS DE PRODUCTOS 
+    Route::get('productos/data', [ProductoController::class, 'data'])->name('productos.data');
+    Route::post('productos', [ProductoController::class, 'store'])->name('productos.store');
+    Route::put('productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
+    Route::delete('productos/{producto}', [ProductoController::class, 'destroy'])->name('productos.destroy');
 });
