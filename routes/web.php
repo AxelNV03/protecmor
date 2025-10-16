@@ -7,13 +7,8 @@ use App\Http\Controllers\GrupoController;           // ✅ Import correcto
 use App\Http\Controllers\EventoController;          // ✅ Import correcto
 use App\Http\Controllers\ClaseController;           // ✅ Import correcto
 use App\Http\Controllers\CalificacionController;    // ✅ Import correcto
-use App\Http\Controllers\RespaldoController;        // ✅ Import correcto
-<<<<<<< HEAD
-use App\Http\Controllers\ProductoPublicController; // Importa el controlador público de productos
-use App\Http\Controllers\ProductoController;
-=======
-
->>>>>>> 238a1af ( crud de prodcutos incompleto)
+use App\Http\Controllers\RespaldoController;        // ✅ Import corr
+use App\Http\Controllers\ProductoPublicController; // ✅ Import correcto   
 
 use App\Models\Clase; // Asegúrate de importar el modelo
 
@@ -44,6 +39,7 @@ require base_path('routes/calificaciones.php');
 
 
 
+
 // Rutas de Clases
 require base_path('routes/clases.php');
 
@@ -56,7 +52,7 @@ Route::get('/eventos/data', [EventoController::class, 'data'])
     ->name('eventos.public.data');
 
 // Ruta para la visualización pública de productos
-//Route::get('/productos', [ProductoPublicController::class, 'index'])->name('productos.public.index');
+Route::get('/productos', [ProductoPublicController::class, 'index'])->name('productos.public.index');
 
 
 Route::post('/respaldos/generar', [RespaldoController::class, 'generar'])->name('respaldos.generar');
