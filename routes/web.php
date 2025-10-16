@@ -8,8 +8,12 @@ use App\Http\Controllers\EventoController;          // ✅ Import correcto
 use App\Http\Controllers\ClaseController;           // ✅ Import correcto
 use App\Http\Controllers\CalificacionController;    // ✅ Import correcto
 use App\Http\Controllers\RespaldoController;        // ✅ Import correcto
+<<<<<<< HEAD
 use App\Http\Controllers\ProductoPublicController; // Importa el controlador público de productos
 use App\Http\Controllers\ProductoController;
+=======
+
+>>>>>>> 238a1af ( crud de prodcutos incompleto)
 
 use App\Models\Clase; // Asegúrate de importar el modelo
 
