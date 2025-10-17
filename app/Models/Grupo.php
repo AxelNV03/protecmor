@@ -44,7 +44,7 @@ class Grupo extends Model
 
 	public function alumnos()
 	{
-		return $this->hasMany(Alumno::class);
+		return $this->hasMany(\App\Models\Alumno::class, 'grupo_id');
 	}
 
 	public function clases()

@@ -24,10 +24,20 @@ class ClaseController extends Controller
 
     public function data(): \Illuminate\Http\JsonResponse
     {
-        $clases = Clase::with(['grupo', 'profesor.user', 'campoFormativo'])->get();
+        $user = auth()->user();
+
+        $clases = \App\Models\Clase::forUser($user)
+            ->with([
+                'grupo:id,nombre',
+                'campoFormativo:id,nombre,tipo',
+                'profesor:id,user_id',
+                'profesor.user:id,name',
+            ])
+            ->orderBy('fecha_inicio', 'desc')
+            ->get();
+
         return response()->json($clases);
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -64,16 +74,21 @@ class ClaseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Clase $clase): View
+    public function show(\App\Models\Clase $clase): \Illuminate\View\View
     {
-        // Carga todas las relaciones necesarias de forma eficiente
-        $clase->load(['profesor.user', 'grupo', 'campoFormativo', 'materiales']);
-    
-        return view('clases.single_class', [
-            'clase' => $clase
-        ], [ 
-            'tab' => 'inicio' 
+        // Autoriza (si usas policy, ver punto 4)
+        // $this->authorize('view', $clase);
+
+        $clase->load([
+            'profesor.user',
+            'grupo.alumnos.user',  // 👈 alumnos del grupo
+            'campoFormativo',
+            'materiales',
         ]);
+
+        return view('clases.single_class', [
+            'clase' => $clase,
+        ], ['tab' => 'inicio']);
     }
 
     /**

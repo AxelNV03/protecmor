@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str; // <-- AÑADE ESTA LÍNEA
+use App\Models\User; // importa User
 
 
 /**
@@ -93,6 +94,33 @@ class Clase extends Model
 	{
 		return $this->hasMany(Mensaje::class);
 	}
+
+    
+
+    /**
+     * Filtra clases visibles para un usuario:
+     * - super admin | admin: todas
+     * - profesor: asignadas (profesor_id)
+     * - alumno: inscritas (pivot clase_alumno)
+     */
+    public function scopeForUser($q, User $user)
+    {
+        if ($user->hasAnyRole(['super admin','admin'])) {
+            return $q;
+        }
+
+        if ($user->hasRole('profesor')) {
+            $profId = optional($user->profesor)->id;
+            return $profId ? $q->where('profesor_id', $profId)
+                        : $q->whereRaw('0=1');
+        }
+
+        // Alumno: todas las clases del grupo al que pertenece
+        $alumnoGrupoId = optional($user->alumno)->grupo_id;
+        return $alumnoGrupoId
+            ? $q->where('grupo_id', $alumnoGrupoId)
+            : $q->whereRaw('0=1');
+    }
 
     public static function generarClave(string $nombre): string
     {

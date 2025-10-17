@@ -9,8 +9,8 @@
             Mi Perfil
         </button>
         <button 
-            @click="changeTab('clases-y-materiales')" 
-            :class="{ 'bg-blue-600 text-white': activeTab === 'clases-y-materiales', 'hover:bg-gray-700': activeTab !== 'clases-y-materiales' }" 
+            @click="changeTab('clases')" 
+            :class="{ 'bg-blue-600 text-white': activeTab === 'clases', 'hover:bg-gray-700': activeTab !== 'clases' }" 
             class="py-2 px-4 rounded-md text-left transition-colors duration-200"
         >
             Clases y Materiales

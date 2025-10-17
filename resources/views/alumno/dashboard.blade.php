@@ -47,8 +47,8 @@
                     @include('alumno.parts.mi-perfil')
                 </div>
                 
-                <div x-show="activeTab === 'clases-y-materiales'">
-                    @include('alumno.parts.clases-y-materiales')
+                <div x-show="activeTab === 'clases">
+                    @include('clases.dashboard')
                 </div>
                 
                 @include('alumno.parts.calificaciones')
