@@ -1,0 +1,151 @@
+/* Estilos generales del contenedor del calendario */
+#calendar {
+    max-width: 100%;
+    margin: 0 auto;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal.active {
+    display: flex;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh; /* Altura máxima para que quepa en la pantalla */
+    overflow-y: auto; /* Permite el desplazamiento vertical si el contenido es muy largo */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeInScale 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Animación */
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Inputs */
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Botones */
+.btn { 
+    padding: 8px 16px; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    cursor: pointer; 
+}
+.btn-primary { 
+    background: #2563eb; 
+    color: #fff; 
+}
+.btn-primary:hover { 
+    background: #1d4ed8; 
+}
+.btn-danger { 
+    background: #dc2626; 
+    color: #fff; 
+}
+.btn-warning { 
+    background: #f59e0b; 
+    color: #fff; 
+}
+.btn-secondary { 
+    background: #6b7280; 
+    color: #fff; 
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto; /* Empuja los botones a la parte inferior */
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.filtros-eventos {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-filtro {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #000;
+    transition: transform 0.2s;
+}
+
+.btn-filtro:hover {
+    transform: scale(1.05);
+}
+
+.lista-eventos {
+    margin-top: 20px;
+}
+
+.evento-item {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff;
+    height: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.evento-item {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff;
+    height: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-left: 20px; /* margen izquierdo agregado */
+}
+
+.btn-contactar {
+    display: inline-block;
+    background-color: #064420; /* Verde oscuro */
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-contactar:hover {
+    background-color: #fff;
+    color: #064420;
+    border: 1px solid #064420;
+}

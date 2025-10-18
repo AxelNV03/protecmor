@@ -1,0 +1,56 @@
+🚀 Iniciar Proyecto con Docker (Windows)
+
+1️⃣ Activar WSL y Virtualización
+- Abrir "Activar o desactivar las características de Windows"
+- Marcar:
+  - Plataforma de máquina virtual (Virtual Machine Platform)
+  - Subsistema de Windows para Linux (WSL)
+- Aceptar y reiniciar
+
+2️⃣ Instalar Docker Desktop
+- Descargar e instalar desde la web oficial
+- Abrir, iniciar sesión y cerrar la app
+
+3️⃣ (Opcional) Configurar Git y SSH
+- Montar llaves SSH en docker-compose.yml:
+  <ruta_de_tus_llaves>:/home/developer/.ssh:cached  
+  ejemplo: 
+  /mnt/c/Users/user/.ssh:/home/developer/.ssh:cached
+
+- Colocar tu gitconfig en docker/gitconf (ejemplo):
+  [user]
+      name = user example
+      email = user@gmail.com
+
+4️⃣ Construir contenedor
+- Desde la raíz del proyecto:
+  docker-compose build app
+- Verificar imágenes:
+  docker images
+- Para borrar todo:
+  docker-compose down --rmi all -v
+
+5️⃣ Levantar y apagar contenedores (Esto solo se hace la primera vez despues del paso 4, posteriormente solo usar los comandos del paso 6)
+- Levantar:
+  docker-compose up -d
+- Apagar:
+  docker-compose down -v
+
+6️⃣ Uso diario
+- Iniciar contenedores existentes:
+  docker-compose start
+- Detener temporalmente:
+  docker-compose stop
+- Acceder a la terminal del contenedor:
+  docker-compose exec app zsh
+
+✅ Tips
+- Si montaste SSH y gitconfig, Git funciona automáticamente
+- Recargar Zsh:
+  source ~/.zshrc
+- Permisos SSH:
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/id_ed25519
+  chmod 644 ~/.ssh/id_ed25519.pub
+
+startconfi
