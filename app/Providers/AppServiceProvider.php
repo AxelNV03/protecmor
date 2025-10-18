@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Alumno;
+use App\Observers\AlumnoObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Alumno::observe(AlumnoObserver::class);
     }
 }

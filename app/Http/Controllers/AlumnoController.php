@@ -39,54 +39,56 @@ class AlumnoController extends Controller
      */
     public function store(SaveAlumnoRequest $request): RedirectResponse
     {
-        $validated =  $request->validated();  // Validar datos y crear usuario y alumno
-        $password = User::generatePassword(); // Generar una contraseña segura
-        $alumno = null; // Declarar la variable antes de la transacción
-
-        // Validar datos y crear usuario y alumno
-        DB::transaction(function () use ($validated, $password, &$alumno) { // Pasar por referencia
-            // Crear el usuario asociado al alumno
-            $alumno = User::create([
-                'name'      => $validated['name'],
-                'email'     => $validated['email'],
-                'password'  => Hash::make($password),
-                'telefono'  => $validated['telefono'] ?? null,
-                'estatus'   => 'activo',
+        $validated = $request->validated();
+        $password  = User::generatePassword();
+        
+        $user = DB::transaction(function () use ($validated, $password) {
+            // 1) Crear usuario
+            $user = User::create([
+                'name'     => $validated['name'],
+                'email'    => $validated['email'],
+                'password' => Hash::make($password),
+                'telefono' => $validated['telefono'] ?? null,
+                'estatus'  => 'activo',
             ]);
-            $alumno->assignRole('alumno');
+            $user->assignRole('alumno');
 
-            // Generar matrícula con los datos reales
+            // 2) Generar matrícula real
             $matricula = Alumno::generarMatricula(
-                $validated['name'],  // ← Pasar parámetros
-                $validated['apeP'], 
+                $validated['name'],
+                $validated['apeP'],
                 $validated['apeM']
             );
 
-            // Crear el registro en la tabla alumnos
-            $alumno->alumno()->create([
-                'apeP'                => $validated['apeP'], 
+            // 3) Crear Alumno relacionado (esto disparará el evento created del modelo)
+            $user->alumno()->create([
+                'apeP'                => $validated['apeP'],
                 'apeM'                => $validated['apeM'],
                 'direccion'           => $validated['direccion'] ?? null,
-                'matricula'           => $matricula, // ← Asignar la matrícula generada
-                'grupo_id'            => NULL, // Se asigna después
+                'matricula'           => $matricula,
+                'grupo_id'            => null,
                 'fecha_nacimiento'    => $validated['fecha_nacimiento'],
                 'sexo'                => $validated['sexo'],
                 'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
             ]);
+
+            return $user; 
         });
 
-        if($alumno){
-            // Enviar email con las credenciales
+        // 4) Enviar credenciales SOLO tras commit exitoso
+        DB::afterCommit(function () use ($validated, $password) {
             Mail::to($validated['email'])->send(new UserCredentialsMail(
                 $validated['name'],
                 $validated['email'],
                 $password,
                 'alumno'
             ));
-        }
+        });
 
         // Redirigir con mensaje de éxito
-        return redirect()->route('admin.index', ['tab' => 'alumnos'])->with('success', 'Alumno creado correctamente');
+        return redirect()
+            ->route('admin.index', ['tab' => 'alumnos'])
+            ->with('success', 'Alumno creado correctamente (pago de inscripción generado automáticamente).');
     }
 
     /**
@@ -163,10 +165,5 @@ class AlumnoController extends Controller
 
         return redirect()->route('admin.index', ['tab' => 'alumnos'])
             ->with('success', 'El alumno y su cuenta de usuario han sido archivados.');
-    }
-
-    public function listaCalificaciones(Alumno $alumno): View
-    {
-        
     }
 }

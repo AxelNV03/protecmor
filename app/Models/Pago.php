@@ -31,7 +31,7 @@ class Pago extends Model
 	protected $casts = [
 		'alumno_id' => 'int',
 		'monto' => 'float',
-		'fecha_pago' => 'datetime'
+		'fecha_pago' => 'date'
 	];
 
 	protected $fillable = [
