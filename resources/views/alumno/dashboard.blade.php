@@ -8,6 +8,47 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Incluir Alpine.js desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/pusher-js@8/dist/web/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1/dist/echo.iife.js"></script>
+    <script>
+    window.Pusher = Pusher;
+
+    const wsHost = window.location.hostname; // ← 127.0.0.1 o localhost según abras el sitio
+    const wsPort = {{ config('reverb.default.port', 8080) }}; // ← el que pusiste en .env
+    Pusher.logToConsole = true; // ← para depuración en consola (quítalo en producción)
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: '{{ config('reverb.apps.0.key') }}',
+        wsHost: wsHost,
+        wsPort: wsPort,
+        wssPort: wsPort,
+        forceTLS: window.location.protocol === 'https:', // http false, https true
+        enabledTransports: ['ws', 'wss'],
+        authorizer: (channel, options) => {
+        return {
+            authorize: (socketId, callback) => {
+            fetch('/broadcasting/auth', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                socket_id: socketId,
+                channel_name: channel.name
+                }),
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => callback(false, data))
+            .catch(err => callback(true, err));
+            }
+        };
+        },
+    });
+    </script>
+    
 </head>
 <body class="bg-gray-100 font-sans">
 
