@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClaseController;
+use App\Http\Controllers\ChatController;
 
 Route::middleware('auth')
     ->prefix('clases')
@@ -18,4 +19,9 @@ Route::middleware('auth')
     Route::get('/{clase}/panelCalificaciones', [ClaseController::class, 'panelCalificaciones'])->name('panelCalificaciones');
     
     Route::get('/{clase}', [ClaseController::class, 'show'])->name('show');
+
+     // Chat de clase
+    Route::get('/{clase}/chat/messages', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/{clase}/chat/messages', [ChatController::class, 'store'])->name('chat.store');
+
 });// En tu archivo de rutas

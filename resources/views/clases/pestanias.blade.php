@@ -14,7 +14,7 @@
     <button class="nav-link" @click="activeTab = 'alumnos'" :class="{ 'active': activeTab === 'alumnos' }">
         Alumnos
     </button>
-    @hasanyrole('superadmin|profesores')
+    @hasanyrole('alumno|profesor')
     <button class="nav-link" @click="activeTab = 'chat'" :class="{ 'active': activeTab === 'chat' }">
         Chat
     </button>
