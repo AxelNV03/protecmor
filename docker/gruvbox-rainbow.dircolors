@@ -1,0 +1,115 @@
+# ~/.config/dircolors/gruvbox.dircolors
+
+# Archivo de configuración para dircolors (compatible con `eval "$(dircolors -b)"`)
+# Colores Gruvbox adaptados
+
+# Normal text
+NORMAL 00
+RESET 0
+
+# Directory: Yellow (dark)
+DIR 01;33  # bold yellow
+
+# Symbolic link: Aqua
+LINK 01;36  # bold cyan
+
+# Socket: Purple
+SOCK 01;35  # bold magenta
+
+# Pipe: Orange
+FIFO 01;33  # bold yellow/orange
+
+# Executable: Green
+EXEC 01;32  # bold green
+
+# Block special file: Aqua background, blue fg
+BLK 01;34;46
+
+# Character special file
+CHR 01;34;43
+
+# Orphan symlink: Red
+ORPHAN 01;31  # bold red
+
+# Missing symlink target
+MISSING 01;31
+
+# Setuid
+SETUID 37;41  # white on red background
+
+# Setgid
+SETGID 30;43  # black on yellow background
+
+# Sticky other writable dir: black on green
+STICKY_OTHER_WRITABLE 30;42
+
+# Other writable directory
+OTHER_WRITABLE 34;42
+
+# Sticky directory
+STICKY 37;44
+
+# Archive files: light brown/orange
+*.tar 01;33
+*.tgz 01;33
+*.arj 01;33
+*.taz 01;33
+*.lzh 01;33
+*.zip 01;33
+*.z 01;33
+*.Z 01;33
+*.gz 01;33
+*.bz2 01;33
+*.xz 01;33
+*.lzma 01;33
+*.7z 01;33
+*.rar 01;33
+*.ace 01;33
+
+# Images: purple
+*.jpg 01;35
+*.jpeg 01;35
+*.gif 01;35
+*.bmp 01;35
+*.pbm 01;35
+*.pgm 01;35
+*.ppm 01;35
+*.tga 01;35
+*.xbm 01;35
+*.xpm 01;35
+*.tif 01;35
+*.tiff 01;35
+*.png 01;35
+*.svg 01;35
+*.webp 01;35
+
+# Audio: cyan
+*.mp3 01;36
+*.wav 01;36
+*.flac 01;36
+
+# Video: cyan
+*.mp4 01;36
+*.avi 01;36
+*.mkv 01;36
+
+# Scripts and text: green
+*.sh 01;32
+*.txt 01;32
+*.md 01;32
+*.rst 01;32
+*.ini 01;32
+*.conf 01;32
+
+# Code files
+*.c 01;34
+*.cpp 01;34
+*.py 01;34
+*.rs 01;34
+*.js 01;34
+*.ts 01;34
+*.html 01;34
+*.css 01;34
+*.go 01;34
+*.php 01;34
+*.java 01;34

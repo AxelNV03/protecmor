@@ -1,0 +1,43 @@
+# version: '3.8'
+
+# ==============================================================================
+# SERVICIOS (CONTENEDORES)
+# ==============================================================================
+services:
+  # 1. Tu servicio de aplicación (construido desde tu Dockerfile)
+  app:
+    build:
+      context: . # Usa el Dockerfile en la carpeta actual
+      args:
+        HOST_UID: ${UID:-1000}
+        HOST_GID: ${GID:-1000}
+    ports: # <-- AÑADE ESTA SECCIÓN
+      - "5173:5173" # Para Vite (frontend)
+      - "8000:8000" # Para Artisan (backend, por si lo usas)
+    volumes:
+      - .:/home/developer/project
+      - /home/asusnv/.ssh:/home/developer/.ssh
+    command: bash
+    tty: true 
+
+  # 2. Tu servicio de base de datos (MariaDB)
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+    #root_password_muy_segura
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'laravel'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: '1234'  # <-- Déjalo vacío
+      #MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # <-- Añade esta línea
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+# ==============================================================================
+# VOLÚMENES (DONDE SE GUARDAN LOS DATOS DE FORMA PERMANENTE)
+# ==============================================================================
+volumes:
+  mariadb_data:
